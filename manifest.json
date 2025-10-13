@@ -1,0 +1,554 @@
+[
+  {
+    "id": "CHK001",
+    "script": "Check-AdminAccount.ps1",
+    "level": "FATAL",
+    "title_fr": "Compte administrateur disponible",
+    "title_en": "Administrator Account Available",
+    "file": "checks/admin_account.html"
+  },
+  {
+    "id": "CHK002",
+    "script": "Check-PowerShellVersion.ps1",
+    "level": "FATAL",
+    "title_fr": "Version de PowerShell minimale",
+    "title_en": "Minimum PowerShell Version",
+    "file": "checks/powershell_version.html"
+  },
+  {
+    "id": "CHK003",
+    "script": "Check-DotNetFramework.ps1",
+    "level": "FATAL",
+    "title_fr": ".NET Framework 4.8 présent",
+    "title_en": ".NET Framework 4.8 Installed",
+    "file": "checks/dotnet_framework.html"
+  },
+  {
+    "id": "CHK004",
+    "script": "Check-WindowsUpdateStatus.ps1",
+    "level": "ERROR",
+    "title_fr": "État du service Windows Update",
+    "title_en": "Windows Update Service State",
+    "file": "checks/windows_update_status.html"
+  },
+  {
+    "id": "CHK005",
+    "script": "Check-SystemDiskSpace.ps1",
+    "level": "FATAL",
+    "title_fr": "Espace disque système suffisant",
+    "title_en": "Sufficient System Disk Space",
+    "file": "checks/system_disk_space.html"
+  },
+  {
+    "id": "CHK006",
+    "script": "Check-DataDiskSpace.ps1",
+    "level": "ERROR",
+    "title_fr": "Espace disque data disponible",
+    "title_en": "Available Data Disk Space",
+    "file": "checks/data_disk_space.html"
+  },
+  {
+    "id": "CHK007",
+    "script": "Check-MemoryAvailable.ps1",
+    "level": "FATAL",
+    "title_fr": "Mémoire vive disponible",
+    "title_en": "Available RAM",
+    "file": "checks/memory_available.html"
+  },
+  {
+    "id": "CHK008",
+    "script": "Check-CPUArchitecture.ps1",
+    "level": "FATAL",
+    "title_fr": "Architecture processeur 64 bits",
+    "title_en": "64-bit Processor Architecture",
+    "file": "checks/cpu_architecture.html"
+  },
+  {
+    "id": "CHK009",
+    "script": "Check-Virtualization.ps1",
+    "level": "WARNING",
+    "title_fr": "Virtualisation matériel activée",
+    "title_en": "Hardware Virtualization Enabled",
+    "file": "checks/virtualization_enabled.html"
+  },
+  {
+    "id": "CHK010",
+    "script": "Check-SecureBoot.ps1",
+    "level": "INFO",
+    "title_fr": "Statut de Secure Boot",
+    "title_en": "Secure Boot Status",
+    "file": "checks/secure_boot.html"
+  },
+  {
+    "id": "CHK011",
+    "script": "Check-TPM.ps1",
+    "level": "WARNING",
+    "title_fr": "Présence du module TPM",
+    "title_en": "TPM Module Presence",
+    "file": "checks/tpm_availability.html"
+  },
+  {
+    "id": "CHK012",
+    "script": "Check-Antivirus.ps1",
+    "level": "ERROR",
+    "title_fr": "Antivirus installé et à jour",
+    "title_en": "Antivirus Installed and Updated",
+    "file": "checks/antivirus_installed.html"
+  },
+  {
+    "id": "CHK013",
+    "script": "Check-DefenderExclusions.ps1",
+    "level": "WARNING",
+    "title_fr": "Exclusions Windows Defender",
+    "title_en": "Windows Defender Exclusions",
+    "file": "checks/defender_exclusions.html"
+  },
+  {
+    "id": "CHK014",
+    "script": "Check-FirewallRules.ps1",
+    "level": "ERROR",
+    "title_fr": "Configuration du pare-feu",
+    "title_en": "Firewall Configuration",
+    "file": "checks/firewall_configuration.html"
+  },
+  {
+    "id": "CHK015",
+    "script": "Check-NetworkConnectivity.ps1",
+    "level": "ERROR",
+    "title_fr": "Connectivité réseau",
+    "title_en": "Network Connectivity",
+    "file": "checks/network_connectivity.html"
+  },
+  {
+    "id": "CHK016",
+    "script": "Check-Proxy.ps1",
+    "level": "INFO",
+    "title_fr": "Détection d'un proxy système",
+    "title_en": "System Proxy Detection",
+    "file": "checks/proxy_detection.html"
+  },
+  {
+    "id": "CHK017",
+    "script": "Check-DnsResolution.ps1",
+    "level": "ERROR",
+    "title_fr": "Résolution DNS",
+    "title_en": "DNS Resolution",
+    "file": "checks/dns_resolution.html"
+  },
+  {
+    "id": "CHK018",
+    "script": "Check-TimeSync.ps1",
+    "level": "ERROR",
+    "title_fr": "Synchronisation horaire",
+    "title_en": "Time Synchronization",
+    "file": "checks/time_synchronization.html"
+  },
+  {
+    "id": "CHK019",
+    "script": "Check-NtpReachability.ps1",
+    "level": "WARNING",
+    "title_fr": "Accessibilité du serveur NTP",
+    "title_en": "NTP Server Reachability",
+    "file": "checks/ntp_reachability.html"
+  },
+  {
+    "id": "CHK020",
+    "script": "Check-DomainMembership.ps1",
+    "level": "FATAL",
+    "title_fr": "Appartenance au domaine",
+    "title_en": "Domain Membership",
+    "file": "checks/domain_membership.html"
+  },
+  {
+    "id": "CHK021",
+    "script": "Check-LocalAdminRights.ps1",
+    "level": "FATAL",
+    "title_fr": "Droits administrateur local",
+    "title_en": "Local Administrator Rights",
+    "file": "checks/local_admin_rights.html"
+  },
+  {
+    "id": "CHK022",
+    "script": "Check-UAC.ps1",
+    "level": "WARNING",
+    "title_fr": "Configuration du contrôle de compte utilisateur",
+    "title_en": "User Account Control Configuration",
+    "file": "checks/uac_status.html"
+  },
+  {
+    "id": "CHK023",
+    "script": "Check-RemoteDesktop.ps1",
+    "level": "INFO",
+    "title_fr": "Activation du Bureau à distance",
+    "title_en": "Remote Desktop Activation",
+    "file": "checks/remote_desktop.html"
+  },
+  {
+    "id": "CHK024",
+    "script": "Check-SMBVersion.ps1",
+    "level": "ERROR",
+    "title_fr": "Version du protocole SMB",
+    "title_en": "SMB Protocol Version",
+    "file": "checks/smb_protocol_version.html"
+  },
+  {
+    "id": "CHK025",
+    "script": "Check-PowerPlan.ps1",
+    "level": "WARNING",
+    "title_fr": "Plan d'alimentation hautes performances",
+    "title_en": "High Performance Power Plan",
+    "file": "checks/power_plan.html"
+  },
+  {
+    "id": "CHK026",
+    "script": "Check-CriticalServices.ps1",
+    "level": "ERROR",
+    "title_fr": "Services Windows critiques",
+    "title_en": "Critical Windows Services",
+    "file": "checks/critical_services.html"
+  },
+  {
+    "id": "CHK027",
+    "script": "Check-EventLogs.ps1",
+    "level": "WARNING",
+    "title_fr": "Santé des journaux d'événements",
+    "title_en": "Event Log Health",
+    "file": "checks/event_log_health.html"
+  },
+  {
+    "id": "CHK028",
+    "script": "Check-DotNetFeature.ps1",
+    "level": "ERROR",
+    "title_fr": "Fonctionnalité .NET Core",
+    "title_en": ".NET Core Feature",
+    "file": "checks/dotnet_feature.html"
+  },
+  {
+    "id": "CHK029",
+    "script": "Check-IISFeature.ps1",
+    "level": "ERROR",
+    "title_fr": "Rôles IIS requis",
+    "title_en": "Required IIS Roles",
+    "file": "checks/iis_feature.html"
+  },
+  {
+    "id": "CHK030",
+    "script": "Check-HyperV.ps1",
+    "level": "WARNING",
+    "title_fr": "Fonctionnalité Hyper-V",
+    "title_en": "Hyper-V Feature",
+    "file": "checks/hyperv_feature.html"
+  },
+  {
+    "id": "CHK031",
+    "script": "Check-SqlServerInstalled.ps1",
+    "level": "FATAL",
+    "title_fr": "Présence de SQL Server",
+    "title_en": "SQL Server Presence",
+    "file": "checks/sql_server_installed.html"
+  },
+  {
+    "id": "CHK032",
+    "script": "Check-SqlServerVersion.ps1",
+    "level": "ERROR",
+    "title_fr": "Version de SQL Server",
+    "title_en": "SQL Server Version",
+    "file": "checks/sql_server_version.html"
+  },
+  {
+    "id": "CHK033",
+    "script": "Check-SqlServiceStatus.ps1",
+    "level": "FATAL",
+    "title_fr": "Service SQL Server démarré",
+    "title_en": "SQL Server Service Running",
+    "file": "checks/sql_service_status.html"
+  },
+  {
+    "id": "CHK034",
+    "script": "Check-SqlPorts.ps1",
+    "level": "ERROR",
+    "title_fr": "Ports SQL Server accessibles",
+    "title_en": "SQL Server Ports Accessible",
+    "file": "checks/sql_ports.html"
+  },
+  {
+    "id": "CHK035",
+    "script": "Check-SqlCollation.ps1",
+    "level": "ERROR",
+    "title_fr": "Collation SQL Server",
+    "title_en": "SQL Server Collation",
+    "file": "checks/sql_collation.html"
+  },
+  {
+    "id": "CHK036",
+    "script": "Check-SqlAgentAccount.ps1",
+    "level": "WARNING",
+    "title_fr": "Compte de service SQL Agent",
+    "title_en": "SQL Agent Service Account",
+    "file": "checks/sql_agent_account.html"
+  },
+  {
+    "id": "CHK037",
+    "script": "Check-DatabaseLatency.ps1",
+    "level": "WARNING",
+    "title_fr": "Latence disque base de données",
+    "title_en": "Database Disk Latency",
+    "file": "checks/database_disk_latency.html"
+  },
+  {
+    "id": "CHK038",
+    "script": "Check-DatabaseBackupPath.ps1",
+    "level": "INFO",
+    "title_fr": "Chemin de sauvegarde SQL",
+    "title_en": "SQL Backup Path",
+    "file": "checks/database_backup_path.html"
+  },
+  {
+    "id": "CHK039",
+    "script": "Check-OdbcDriver.ps1",
+    "level": "ERROR",
+    "title_fr": "Version du pilote ODBC",
+    "title_en": "ODBC Driver Version",
+    "file": "checks/odbc_driver_version.html"
+  },
+  {
+    "id": "CHK040",
+    "script": "Check-VCRuntime.ps1",
+    "level": "ERROR",
+    "title_fr": "Redistribuables Visual C++",
+    "title_en": "Visual C++ Redistributables",
+    "file": "checks/vc_runtime.html"
+  },
+  {
+    "id": "CHK041",
+    "script": "Check-PrintSpooler.ps1",
+    "level": "WARNING",
+    "title_fr": "Service Spouleur d'impression",
+    "title_en": "Print Spooler Service",
+    "file": "checks/printer_spooler.html"
+  },
+  {
+    "id": "CHK042",
+    "script": "Check-WindowsInstaller.ps1",
+    "level": "ERROR",
+    "title_fr": "Service Windows Installer",
+    "title_en": "Windows Installer Service",
+    "file": "checks/windows_installer_service.html"
+  },
+  {
+    "id": "CHK043",
+    "script": "Check-PendingReboot.ps1",
+    "level": "ERROR",
+    "title_fr": "Redémarrage en attente",
+    "title_en": "Pending Reboot",
+    "file": "checks/pending_reboot.html"
+  },
+  {
+    "id": "CHK044",
+    "script": "Check-RebootHistory.ps1",
+    "level": "INFO",
+    "title_fr": "Historique des redémarrages",
+    "title_en": "Reboot History",
+    "file": "checks/reboot_history.html"
+  },
+  {
+    "id": "CHK045",
+    "script": "Check-DriverStatus.ps1",
+    "level": "WARNING",
+    "title_fr": "Pilotes matériels critiques",
+    "title_en": "Critical Hardware Drivers",
+    "file": "checks/driver_status.html"
+  },
+  {
+    "id": "CHK046",
+    "script": "Check-UsbPorts.ps1",
+    "level": "INFO",
+    "title_fr": "Statut des ports USB",
+    "title_en": "USB Port Status",
+    "file": "checks/usb_ports.html"
+  },
+  {
+    "id": "CHK047",
+    "script": "Check-SmartScreen.ps1",
+    "level": "INFO",
+    "title_fr": "Statut de Microsoft SmartScreen",
+    "title_en": "Microsoft SmartScreen Status",
+    "file": "checks/smartscreen.html"
+  },
+  {
+    "id": "CHK048",
+    "script": "Check-DefenderRealtime.ps1",
+    "level": "WARNING",
+    "title_fr": "Protection temps réel Windows Defender",
+    "title_en": "Windows Defender Real-Time Protection",
+    "file": "checks/defender_realtime.html"
+  },
+  {
+    "id": "CHK049",
+    "script": "Check-LocalPolicyAudit.ps1",
+    "level": "INFO",
+    "title_fr": "Stratégie d'audit locale",
+    "title_en": "Local Audit Policy",
+    "file": "checks/local_policy_audit.html"
+  },
+  {
+    "id": "CHK050",
+    "script": "Check-EventLogSize.ps1",
+    "level": "WARNING",
+    "title_fr": "Taille des journaux d'événements",
+    "title_en": "Event Log Size",
+    "file": "checks/event_log_size.html"
+  },
+  {
+    "id": "CHK051",
+    "script": "Check-CrashDump.ps1",
+    "level": "INFO",
+    "title_fr": "Configuration des fichiers de vidage",
+    "title_en": "Crash Dump Configuration",
+    "file": "checks/crash_dump.html"
+  },
+  {
+    "id": "CHK052",
+    "script": "Check-PagingFile.ps1",
+    "level": "WARNING",
+    "title_fr": "Fichier d'échange dimensionné",
+    "title_en": "Paging File Sized",
+    "file": "checks/paging_file.html"
+  },
+  {
+    "id": "CHK053",
+    "script": "Check-TempPermissions.ps1",
+    "level": "ERROR",
+    "title_fr": "Permissions du dossier TEMP",
+    "title_en": "TEMP Folder Permissions",
+    "file": "checks/temp_folder_permissions.html"
+  },
+  {
+    "id": "CHK054",
+    "script": "Check-InstallPath.ps1",
+    "level": "FATAL",
+    "title_fr": "Chemin d'installation accessible",
+    "title_en": "Installation Path Accessible",
+    "file": "checks/installation_path.html"
+  },
+  {
+    "id": "CHK055",
+    "script": "Check-ServiceAccountPassword.ps1",
+    "level": "WARNING",
+    "title_fr": "Âge du mot de passe du compte de service",
+    "title_en": "Service Account Password Age",
+    "file": "checks/service_account_password.html"
+  },
+  {
+    "id": "CHK056",
+    "script": "Check-ServiceAccountSPN.ps1",
+    "level": "ERROR",
+    "title_fr": "SPN du compte de service",
+    "title_en": "Service Account SPN",
+    "file": "checks/service_account_spn.html"
+  },
+  {
+    "id": "CHK057",
+    "script": "Check-ADConnectivity.ps1",
+    "level": "ERROR",
+    "title_fr": "Connectivité Active Directory",
+    "title_en": "Active Directory Connectivity",
+    "file": "checks/ad_connectivity.html"
+  },
+  {
+    "id": "CHK058",
+    "script": "Check-LDAPSSL.ps1",
+    "level": "WARNING",
+    "title_fr": "Disponibilité LDAP sur SSL",
+    "title_en": "LDAP over SSL Availability",
+    "file": "checks/ldap_over_ssl.html"
+  },
+  {
+    "id": "CHK059",
+    "script": "Check-CertificateStore.ps1",
+    "level": "WARNING",
+    "title_fr": "Certificats requis",
+    "title_en": "Required Certificates",
+    "file": "checks/certificate_store.html"
+  },
+  {
+    "id": "CHK060",
+    "script": "Check-WindowsActivation.ps1",
+    "level": "WARNING",
+    "title_fr": "Activation de Windows",
+    "title_en": "Windows Activation",
+    "file": "checks/windows_activation.html"
+  },
+  {
+    "id": "CHK061",
+    "script": "Check-SystemLocale.ps1",
+    "level": "INFO",
+    "title_fr": "Langue système",
+    "title_en": "System Locale",
+    "file": "checks/system_locale.html"
+  },
+  {
+    "id": "CHK062",
+    "script": "Check-Timezone.ps1",
+    "level": "WARNING",
+    "title_fr": "Fuseau horaire conforme",
+    "title_en": "Compliant Time Zone",
+    "file": "checks/timezone_configuration.html"
+  },
+  {
+    "id": "CHK063",
+    "script": "Check-KeyboardLayout.ps1",
+    "level": "INFO",
+    "title_fr": "Disposition de clavier",
+    "title_en": "Keyboard Layout",
+    "file": "checks/keyboard_layout.html"
+  },
+  {
+    "id": "CHK064",
+    "script": "Check-RegionalSettings.ps1",
+    "level": "WARNING",
+    "title_fr": "Paramètres régionaux",
+    "title_en": "Regional Settings",
+    "file": "checks/regional_settings.html"
+  },
+  {
+    "id": "CHK065",
+    "script": "Check-HighContrast.ps1",
+    "level": "INFO",
+    "title_fr": "Mode contraste élevé",
+    "title_en": "High Contrast Mode",
+    "file": "checks/high_contrast.html"
+  },
+  {
+    "id": "CHK066",
+    "script": "Check-ScreenResolution.ps1",
+    "level": "WARNING",
+    "title_fr": "Résolution d'écran minimale",
+    "title_en": "Minimum Screen Resolution",
+    "file": "checks/screen_resolution.html"
+  },
+  {
+    "id": "CHK067",
+    "script": "Check-EdgeVersion.ps1",
+    "level": "ERROR",
+    "title_fr": "Version de Microsoft Edge",
+    "title_en": "Microsoft Edge Version",
+    "file": "checks/edge_version.html"
+  },
+  {
+    "id": "CHK068",
+    "script": "Check-ExecutionPolicy.ps1",
+    "level": "ERROR",
+    "title_fr": "Stratégie d'exécution PowerShell",
+    "title_en": "PowerShell Execution Policy",
+    "file": "checks/execution_policy.html"
+  },
+  {
+    "id": "CHK069",
+    "script": "Check-WindowsVersion.ps1",
+    "level": "FATAL",
+    "title_fr": "Version de Windows supportée",
+    "title_en": "Supported Windows Version",
+    "file": "checks/windows_version.html"
+  }
+]
