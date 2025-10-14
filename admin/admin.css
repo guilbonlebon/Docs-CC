@@ -56,6 +56,22 @@ main {
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+.layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.layout .card {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}
+
 .warning-banner {
   background: var(--warning-bg);
   color: var(--warning-text);
@@ -71,6 +87,41 @@ main {
 
 .warning-banner svg {
   flex-shrink: 0;
+}
+
+.message {
+  border-radius: 10px;
+  padding: 0.85rem 1.2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+}
+
+.message.success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.message.error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.message.info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.message.error ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.25rem;
+}
+
+.message.error li {
+  margin: 0.25rem 0;
 }
 
 .toolbar {
@@ -100,6 +151,24 @@ button {
   border: none;
   font-weight: 600;
   letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button,
+a.primary-btn,
+a.ghost-btn,
+a.danger-btn {
+  text-decoration: none;
+}
+
+a.primary-btn,
+a.ghost-btn,
+a.danger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .primary-btn {
@@ -153,6 +222,10 @@ table {
   border-collapse: collapse;
 }
 
+.table-wrapper {
+  overflow: auto;
+}
+
 th,
 td {
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
@@ -171,6 +244,11 @@ tbody tr:hover {
   background: rgba(15, 23, 42, 0.04);
 }
 
+tbody tr.selected,
+tbody tr.selected:hover {
+  background: rgba(37, 99, 235, 0.12);
+}
+
 .tag {
   display: inline-flex;
   align-items: center;
@@ -180,6 +258,11 @@ tbody tr:hover {
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+.tag.warning {
+  background: rgba(234, 179, 8, 0.15);
+  color: #92400e;
 }
 
 .empty {
@@ -310,6 +393,44 @@ textarea {
   justify-content: flex-end;
   gap: 1rem;
   padding: 0 1.5rem 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.editor-form textarea#field-content {
+  min-height: 320px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.form-actions .ghost-btn {
+  border-color: var(--border);
+  color: inherit;
+}
+
+.form-actions .ghost-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .status {
