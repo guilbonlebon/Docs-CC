@@ -46,6 +46,148 @@ function normalizeNewlines(string $content): string
     return $content;
 }
 
+function createDomDocument(string $htmlContent): ?DOMDocument
+{
+    $document = new DOMDocument();
+    $document->preserveWhiteSpace = false;
+    $document->formatOutput = true;
+
+    libxml_use_internal_errors(true);
+    $loaded = $document->loadHTML($htmlContent, LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+    libxml_clear_errors();
+
+    if ($loaded === false) {
+        return null;
+    }
+
+    return $document;
+}
+
+function getFirstNode(DOMXPath $xpath, string $query, ?DOMNode $context = null): ?DOMElement
+{
+    $nodeList = $xpath->query($query, $context);
+    if (!$nodeList instanceof DOMNodeList || $nodeList->length === 0) {
+        return null;
+    }
+
+    $item = $nodeList->item(0);
+    return $item instanceof DOMElement ? $item : null;
+}
+
+function updateCheckHtml(string $htmlContent, array $data): string
+{
+    $document = createDomDocument($htmlContent);
+    if (!$document instanceof DOMDocument) {
+        return $htmlContent;
+    }
+
+    $xpath = new DOMXPath($document);
+
+    $titleFr = trim((string) ($data['title_fr'] ?? ''));
+    if ($titleFr !== '') {
+        $titleNodes = $document->getElementsByTagName('title');
+        if ($titleNodes->length > 0) {
+            $titleNodes->item(0)->textContent = $titleFr . ' · Consistency Checker';
+        }
+    }
+
+    $pageTitle = getFirstNode($xpath, "//h1[contains(concat(' ', normalize-space(@class), ' '), ' page-title ')]");
+    if ($pageTitle) {
+        if ($titleFr !== '') {
+            $pageTitle->setAttribute('data-fr', $titleFr);
+            $pageTitle->textContent = $titleFr;
+        }
+        $titleEn = trim((string) ($data['title_en'] ?? ''));
+        if ($titleEn !== '') {
+            $pageTitle->setAttribute('data-en', $titleEn);
+        }
+    }
+
+    $identifier = trim((string) ($data['id'] ?? ''));
+    if ($identifier !== '') {
+        $identifierCell = getFirstNode(
+            $xpath,
+            "//table[contains(concat(' ', normalize-space(@class), ' '), ' info-table ')]//tr[th[@data-fr='Identifiant' or @data-en='Identifier']]/td"
+        );
+        if ($identifierCell) {
+            $identifierCell->textContent = $identifier;
+        }
+    }
+
+    $level = trim((string) ($data['level'] ?? ''));
+    if ($level !== '') {
+        $levelSpan = getFirstNode($xpath, "//span[contains(concat(' ', normalize-space(@class), ' '), ' level-pill ')]");
+        if ($levelSpan) {
+            $normalizedLevel = preg_replace('/[^A-Za-z0-9_-]/', '', strtoupper($level));
+            $levelSpan->setAttribute('class', 'level-pill' . ($normalizedLevel !== '' ? ' level-' . $normalizedLevel : ''));
+            $levelSpan->textContent = $level;
+        }
+    }
+
+    $explanationFr = trim((string) ($data['explanation_fr'] ?? ''));
+    $explanationEn = trim((string) ($data['explanation_en'] ?? ''));
+    if ($explanationFr !== '' || $explanationEn !== '') {
+        $paragraph = getFirstNode(
+            $xpath,
+            "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
+            . "[h2[contains(@data-fr, 'Explications') or contains(@data-en, 'Overview')]]"
+            . "//p[@data-fr or @data-en]"
+        );
+        if ($paragraph) {
+            if ($explanationFr !== '') {
+                $paragraph->setAttribute('data-fr', $explanationFr);
+                $paragraph->textContent = $explanationFr;
+            }
+            if ($explanationEn !== '') {
+                $paragraph->setAttribute('data-en', $explanationEn);
+            }
+        }
+    }
+
+    $descriptionFr = trim((string) ($data['description_fr'] ?? ''));
+    $descriptionEn = trim((string) ($data['description_en'] ?? ''));
+    if ($descriptionFr !== '' || $descriptionEn !== '') {
+        $metaDescription = getFirstNode($xpath, "//meta[@name='description']");
+        if ($metaDescription) {
+            $metaDescription->setAttribute('content', $descriptionFr !== '' ? $descriptionFr : $descriptionEn);
+        }
+    }
+
+    return (string) $document->saveHTML();
+}
+
+function extractExplanationTexts(string $htmlContent): array
+{
+    $document = createDomDocument($htmlContent);
+    if (!$document instanceof DOMDocument) {
+        return ['fr' => '', 'en' => ''];
+    }
+
+    $xpath = new DOMXPath($document);
+    $paragraph = getFirstNode(
+        $xpath,
+        "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
+        . "[h2[contains(@data-fr, 'Explications') or contains(@data-en, 'Overview')]]"
+        . "//p[@data-fr or @data-en]"
+    );
+
+    if (!$paragraph) {
+        return ['fr' => '', 'en' => ''];
+    }
+
+    $fr = trim((string) $paragraph->getAttribute('data-fr'));
+    if ($fr === '') {
+        $fr = trim($paragraph->textContent);
+    }
+
+    $en = trim((string) $paragraph->getAttribute('data-en'));
+    if ($en === '') {
+        $en = $fr;
+    }
+
+    return ['fr' => $fr, 'en' => $en];
+}
+
 $manifest = loadManifest($manifestPath);
 $manifestByFile = [];
 foreach ($manifest as $entry) {
@@ -108,6 +250,8 @@ $formData = [
     'title_en' => '',
     'description_fr' => '',
     'description_en' => '',
+    'explanation_fr' => '',
+    'explanation_en' => '',
     'content' => '',
 ];
 
@@ -121,7 +265,16 @@ if ($hasPost) {
     $titleEn = trim((string) ($_POST['title_en'] ?? ''));
     $descriptionFr = trim((string) ($_POST['description_fr'] ?? ''));
     $descriptionEn = trim((string) ($_POST['description_en'] ?? ''));
+    $explanationFr = trim((string) ($_POST['explanation_fr'] ?? ''));
+    $explanationEn = trim((string) ($_POST['explanation_en'] ?? ''));
     $htmlContent = (string) ($_POST['content'] ?? '');
+
+    if ($explanationFr === '') {
+        $explanationFr = $descriptionFr;
+    }
+    if ($explanationEn === '') {
+        $explanationEn = $descriptionEn;
+    }
 
     $fileWithExtension = $inputFileName;
     if ($fileWithExtension !== '' && !endsWithHtml($fileWithExtension)) {
@@ -162,12 +315,26 @@ if ($hasPost) {
         'title_en' => $titleEn,
         'description_fr' => $descriptionFr,
         'description_en' => $descriptionEn,
+        'explanation_fr' => $explanationFr,
+        'explanation_en' => $explanationEn,
         'content' => $htmlContent,
     ];
     $selectedFile = $sanitizedFileName;
 
+    $updatedHtmlContent = updateCheckHtml($htmlContent, [
+        'id' => $formData['id'],
+        'level' => $formData['level'],
+        'title_fr' => $formData['title_fr'],
+        'title_en' => $formData['title_en'],
+        'description_fr' => $formData['description_fr'],
+        'description_en' => $formData['description_en'],
+        'explanation_fr' => $formData['explanation_fr'],
+        'explanation_en' => $formData['explanation_en'],
+    ]);
+    $formData['content'] = $updatedHtmlContent;
+
     if (!$errors) {
-        $htmlToWrite = normalizeNewlines($htmlContent);
+        $htmlToWrite = normalizeNewlines($updatedHtmlContent);
         $targetPath = $checksDir . '/' . $sanitizedFileName;
         if (file_put_contents($targetPath, $htmlToWrite) === false) {
             $errors[] = 'Impossible d\'écrire le fichier HTML.';
@@ -259,6 +426,24 @@ if ($selectedFile && is_file($checksDir . '/' . $selectedFile) && $formData['con
     $fileContent = file_get_contents($checksDir . '/' . $selectedFile);
     if ($fileContent !== false) {
         $formData['content'] = $fileContent;
+        $explanations = extractExplanationTexts($fileContent);
+        $formData['explanation_fr'] = $explanations['fr'];
+        $formData['explanation_en'] = $explanations['en'];
+        if ($formData['explanation_fr'] === '' && $formData['description_fr'] !== '') {
+            $formData['explanation_fr'] = $formData['description_fr'];
+        }
+        if ($formData['explanation_en'] === '' && $formData['description_en'] !== '') {
+            $formData['explanation_en'] = $formData['description_en'];
+        }
+    }
+}
+
+if (!$hasPost) {
+    if ($formData['explanation_fr'] === '' && $formData['description_fr'] !== '') {
+        $formData['explanation_fr'] = $formData['description_fr'];
+    }
+    if ($formData['explanation_en'] === '' && $formData['description_en'] !== '') {
+        $formData['explanation_en'] = $formData['description_en'];
     }
 }
 
@@ -423,6 +608,17 @@ function h(?string $value): string
                 <div class="field">
                   <label for="field-description-en">Description (EN)</label>
                   <textarea id="field-description-en" name="description_en" rows="3"><?= h($formData['description_en']) ?></textarea>
+                </div>
+              </div>
+
+              <div class="grid">
+                <div class="field">
+                  <label for="field-explanation-fr">Explications (FR)</label>
+                  <textarea id="field-explanation-fr" name="explanation_fr" rows="4"><?= h($formData['explanation_fr']) ?></textarea>
+                </div>
+                <div class="field">
+                  <label for="field-explanation-en">Explications (EN)</label>
+                  <textarea id="field-explanation-en" name="explanation_en" rows="4"><?= h($formData['explanation_en']) ?></textarea>
                 </div>
               </div>
 
