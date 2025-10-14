@@ -8,7 +8,14 @@
   --color-blue-light: #4EC3E0;
   --color-blue-dark: #00305D;
   --color-text: #444444;
+  --color-info: #00427F;
+  --color-warning: #FF9800;
+  --color-error: #D32F2F;
+  --color-fatal: #B71C1C;
   --font-main: 'Arial', sans-serif;
+  --card-padding: 1.5rem;
+  --card-radius: 16px;
+  --card-shadow: 0 12px 24px rgba(0, 42, 76, 0.08);
 }
 
 * {
@@ -23,7 +30,7 @@ body {
   margin: 0;
   font-family: var(--font-main);
   color: var(--color-text);
-  background: #F4F7FB;
+  background: #F7F9FB;
 }
 
 .primary-header {
@@ -142,64 +149,272 @@ main {
   box-shadow: 0 0 0 3px rgba(60, 152, 69, 0.2);
 }
 
+/* --------------------------------------------- */
+/* Cartes de contrôle : grille responsive         */
+/* --------------------------------------------- */
 .checks-grid {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-bottom: 2.5rem;
 }
 
+/* --------------------------------------------- */
+/* Cartes de contrôle : conteneur principal       */
+/* --------------------------------------------- */
 .check-card {
+  --level-color: var(--color-blue-primary);
   background: #FFFFFF;
-  border-radius: 16px;
-  border-top: 6px solid var(--color-blue-primary);
-  padding: 1.5rem;
-  box-shadow: 0 12px 24px rgba(0, 66, 127, 0.08);
+  border-radius: var(--card-radius);
+  padding: calc(var(--card-padding) + 6px) var(--card-padding) calc(var(--card-padding) * 2.25);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.check-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--level-color);
+}
+
+.check-card > *:not(a) {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .check-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 32px rgba(0, 66, 127, 0.12);
+  box-shadow: 0 18px 38px rgba(0, 66, 127, 0.16);
 }
 
+.check-card:hover::before {
+  filter: brightness(1.05);
+}
+
+.check-card:focus-within {
+  box-shadow: 0 0 0 4px rgba(60, 152, 69, 0.35), var(--card-shadow);
+}
+
+.check-card:focus-within::before {
+  height: 8px;
+}
+
+/* --------------------------------------------- */
+/* Cartes de contrôle : titre et description      */
+/* --------------------------------------------- */
 .check-card h3 {
   margin: 0;
-  font-size: 2.25rem;
-  color: var(--color-green-primary);
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-blue-primary);
+  line-height: 1.35;
 }
 
 .check-card p {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  line-height: 1.5;
 }
 
+/* --------------------------------------------- */
+/* Badge de niveau avec icônes contextuelles      */
+/* --------------------------------------------- */
 .level-pill {
+  --level-color: var(--color-blue-primary);
   align-self: flex-start;
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  font-weight: bold;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #FFFFFF;
-}
-
-.level-FATAL { background: #B71C1C; }
-.level-ERROR { background: #D32F2F; }
-.level-WARNING { background: #FF9800; }
-.level-INFO { background: #1976D2; }
-
-.check-card a {
-  margin-top: auto;
-  text-decoration: none;
-  font-weight: bold;
-  color: var(--color-blue-primary);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--level-color);
+  color: #FFFFFF;
+  position: relative;
+  z-index: 2;
+}
+
+.level-pill::before {
+  content: "";
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: #FFFFFF;
+  position: relative;
+}
+
+.level-pill.level-FATAL::before {
+  content: "✖";
+}
+
+.level-pill.level-ERROR::before {
+  content: "!";
+}
+
+.level-pill.level-WARNING::before {
+  content: "⚠";
+}
+
+.level-pill.level-INFO::before {
+  content: "ℹ";
+}
+
+.check-card:has(.level-pill.level-FATAL) {
+  --level-color: var(--color-fatal);
+}
+
+.check-card:has(.level-pill.level-ERROR) {
+  --level-color: var(--color-error);
+}
+
+.check-card:has(.level-pill.level-WARNING) {
+  --level-color: var(--color-warning);
+}
+
+.check-card:has(.level-pill.level-INFO) {
+  --level-color: var(--color-info);
+}
+
+.level-pill.level-FATAL {
+  --level-color: var(--color-fatal);
+}
+
+.level-pill.level-ERROR {
+  --level-color: var(--color-error);
+}
+
+.level-pill.level-WARNING {
+  --level-color: var(--color-warning);
+}
+
+.level-pill.level-INFO {
+  --level-color: var(--color-info);
+}
+
+
+/* --------------------------------------------- */
+/* Lien principal : carte entière cliquable       */
+/* --------------------------------------------- */
+.check-card a {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  text-indent: -9999px;
+  overflow: hidden;
+  outline: none;
+}
+
+.check-card a::after {
+  content: attr(data-fr);
+  position: absolute;
+  left: var(--card-padding);
+  right: var(--card-padding);
+  bottom: var(--card-padding);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: 2px solid var(--color-green-primary);
+  background: #FFFFFF;
+  color: var(--color-green-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-indent: 0;
+  text-transform: none;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+html[lang="en"] .check-card a::after {
+  content: attr(data-en);
+}
+
+.check-card:hover a::after {
+  background: linear-gradient(90deg, var(--color-green-primary), var(--color-yellow));
+  color: var(--color-blue-primary);
+  box-shadow: 0 10px 18px rgba(60, 152, 69, 0.25);
+  transform: translateY(-2px);
+}
+
+.check-card a:focus-visible::after,
+.check-card a:focus-visible {
+  box-shadow: 0 0 0 4px rgba(60, 152, 69, 0.35);
+}
+
+.check-card a:focus-visible::after {
+  background: linear-gradient(90deg, var(--color-green-primary), var(--color-yellow));
+  color: var(--color-blue-primary);
+}
+
+/* --------------------------------------------- */
+/* Accessibilité : réduction des animations       */
+/* --------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .check-card,
+  .check-card a::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* --------------------------------------------- */
+/* Responsivité spécifique aux cartes             */
+/* --------------------------------------------- */
+@media (min-width: 1200px) {
+  .checks-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .checks-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .checks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .check-card {
+    padding-bottom: calc(var(--card-padding) * 2.75);
+    text-align: center;
+  }
+
+  .check-card h3,
+  .check-card p {
+    text-align: center;
+  }
+
+  .level-pill {
+    align-self: center;
+  }
 }
 
 .info-table {
