@@ -43,7 +43,11 @@ function getLevelGroup(level) {
 
 const STORAGE_KEY = 'precheck-doc-language';
 const DISPLAY_MODE_STORAGE_KEY = 'precheck-display-mode';
-const DISPLAY_MODES = new Set(['grid-8x8', 'grid-4x4', 'list']);
+const DISPLAY_MODES = new Set(['grid-6x6', 'grid-4x4', 'grid-list']);
+const LEGACY_DISPLAY_MODES = {
+  'grid-8x8': 'grid-6x6',
+  list: 'grid-list'
+};
 const DEFAULT_DISPLAY_MODE = 'grid-4x4';
 
 const normalize = (value) =>
@@ -101,8 +105,9 @@ function getPreferredDisplayMode() {
       return DEFAULT_DISPLAY_MODE;
     }
     const stored = localStorage.getItem(DISPLAY_MODE_STORAGE_KEY);
-    if (DISPLAY_MODES.has(stored)) {
-      return stored;
+    const normalized = LEGACY_DISPLAY_MODES[stored] || stored;
+    if (DISPLAY_MODES.has(normalized)) {
+      return normalized;
     }
   } catch (error) {
     console.warn('Unable to read stored display mode', error);
@@ -177,8 +182,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const normalizedMode = DISPLAY_MODES.has(mode) ? mode : DEFAULT_DISPLAY_MODE;
+    const normalizedMode = DISPLAY_MODES.has(mode)
+      ? mode
+      : LEGACY_DISPLAY_MODES[mode] || DEFAULT_DISPLAY_MODE;
     document.body.setAttribute('data-display-mode', normalizedMode);
+
+    const stateClasses = ['grid-6x6', 'grid-4x4', 'grid-list'];
+    document.body.classList.remove(...stateClasses);
+    if (stateClasses.includes(normalizedMode)) {
+      document.body.classList.add(normalizedMode);
+    }
 
     displayModeButtons.forEach((button) => {
       const isActive = button.dataset.mode === normalizedMode;
