@@ -144,12 +144,28 @@ function updateCheckHtml(string $htmlContent, array $data): string
         }
     }
 
-    $descriptionFr = trim((string) ($data['description_fr'] ?? ''));
-    $descriptionEn = trim((string) ($data['description_en'] ?? ''));
-    if ($descriptionFr !== '' || $descriptionEn !== '') {
-        $metaDescription = getFirstNode($xpath, "//meta[@name='description']");
-        if ($metaDescription) {
-            $metaDescription->setAttribute('content', $descriptionFr !== '' ? $descriptionFr : $descriptionEn);
+    $metaDescription = getFirstNode($xpath, "//meta[@name='description']");
+    if ($metaDescription) {
+        $metaDescription->setAttribute('content', $explanationFr !== '' ? $explanationFr : $explanationEn);
+    }
+
+    $resolutionFr = trim((string) ($data['resolution_fr'] ?? ''));
+    $resolutionEn = trim((string) ($data['resolution_en'] ?? ''));
+    if ($resolutionFr !== '' || $resolutionEn !== '') {
+        $resolutionParagraph = getFirstNode(
+            $xpath,
+            "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
+            . "[h2[contains(@data-fr, 'Résolution') or contains(@data-en, 'Remediation')]]"
+            . "//p[@data-fr or @data-en]"
+        );
+        if ($resolutionParagraph) {
+            if ($resolutionFr !== '') {
+                $resolutionParagraph->setAttribute('data-fr', $resolutionFr);
+                $resolutionParagraph->textContent = $resolutionFr;
+            }
+            if ($resolutionEn !== '') {
+                $resolutionParagraph->setAttribute('data-en', $resolutionEn);
+            }
         }
     }
 
@@ -168,6 +184,38 @@ function extractExplanationTexts(string $htmlContent): array
         $xpath,
         "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
         . "[h2[contains(@data-fr, 'Explications') or contains(@data-en, 'Overview')]]"
+        . "//p[@data-fr or @data-en]"
+    );
+
+    if (!$paragraph) {
+        return ['fr' => '', 'en' => ''];
+    }
+
+    $fr = trim((string) $paragraph->getAttribute('data-fr'));
+    if ($fr === '') {
+        $fr = trim($paragraph->textContent);
+    }
+
+    $en = trim((string) $paragraph->getAttribute('data-en'));
+    if ($en === '') {
+        $en = $fr;
+    }
+
+    return ['fr' => $fr, 'en' => $en];
+}
+
+function extractResolutionTexts(string $htmlContent): array
+{
+    $document = createDomDocument($htmlContent);
+    if (!$document instanceof DOMDocument) {
+        return ['fr' => '', 'en' => ''];
+    }
+
+    $xpath = new DOMXPath($document);
+    $paragraph = getFirstNode(
+        $xpath,
+        "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
+        . "[h2[contains(@data-fr, 'Résolution') or contains(@data-en, 'Remediation')]]"
         . "//p[@data-fr or @data-en]"
     );
 
@@ -248,10 +296,10 @@ $formData = [
     'script' => 'N/A',
     'title_fr' => '',
     'title_en' => '',
-    'description_fr' => '',
-    'description_en' => '',
     'explanation_fr' => '',
     'explanation_en' => '',
+    'resolution_fr' => '',
+    'resolution_en' => '',
     'content' => '',
 ];
 
@@ -263,17 +311,17 @@ if ($hasPost) {
     $script = trim((string) ($_POST['script'] ?? ''));
     $titleFr = trim((string) ($_POST['title_fr'] ?? ''));
     $titleEn = trim((string) ($_POST['title_en'] ?? ''));
-    $descriptionFr = trim((string) ($_POST['description_fr'] ?? ''));
-    $descriptionEn = trim((string) ($_POST['description_en'] ?? ''));
     $explanationFr = trim((string) ($_POST['explanation_fr'] ?? ''));
     $explanationEn = trim((string) ($_POST['explanation_en'] ?? ''));
+    $resolutionFr = trim((string) ($_POST['resolution_fr'] ?? ''));
+    $resolutionEn = trim((string) ($_POST['resolution_en'] ?? ''));
     $htmlContent = (string) ($_POST['content'] ?? '');
 
-    if ($explanationFr === '') {
-        $explanationFr = $descriptionFr;
+    if ($explanationFr === '' && $resolutionFr !== '') {
+        $explanationFr = $resolutionFr;
     }
-    if ($explanationEn === '') {
-        $explanationEn = $descriptionEn;
+    if ($explanationEn === '' && $resolutionEn !== '') {
+        $explanationEn = $resolutionEn;
     }
 
     $fileWithExtension = $inputFileName;
@@ -313,10 +361,10 @@ if ($hasPost) {
         'script' => $script !== '' ? $script : 'N/A',
         'title_fr' => $titleFr,
         'title_en' => $titleEn,
-        'description_fr' => $descriptionFr,
-        'description_en' => $descriptionEn,
         'explanation_fr' => $explanationFr,
         'explanation_en' => $explanationEn,
+        'resolution_fr' => $resolutionFr,
+        'resolution_en' => $resolutionEn,
         'content' => $htmlContent,
     ];
     $selectedFile = $sanitizedFileName;
@@ -326,10 +374,10 @@ if ($hasPost) {
         'level' => $formData['level'],
         'title_fr' => $formData['title_fr'],
         'title_en' => $formData['title_en'],
-        'description_fr' => $formData['description_fr'],
-        'description_en' => $formData['description_en'],
         'explanation_fr' => $formData['explanation_fr'],
         'explanation_en' => $formData['explanation_en'],
+        'resolution_fr' => $formData['resolution_fr'],
+        'resolution_en' => $formData['resolution_en'],
     ]);
     $formData['content'] = $updatedHtmlContent;
 
@@ -373,8 +421,8 @@ if ($hasPost) {
             $newEntry['script'] = $script !== '' ? $script : 'N/A';
             $newEntry['title_fr'] = $titleFr;
             $newEntry['title_en'] = $titleEn;
-            $newEntry['description_fr'] = $descriptionFr;
-            $newEntry['description_en'] = $descriptionEn;
+            $newEntry['description_fr'] = $explanationFr;
+            $newEntry['description_en'] = $explanationEn !== '' ? $explanationEn : $explanationFr;
             $newEntry['file'] = 'checks/' . $sanitizedFileName;
 
             if ($existingIndex !== null) {
@@ -417,8 +465,8 @@ if (!$hasPost && $selectedFile && isset($manifestByFile['checks/' . $selectedFil
     $formData['script'] = (string) ($entry['script'] ?? 'N/A');
     $formData['title_fr'] = (string) ($entry['title_fr'] ?? '');
     $formData['title_en'] = (string) ($entry['title_en'] ?? '');
-    $formData['description_fr'] = (string) ($entry['description_fr'] ?? '');
-    $formData['description_en'] = (string) ($entry['description_en'] ?? '');
+    $formData['explanation_fr'] = (string) ($entry['description_fr'] ?? $formData['explanation_fr']);
+    $formData['explanation_en'] = (string) ($entry['description_en'] ?? $formData['explanation_en']);
     $formData['file'] = $selectedFile;
 }
 
@@ -429,21 +477,9 @@ if ($selectedFile && is_file($checksDir . '/' . $selectedFile) && $formData['con
         $explanations = extractExplanationTexts($fileContent);
         $formData['explanation_fr'] = $explanations['fr'];
         $formData['explanation_en'] = $explanations['en'];
-        if ($formData['explanation_fr'] === '' && $formData['description_fr'] !== '') {
-            $formData['explanation_fr'] = $formData['description_fr'];
-        }
-        if ($formData['explanation_en'] === '' && $formData['description_en'] !== '') {
-            $formData['explanation_en'] = $formData['description_en'];
-        }
-    }
-}
-
-if (!$hasPost) {
-    if ($formData['explanation_fr'] === '' && $formData['description_fr'] !== '') {
-        $formData['explanation_fr'] = $formData['description_fr'];
-    }
-    if ($formData['explanation_en'] === '' && $formData['description_en'] !== '') {
-        $formData['explanation_en'] = $formData['description_en'];
+        $resolutions = extractResolutionTexts($fileContent);
+        $formData['resolution_fr'] = $resolutions['fr'];
+        $formData['resolution_en'] = $resolutions['en'];
     }
 }
 
@@ -518,17 +554,15 @@ function h(?string $value): string
             <table>
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Titre (FR)</th>
-                  <th>Titre (EN)</th>
-                  <th>Fichier</th>
+                  <th>Script</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <?php if (!$checks): ?>
                   <tr class="empty">
-                    <td colspan="5">Aucun check n'a été trouvé dans le dossier « checks ».</td>
+                    <td colspan="3">Aucun check n'a été trouvé dans le dossier « checks ».</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($checks as $item): ?>
@@ -537,11 +571,9 @@ function h(?string $value): string
                       $entry = $item['manifest'] ?? null;
                     ?>
                     <tr<?= $isSelected ? ' class="selected"' : '' ?>>
-                      <td><?= h($entry['id'] ?? '—') ?></td>
                       <td><?= h($entry['title_fr'] ?? '—') ?></td>
-                      <td><?= h($entry['title_en'] ?? '—') ?></td>
                       <td>
-                        <?= h($item['file']) ?>
+                        <?= h($entry['script'] ?? '—') ?>
                         <?php if (!$item['exists']): ?>
                           <span class="tag warning">manquant</span>
                         <?php endif; ?>
@@ -602,23 +634,23 @@ function h(?string $value): string
 
               <div class="grid">
                 <div class="field">
-                  <label for="field-description-fr">Description (FR)</label>
-                  <textarea id="field-description-fr" name="description_fr" rows="3"><?= h($formData['description_fr']) ?></textarea>
-                </div>
-                <div class="field">
-                  <label for="field-description-en">Description (EN)</label>
-                  <textarea id="field-description-en" name="description_en" rows="3"><?= h($formData['description_en']) ?></textarea>
-                </div>
-              </div>
-
-              <div class="grid">
-                <div class="field">
                   <label for="field-explanation-fr">Explications (FR)</label>
                   <textarea id="field-explanation-fr" name="explanation_fr" rows="4"><?= h($formData['explanation_fr']) ?></textarea>
                 </div>
                 <div class="field">
                   <label for="field-explanation-en">Explications (EN)</label>
                   <textarea id="field-explanation-en" name="explanation_en" rows="4"><?= h($formData['explanation_en']) ?></textarea>
+                </div>
+              </div>
+
+              <div class="grid">
+                <div class="field">
+                  <label for="field-resolution-fr">Résolution (FR)</label>
+                  <textarea id="field-resolution-fr" name="resolution_fr" rows="4"><?= h($formData['resolution_fr']) ?></textarea>
+                </div>
+                <div class="field">
+                  <label for="field-resolution-en">Resolution (EN)</label>
+                  <textarea id="field-resolution-en" name="resolution_en" rows="4"><?= h($formData['resolution_en']) ?></textarea>
                 </div>
               </div>
 
