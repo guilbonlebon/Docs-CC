@@ -637,6 +637,7 @@
 
       async function writeFile(handle, contents) {
         const writer = await handle.createWritable();
+        await writer.truncate(0);
         await writer.write(contents);
         await writer.close();
       }
