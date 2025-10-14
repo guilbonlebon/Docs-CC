@@ -1,554 +1,692 @@
 [
   {
     "id": "CHK001",
-    "script": "Check-AdminAccount.ps1",
-    "level": "FATAL",
+    "script": "admin_account.ps1",
+    "level": "FATAL_ERROR",
     "title_fr": "Compte administrateur disponible",
-    "title_en": "Administrator Account Available",
-    "file": "checks/admin_account.html"
+    "title_en": "Administrator account available",
+    "description_fr": "S'assure qu'un compte administrateur local ou de domaine est disponible pour l'installation.",
+    "description_en": "Ensures that a local or domain administrator account is available for the installation.",
+    "file": null
   },
   {
     "id": "CHK002",
-    "script": "Check-PowerShellVersion.ps1",
-    "level": "FATAL",
-    "title_fr": "Version de PowerShell minimale",
-    "title_en": "Minimum PowerShell Version",
-    "file": "checks/powershell_version.html"
+    "script": "antivirus_installed.ps1",
+    "level": "ERROR",
+    "title_fr": "Antivirus installé",
+    "title_en": "Antivirus installed",
+    "description_fr": "Vérifie qu'un antivirus supporté est présent, actif et à jour sur le serveur.",
+    "description_en": "Checks that a supported antivirus solution is installed, running and up to date on the server.",
+    "file": null
   },
   {
     "id": "CHK003",
-    "script": "Check-DotNetFramework.ps1",
-    "level": "FATAL",
-    "title_fr": ".NET Framework 4.8 présent",
-    "title_en": ".NET Framework 4.8 Installed",
-    "file": "checks/dotnet_framework.html"
+    "script": "bmt_recommended.ps1",
+    "level": "WARNING",
+    "title_fr": "Configuration BMT recommandée",
+    "title_en": "Recommended BMT configuration",
+    "description_fr": "Contrôle que le poste BMT répond aux recommandations fonctionnelles (options et prérequis attendus).",
+    "description_en": "Verifies that the BMT workstation follows the recommended functional options and prerequisites.",
+    "file": null
   },
   {
     "id": "CHK004",
-    "script": "Check-WindowsUpdateStatus.ps1",
+    "script": "bmx_admin_not_in_bMxServices_group.ps1",
     "level": "ERROR",
-    "title_fr": "État du service Windows Update",
-    "title_en": "Windows Update Service State",
-    "file": "checks/windows_update_status.html"
+    "title_fr": "Compte bMx hors groupe bMxServices",
+    "title_en": "bMx admin outside bMxServices group",
+    "description_fr": "S'assure que le compte administrateur utilisé n'est pas membre du groupe bMxServices pour éviter les conflits de droits.",
+    "description_en": "Ensures that the administrator account in use does not belong to the bMxServices group to avoid permission conflicts.",
+    "file": null
   },
   {
     "id": "CHK005",
-    "script": "Check-SystemDiskSpace.ps1",
-    "level": "FATAL",
-    "title_fr": "Espace disque système suffisant",
-    "title_en": "Sufficient System Disk Space",
-    "file": "checks/system_disk_space.html"
+    "script": "check_access_drive.ps1",
+    "level": "ERROR",
+    "title_fr": "Accès au lecteur d'installation",
+    "title_en": "Installation drive access",
+    "description_fr": "Contrôle que le lecteur cible et ses partages sont accessibles en lecture et en écriture.",
+    "description_en": "Checks that the target drive and required shares are reachable with read and write permissions.",
+    "file": null
   },
   {
     "id": "CHK006",
-    "script": "Check-DataDiskSpace.ps1",
-    "level": "ERROR",
-    "title_fr": "Espace disque data disponible",
-    "title_en": "Available Data Disk Space",
-    "file": "checks/data_disk_space.html"
+    "script": "check_bmt_execution.ps1",
+    "level": "WARNING",
+    "title_fr": "Exécution récente du BMT",
+    "title_en": "Recent BMT execution",
+    "description_fr": "Vérifie qu'une exécution récente des scripts BMT est disponible avant migration.",
+    "description_en": "Confirms that a recent execution of the BMT scripts is available before the migration.",
+    "file": null
   },
   {
     "id": "CHK007",
-    "script": "Check-MemoryAvailable.ps1",
-    "level": "FATAL",
-    "title_fr": "Mémoire vive disponible",
-    "title_en": "Available RAM",
-    "file": "checks/memory_available.html"
+    "script": "check_cas_conf_folder.ps1",
+    "level": "ERROR",
+    "title_fr": "Dossier CAS présent",
+    "title_en": "CAS folder present",
+    "description_fr": "S'assure que le dossier de configuration CAS requis est présent avec tous ses sous-répertoires.",
+    "description_en": "Ensures that the required CAS configuration folder and its subdirectories are available.",
+    "file": null
   },
   {
     "id": "CHK008",
-    "script": "Check-CPUArchitecture.ps1",
-    "level": "FATAL",
-    "title_fr": "Architecture processeur 64 bits",
-    "title_en": "64-bit Processor Architecture",
-    "file": "checks/cpu_architecture.html"
+    "script": "check_consistency_version.ps1",
+    "level": "WARNING",
+    "title_fr": "Version de Consistency Checker",
+    "title_en": "Consistency Checker version",
+    "description_fr": "Contrôle que la version du Consistency Checker correspond à la version cible du projet.",
+    "description_en": "Checks that the Consistency Checker version matches the target project release.",
+    "file": null
   },
   {
     "id": "CHK009",
-    "script": "Check-Virtualization.ps1",
+    "script": "check_customization_done.ps1",
     "level": "WARNING",
-    "title_fr": "Virtualisation matériel activée",
-    "title_en": "Hardware Virtualization Enabled",
-    "file": "checks/virtualization_enabled.html"
+    "title_fr": "Personnalisation appliquée",
+    "title_en": "Customization applied",
+    "description_fr": "Vérifie que les personnalisations attendues ont été appliquées sur l'environnement client.",
+    "description_en": "Verifies that the expected customer customizations have been applied on the environment.",
+    "file": null
   },
   {
     "id": "CHK010",
-    "script": "Check-SecureBoot.ps1",
-    "level": "INFO",
-    "title_fr": "Statut de Secure Boot",
-    "title_en": "Secure Boot Status",
-    "file": "checks/secure_boot.html"
+    "script": "check_installation_path.ps1",
+    "level": "ERROR",
+    "title_fr": "Chemin d'installation valide",
+    "title_en": "Valid installation path",
+    "description_fr": "Contrôle que le chemin d'installation sélectionné respecte les bonnes pratiques (volume et droits).",
+    "description_en": "Checks that the chosen installation path follows the recommended volume and permission rules.",
+    "file": null
   },
   {
     "id": "CHK011",
-    "script": "Check-TPM.ps1",
-    "level": "WARNING",
-    "title_fr": "Présence du module TPM",
-    "title_en": "TPM Module Presence",
-    "file": "checks/tpm_availability.html"
+    "script": "check_postgresTablespace.ps1",
+    "level": "ERROR",
+    "title_fr": "Tablespace PostgreSQL disponible",
+    "title_en": "PostgreSQL tablespace available",
+    "description_fr": "Vérifie que le tablespace PostgreSQL dédié existe et dispose d'un espace libre suffisant.",
+    "description_en": "Ensures that the dedicated PostgreSQL tablespace exists and provides sufficient free space.",
+    "file": null
   },
   {
     "id": "CHK012",
-    "script": "Check-Antivirus.ps1",
-    "level": "ERROR",
-    "title_fr": "Antivirus installé et à jour",
-    "title_en": "Antivirus Installed and Updated",
-    "file": "checks/antivirus_installed.html"
+    "script": "check_registry_key.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Clés de registre requises",
+    "title_en": "Required registry keys",
+    "description_fr": "Confirme la présence des clés de registre nécessaires au fonctionnement de la solution.",
+    "description_en": "Confirms that the registry keys required by the solution are present.",
+    "file": null
   },
   {
     "id": "CHK013",
-    "script": "Check-DefenderExclusions.ps1",
-    "level": "WARNING",
-    "title_fr": "Exclusions Windows Defender",
-    "title_en": "Windows Defender Exclusions",
-    "file": "checks/defender_exclusions.html"
+    "script": "check_server_certificate_alternativenames.out",
+    "level": "INFORMATION",
+    "title_fr": "Rapport SAN certificat serveur",
+    "title_en": "Server certificate SAN report",
+    "description_fr": "Fichier de sortie listant les Subject Alternative Names relevés pour le certificat serveur.",
+    "description_en": "Output file listing the Subject Alternative Names detected for the server certificate.",
+    "file": null
   },
   {
     "id": "CHK014",
-    "script": "Check-FirewallRules.ps1",
+    "script": "check_server_certificate_alternativenames.out.err",
     "level": "ERROR",
-    "title_fr": "Configuration du pare-feu",
-    "title_en": "Firewall Configuration",
-    "file": "checks/firewall_configuration.html"
+    "title_fr": "Erreurs SAN certificat serveur",
+    "title_en": "Server certificate SAN errors",
+    "description_fr": "Trace les erreurs rencontrées lors de la récupération des Subject Alternative Names du certificat serveur.",
+    "description_en": "Logs any errors raised while retrieving the server certificate Subject Alternative Names.",
+    "file": null
   },
   {
     "id": "CHK015",
-    "script": "Check-NetworkConnectivity.ps1",
+    "script": "check_server_certificate_alternativenames.ps1",
     "level": "ERROR",
-    "title_fr": "Connectivité réseau",
-    "title_en": "Network Connectivity",
-    "file": "checks/network_connectivity.html"
+    "title_fr": "Contrôle SAN du certificat serveur",
+    "title_en": "Server certificate SAN check",
+    "description_fr": "Vérifie que le certificat serveur comporte les Subject Alternative Names requis.",
+    "description_en": "Checks that the server certificate includes the required Subject Alternative Names.",
+    "file": null
   },
   {
     "id": "CHK016",
-    "script": "Check-Proxy.ps1",
-    "level": "INFO",
-    "title_fr": "Détection d'un proxy système",
-    "title_en": "System Proxy Detection",
-    "file": "checks/proxy_detection.html"
+    "script": "check_server_certificate_alternativenames_Cert-Number.out",
+    "level": "INFORMATION",
+    "title_fr": "Détail certificat serveur",
+    "title_en": "Server certificate detail",
+    "description_fr": "Fichier texte contenant le numéro et les métadonnées du certificat serveur analysé.",
+    "description_en": "Text output containing the number and metadata of the analysed server certificate.",
+    "file": null
   },
   {
     "id": "CHK017",
-    "script": "Check-DnsResolution.ps1",
+    "script": "check_systems_certificate.ps1",
     "level": "ERROR",
-    "title_fr": "Résolution DNS",
-    "title_en": "DNS Resolution",
-    "file": "checks/dns_resolution.html"
+    "title_fr": "Certificat systèmes valide",
+    "title_en": "Systems certificate valid",
+    "description_fr": "Contrôle que le certificat systèmes est présent, non expiré et approuvé.",
+    "description_en": "Checks that the systems certificate is present, valid and trusted.",
+    "file": null
   },
   {
     "id": "CHK018",
-    "script": "Check-TimeSync.ps1",
-    "level": "ERROR",
-    "title_fr": "Synchronisation horaire",
-    "title_en": "Time Synchronization",
-    "file": "checks/time_synchronization.html"
+    "script": "check_systems_certificate_Cert-Number.out",
+    "level": "INFORMATION",
+    "title_fr": "Détail certificat systèmes",
+    "title_en": "Systems certificate detail",
+    "description_fr": "Capture des informations détaillées du certificat systèmes contrôlé.",
+    "description_en": "Records the detailed information for the systems certificate that was checked.",
+    "file": null
   },
   {
     "id": "CHK019",
-    "script": "Check-NtpReachability.ps1",
-    "level": "WARNING",
-    "title_fr": "Accessibilité du serveur NTP",
-    "title_en": "NTP Server Reachability",
-    "file": "checks/ntp_reachability.html"
+    "script": "check_systems_certificate_maestria.sql",
+    "level": "INFORMATION",
+    "title_fr": "Script SQL certificat systèmes",
+    "title_en": "Systems certificate SQL script",
+    "description_fr": "Script SQL utilisé pour collecter les informations de certificat au sein de la base MAESTRIA.",
+    "description_en": "SQL script used to collect certificate information within the MAESTRIA database.",
+    "file": null
   },
   {
     "id": "CHK020",
-    "script": "Check-DomainMembership.ps1",
-    "level": "FATAL",
-    "title_fr": "Appartenance au domaine",
-    "title_en": "Domain Membership",
-    "file": "checks/domain_membership.html"
+    "script": "check_unsuported_hardware.ps1",
+    "level": "ERROR",
+    "title_fr": "Matériel non supporté",
+    "title_en": "Unsupported hardware",
+    "description_fr": "Détecte la présence de composants matériels non supportés par la plateforme MAESTRIA.",
+    "description_en": "Detects hardware components that are not supported by the MAESTRIA platform.",
+    "file": null
   },
   {
     "id": "CHK021",
-    "script": "Check-LocalAdminRights.ps1",
-    "level": "FATAL",
-    "title_fr": "Droits administrateur local",
-    "title_en": "Local Administrator Rights",
-    "file": "checks/local_admin_rights.html"
+    "script": "cpu_core_number.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Nombre de cœurs CPU suffisant",
+    "title_en": "Sufficient CPU cores",
+    "description_fr": "Vérifie que le serveur dispose du nombre minimal de cœurs CPU requis.",
+    "description_en": "Ensures that the server provides the minimum required number of CPU cores.",
+    "file": null
   },
   {
     "id": "CHK022",
-    "script": "Check-UAC.ps1",
+    "script": "cpu_speed.ps1",
     "level": "WARNING",
-    "title_fr": "Configuration du contrôle de compte utilisateur",
-    "title_en": "User Account Control Configuration",
-    "file": "checks/uac_status.html"
+    "title_fr": "Fréquence CPU conforme",
+    "title_en": "CPU frequency compliant",
+    "description_fr": "Contrôle que la fréquence processeur atteint le seuil recommandé pour les performances.",
+    "description_en": "Checks that the processor frequency meets the recommended performance threshold.",
+    "file": null
   },
   {
     "id": "CHK023",
-    "script": "Check-RemoteDesktop.ps1",
-    "level": "INFO",
-    "title_fr": "Activation du Bureau à distance",
-    "title_en": "Remote Desktop Activation",
-    "file": "checks/remote_desktop.html"
+    "script": "CUSTOMER__no_major_version_update.ps1",
+    "level": "WARNING",
+    "title_fr": "Pas de mise à jour majeure en cours",
+    "title_en": "No major update in progress",
+    "description_fr": "S'assure qu'aucune mise à jour majeure de la plateforme n'est planifiée ou active durant l'installation.",
+    "description_en": "Ensures that no major platform update is planned or running during the installation window.",
+    "file": null
   },
   {
     "id": "CHK024",
-    "script": "Check-SMBVersion.ps1",
-    "level": "ERROR",
-    "title_fr": "Version du protocole SMB",
-    "title_en": "SMB Protocol Version",
-    "file": "checks/smb_protocol_version.html"
+    "script": "disk_free_space.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Espace disque libre (Go)",
+    "title_en": "Free disk space (GB)",
+    "description_fr": "Vérifie que le volume requis dispose d'au moins l'espace libre minimal en giga-octets.",
+    "description_en": "Checks that the target volume provides at least the minimum free space in gigabytes.",
+    "file": null
   },
   {
     "id": "CHK025",
-    "script": "Check-PowerPlan.ps1",
-    "level": "WARNING",
-    "title_fr": "Plan d'alimentation hautes performances",
-    "title_en": "High Performance Power Plan",
-    "file": "checks/power_plan.html"
+    "script": "disk_free_space_percentage.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Espace disque libre (%)",
+    "title_en": "Free disk space (%)",
+    "description_fr": "Contrôle que le pourcentage d'espace disque libre reste au-dessus du seuil exigé.",
+    "description_en": "Ensures that the percentage of free disk space stays above the required threshold.",
+    "file": null
   },
   {
     "id": "CHK026",
-    "script": "Check-CriticalServices.ps1",
-    "level": "ERROR",
-    "title_fr": "Services Windows critiques",
-    "title_en": "Critical Windows Services",
-    "file": "checks/critical_services.html"
+    "script": "dotnet_version.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Version .NET conforme",
+    "title_en": ".NET version compliant",
+    "description_fr": "Vérifie que la version minimale du framework .NET demandée est installée.",
+    "description_en": "Checks that the required minimum .NET Framework version is installed.",
+    "file": null
   },
   {
     "id": "CHK027",
-    "script": "Check-EventLogs.ps1",
-    "level": "WARNING",
-    "title_fr": "Santé des journaux d'événements",
-    "title_en": "Event Log Health",
-    "file": "checks/event_log_health.html"
+    "script": "DWH_initialized.ps1",
+    "level": "INFORMATION",
+    "title_fr": "Entrepôt de données initialisé",
+    "title_en": "Data warehouse initialized",
+    "description_fr": "Informe sur l'initialisation de l'entrepôt de données MAESTRIA.",
+    "description_en": "Reports whether the MAESTRIA data warehouse has been initialized.",
+    "file": null
   },
   {
     "id": "CHK028",
-    "script": "Check-DotNetFeature.ps1",
+    "script": "environment_variable.ps1",
     "level": "ERROR",
-    "title_fr": "Fonctionnalité .NET Core",
-    "title_en": ".NET Core Feature",
-    "file": "checks/dotnet_feature.html"
+    "title_fr": "Variables d'environnement définies",
+    "title_en": "Environment variables set",
+    "description_fr": "Contrôle la présence et la valeur des variables d'environnement nécessaires.",
+    "description_en": "Checks that the required environment variables exist and are correctly set.",
+    "file": null
   },
   {
     "id": "CHK029",
-    "script": "Check-IISFeature.ps1",
-    "level": "ERROR",
-    "title_fr": "Rôles IIS requis",
-    "title_en": "Required IIS Roles",
-    "file": "checks/iis_feature.html"
+    "script": "etl_success_run_found.ps1",
+    "level": "WARNING",
+    "title_fr": "Dernière exécution ETL réussie",
+    "title_en": "Latest ETL run successful",
+    "description_fr": "Vérifie qu'une exécution ETL récente s'est terminée avec succès.",
+    "description_en": "Checks that a recent ETL execution completed successfully.",
+    "file": null
   },
   {
     "id": "CHK030",
-    "script": "Check-HyperV.ps1",
+    "script": "firewall_notification_rule.ps1",
     "level": "WARNING",
-    "title_fr": "Fonctionnalité Hyper-V",
-    "title_en": "Hyper-V Feature",
-    "file": "checks/hyperv_feature.html"
+    "title_fr": "Règle de notification pare-feu",
+    "title_en": "Firewall notification rule",
+    "description_fr": "Confirme que la règle de notification requise est configurée dans le pare-feu Windows.",
+    "description_en": "Confirms that the required notification rule is configured in Windows Firewall.",
+    "file": null
   },
   {
     "id": "CHK031",
-    "script": "Check-SqlServerInstalled.ps1",
-    "level": "FATAL",
-    "title_fr": "Présence de SQL Server",
-    "title_en": "SQL Server Presence",
-    "file": "checks/sql_server_installed.html"
+    "script": "full_system_backup_available.ps1",
+    "level": "WARNING",
+    "title_fr": "Sauvegarde système disponible",
+    "title_en": "System backup available",
+    "description_fr": "Vérifie qu'une sauvegarde complète et récente du système est disponible.",
+    "description_en": "Checks that a recent and complete system backup is available.",
+    "file": null
   },
   {
     "id": "CHK032",
-    "script": "Check-SqlServerVersion.ps1",
+    "script": "global_updater_not_already_running.ps1",
     "level": "ERROR",
-    "title_fr": "Version de SQL Server",
-    "title_en": "SQL Server Version",
-    "file": "checks/sql_server_version.html"
+    "title_fr": "Global Updater arrêté",
+    "title_en": "Global Updater stopped",
+    "description_fr": "S'assure qu'aucun processus Global Updater n'est déjà en cours d'exécution.",
+    "description_en": "Ensures that no Global Updater process is currently running.",
+    "file": null
   },
   {
     "id": "CHK033",
-    "script": "Check-SqlServiceStatus.ps1",
-    "level": "FATAL",
-    "title_fr": "Service SQL Server démarré",
-    "title_en": "SQL Server Service Running",
-    "file": "checks/sql_service_status.html"
+    "script": "hostname.ps1",
+    "level": "WARNING",
+    "title_fr": "Nom d'hôte conforme",
+    "title_en": "Hostname compliant",
+    "description_fr": "Vérifie que le nom du serveur respecte la convention attendue et ne contient pas de caractères interdits.",
+    "description_en": "Checks that the server hostname follows the expected convention and contains no invalid characters.",
+    "file": null
   },
   {
     "id": "CHK034",
-    "script": "Check-SqlPorts.ps1",
+    "script": "instrument_id_bta.ps1",
     "level": "ERROR",
-    "title_fr": "Ports SQL Server accessibles",
-    "title_en": "SQL Server Ports Accessible",
-    "file": "checks/sql_ports.html"
+    "title_fr": "Identifiant instrument BTA",
+    "title_en": "BTA instrument identifier",
+    "description_fr": "Contrôle la validité et l'unicité des identifiants d'instrument BTA déclarés.",
+    "description_en": "Checks the validity and uniqueness of the declared BTA instrument identifiers.",
+    "file": null
   },
   {
     "id": "CHK035",
-    "script": "Check-SqlCollation.ps1",
+    "script": "internet_connectivity.ps1",
     "level": "ERROR",
-    "title_fr": "Collation SQL Server",
-    "title_en": "SQL Server Collation",
-    "file": "checks/sql_collation.html"
+    "title_fr": "Connectivité Internet",
+    "title_en": "Internet connectivity",
+    "description_fr": "Valide que le serveur peut accéder aux ressources Internet nécessaires.",
+    "description_en": "Validates that the server can reach the required internet resources.",
+    "file": null
   },
   {
     "id": "CHK036",
-    "script": "Check-SqlAgentAccount.ps1",
-    "level": "WARNING",
-    "title_fr": "Compte de service SQL Agent",
-    "title_en": "SQL Agent Service Account",
-    "file": "checks/sql_agent_account.html"
+    "script": "ip-v4_enabled.ps1",
+    "level": "ERROR",
+    "title_fr": "IPv4 activé",
+    "title_en": "IPv4 enabled",
+    "description_fr": "S'assure que la pile IPv4 est activée et configurée.",
+    "description_en": "Ensures that the IPv4 stack is enabled and configured.",
+    "file": null
   },
   {
     "id": "CHK037",
-    "script": "Check-DatabaseLatency.ps1",
+    "script": "ip-v6_disabled.ps1",
     "level": "WARNING",
-    "title_fr": "Latence disque base de données",
-    "title_en": "Database Disk Latency",
-    "file": "checks/database_disk_latency.html"
+    "title_fr": "IPv6 désactivé",
+    "title_en": "IPv6 disabled",
+    "description_fr": "Vérifie que la pile IPv6 est désactivée conformément aux recommandations projet.",
+    "description_en": "Checks that the IPv6 stack is disabled as recommended for the project.",
+    "file": null
   },
   {
     "id": "CHK038",
-    "script": "Check-DatabaseBackupPath.ps1",
-    "level": "INFO",
-    "title_fr": "Chemin de sauvegarde SQL",
-    "title_en": "SQL Backup Path",
-    "file": "checks/database_backup_path.html"
+    "script": "MAESTRIA-BI_initialized.ps1",
+    "level": "INFORMATION",
+    "title_fr": "MAESTRIA BI initialisé",
+    "title_en": "MAESTRIA BI initialized",
+    "description_fr": "Informe sur l'état d'initialisation du module BI de MAESTRIA.",
+    "description_en": "Reports the initialization state of the MAESTRIA BI module.",
+    "file": null
   },
   {
     "id": "CHK039",
-    "script": "Check-OdbcDriver.ps1",
-    "level": "ERROR",
-    "title_fr": "Version du pilote ODBC",
-    "title_en": "ODBC Driver Version",
-    "file": "checks/odbc_driver_version.html"
+    "script": "MAESTRIA_BioFire_driver_not_installed.ps1",
+    "level": "WARNING",
+    "title_fr": "Driver BioFire absent",
+    "title_en": "BioFire driver not installed",
+    "description_fr": "S'assure que le driver BioFire n'est pas installé lorsque non requis.",
+    "description_en": "Ensures that the BioFire driver is not installed when it is not required.",
+    "file": null
   },
   {
     "id": "CHK040",
-    "script": "Check-VCRuntime.ps1",
-    "level": "ERROR",
-    "title_fr": "Redistribuables Visual C++",
-    "title_en": "Visual C++ Redistributables",
-    "file": "checks/vc_runtime.html"
+    "script": "MAESTRIA_Sirweb_driver_not_installed.ps1",
+    "level": "WARNING",
+    "title_fr": "Driver Sirweb absent",
+    "title_en": "Sirweb driver not installed",
+    "description_fr": "Vérifie que le driver Sirweb n'est pas présent si l'intégration n'est pas prévue.",
+    "description_en": "Checks that the Sirweb driver is absent when the integration is not planned.",
+    "file": null
   },
   {
     "id": "CHK041",
-    "script": "Check-PrintSpooler.ps1",
-    "level": "WARNING",
-    "title_fr": "Service Spouleur d'impression",
-    "title_en": "Print Spooler Service",
-    "file": "checks/printer_spooler.html"
+    "script": "no_backup_in_progress.ps1",
+    "level": "ERROR",
+    "title_fr": "Aucune sauvegarde en cours",
+    "title_en": "No backup in progress",
+    "description_fr": "Vérifie qu'aucune sauvegarde système ou applicative n'est en cours.",
+    "description_en": "Checks that no system or application backup is currently running.",
+    "file": null
   },
   {
     "id": "CHK042",
-    "script": "Check-WindowsInstaller.ps1",
+    "script": "no_common_platform_installed.ps1",
     "level": "ERROR",
-    "title_fr": "Service Windows Installer",
-    "title_en": "Windows Installer Service",
-    "file": "checks/windows_installer_service.html"
+    "title_fr": "Plateformes communes absentes",
+    "title_en": "Common platforms absent",
+    "description_fr": "S'assure qu'aucune plateforme logicielle incompatible n'est installée.",
+    "description_en": "Ensures that no incompatible common platform is installed.",
+    "file": null
   },
   {
     "id": "CHK043",
-    "script": "Check-PendingReboot.ps1",
-    "level": "ERROR",
-    "title_fr": "Redémarrage en attente",
-    "title_en": "Pending Reboot",
-    "file": "checks/pending_reboot.html"
+    "script": "no_dbeaver_or_pgadmin_running.ps1",
+    "level": "WARNING",
+    "title_fr": "Outils SQL fermés",
+    "title_en": "SQL tools closed",
+    "description_fr": "Vérifie que DBeaver, pgAdmin ou outils équivalents ne sont pas en cours d'exécution.",
+    "description_en": "Checks that DBeaver, pgAdmin or similar SQL tools are not running.",
+    "file": null
   },
   {
     "id": "CHK044",
-    "script": "Check-RebootHistory.ps1",
-    "level": "INFO",
-    "title_fr": "Historique des redémarrages",
-    "title_en": "Reboot History",
-    "file": "checks/reboot_history.html"
+    "script": "no_duplicate_or_null_uuid.ps1",
+    "level": "ERROR",
+    "title_fr": "UUID sans doublon",
+    "title_en": "UUID without duplicates",
+    "description_fr": "Contrôle l'absence d'UUID dupliqués ou nuls dans les données.",
+    "description_en": "Checks that there are no duplicate or null UUID values in the data.",
+    "file": null
   },
   {
     "id": "CHK045",
-    "script": "Check-DriverStatus.ps1",
-    "level": "WARNING",
-    "title_fr": "Pilotes matériels critiques",
-    "title_en": "Critical Hardware Drivers",
-    "file": "checks/driver_status.html"
+    "script": "no_duplicate_VITEK2_instrument_identifier.ps1",
+    "level": "ERROR",
+    "title_fr": "Identifiant VITEK2 unique",
+    "title_en": "Unique VITEK2 identifier",
+    "description_fr": "Vérifie qu'aucun identifiant VITEK2 n'est dupliqué dans la configuration.",
+    "description_en": "Ensures that no VITEK2 identifier is duplicated in the configuration.",
+    "file": null
   },
   {
     "id": "CHK046",
-    "script": "Check-UsbPorts.ps1",
-    "level": "INFO",
-    "title_fr": "Statut des ports USB",
-    "title_en": "USB Port Status",
-    "file": "checks/usb_ports.html"
+    "script": "no_etl_in_progress.ps1",
+    "level": "ERROR",
+    "title_fr": "Aucun ETL en cours",
+    "title_en": "No ETL in progress",
+    "description_fr": "S'assure qu'aucune tâche ETL n'est active avant les opérations.",
+    "description_en": "Ensures that no ETL job is running before performing the operations.",
+    "file": null
   },
   {
     "id": "CHK047",
-    "script": "Check-SmartScreen.ps1",
-    "level": "INFO",
-    "title_fr": "Statut de Microsoft SmartScreen",
-    "title_en": "Microsoft SmartScreen Status",
-    "file": "checks/smartscreen.html"
+    "script": "no_jms_virtuo_31_maestria.sql",
+    "level": "WARNING",
+    "title_fr": "Absence de JMS Virtuo 3.1 MAESTRIA",
+    "title_en": "No JMS Virtuo 3.1 MAESTRIA",
+    "description_fr": "Vérifie via SQL qu'aucune configuration JMS Virtuo 3.1 spécifique MAESTRIA n'est active.",
+    "description_en": "Uses SQL to ensure that no MAESTRIA specific JMS Virtuo 3.1 configuration is active.",
+    "file": null
   },
   {
     "id": "CHK048",
-    "script": "Check-DefenderRealtime.ps1",
+    "script": "no_jms_virtuo_31_post.ps1",
     "level": "WARNING",
-    "title_fr": "Protection temps réel Windows Defender",
-    "title_en": "Windows Defender Real-Time Protection",
-    "file": "checks/defender_realtime.html"
+    "title_fr": "Tâches JMS post désactivées",
+    "title_en": "JMS post tasks disabled",
+    "description_fr": "S'assure qu'aucun traitement JMS Virtuo 3.1 post-installation n'est en cours.",
+    "description_en": "Ensures that no JMS Virtuo 3.1 post-installation task is running.",
+    "file": null
   },
   {
     "id": "CHK049",
-    "script": "Check-LocalPolicyAudit.ps1",
-    "level": "INFO",
-    "title_fr": "Stratégie d'audit locale",
-    "title_en": "Local Audit Policy",
-    "file": "checks/local_policy_audit.html"
+    "script": "no_jms_virtuo_31_pre.ps1",
+    "level": "WARNING",
+    "title_fr": "Tâches JMS pré désactivées",
+    "title_en": "JMS pre tasks disabled",
+    "description_fr": "Vérifie qu'aucun traitement JMS Virtuo 3.1 pré-installation n'est actif.",
+    "description_en": "Checks that no JMS Virtuo 3.1 pre-installation task is active.",
+    "file": null
   },
   {
     "id": "CHK050",
-    "script": "Check-EventLogSize.ps1",
-    "level": "WARNING",
-    "title_fr": "Taille des journaux d'événements",
-    "title_en": "Event Log Size",
-    "file": "checks/event_log_size.html"
+    "script": "no_modules_and_stations_duplication.ps1",
+    "level": "ERROR",
+    "title_fr": "Pas de doublon modules/stations",
+    "title_en": "No module or station duplication",
+    "description_fr": "Contrôle l'absence de doublons dans la définition des modules et stations.",
+    "description_en": "Ensures that no modules or stations are duplicated in the configuration.",
+    "file": null
   },
   {
     "id": "CHK051",
-    "script": "Check-CrashDump.ps1",
-    "level": "INFO",
-    "title_fr": "Configuration des fichiers de vidage",
-    "title_en": "Crash Dump Configuration",
-    "file": "checks/crash_dump.html"
+    "script": "no_pending_reboot.ps1",
+    "level": "ERROR",
+    "title_fr": "Aucun redémarrage en attente",
+    "title_en": "No pending reboot",
+    "description_fr": "Vérifie qu'aucun redémarrage Windows n'est requis avant de continuer.",
+    "description_en": "Checks that Windows does not require a pending reboot before proceeding.",
+    "file": null
   },
   {
     "id": "CHK052",
-    "script": "Check-PagingFile.ps1",
+    "script": "no_shared_folders_on_acl.ps1",
     "level": "WARNING",
-    "title_fr": "Fichier d'échange dimensionné",
-    "title_en": "Paging File Sized",
-    "file": "checks/paging_file.html"
+    "title_fr": "Partages hors ACL",
+    "title_en": "No shared folders in ACL",
+    "description_fr": "S'assure que des dossiers partagés non souhaités ne sont pas présents dans les ACL critiques.",
+    "description_en": "Ensures that unwanted shared folders are not referenced in critical ACLs.",
+    "file": null
   },
   {
     "id": "CHK053",
-    "script": "Check-TempPermissions.ps1",
-    "level": "ERROR",
-    "title_fr": "Permissions du dossier TEMP",
-    "title_en": "TEMP Folder Permissions",
-    "file": "checks/temp_folder_permissions.html"
+    "script": "no_sysmon_running.ps1",
+    "level": "INFORMATION",
+    "title_fr": "Sysmon non actif",
+    "title_en": "Sysmon not running",
+    "description_fr": "Informe sur l'absence d'un service Sysmon actif susceptible d'impacter les performances.",
+    "description_en": "Reports whether a Sysmon service is absent to avoid potential performance impact.",
+    "file": null
   },
   {
     "id": "CHK054",
-    "script": "Check-InstallPath.ps1",
-    "level": "FATAL",
-    "title_fr": "Chemin d'installation accessible",
-    "title_en": "Installation Path Accessible",
-    "file": "checks/installation_path.html"
+    "script": "physical_memory.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Mémoire physique suffisante",
+    "title_en": "Sufficient physical memory",
+    "description_fr": "Contrôle que la mémoire RAM disponible répond à la capacité minimale requise.",
+    "description_en": "Checks that the available RAM meets the minimum capacity requirement.",
+    "file": null
   },
   {
     "id": "CHK055",
-    "script": "Check-ServiceAccountPassword.ps1",
-    "level": "WARNING",
-    "title_fr": "Âge du mot de passe du compte de service",
-    "title_en": "Service Account Password Age",
-    "file": "checks/service_account_password.html"
+    "script": "port_available.ps1",
+    "level": "ERROR",
+    "title_fr": "Ports requis disponibles",
+    "title_en": "Required ports available",
+    "description_fr": "Vérifie que les ports réseau attendus sont libres et non utilisés par d'autres services.",
+    "description_en": "Ensures that the required network ports are free and unused by other services.",
+    "file": null
   },
   {
     "id": "CHK056",
-    "script": "Check-ServiceAccountSPN.ps1",
+    "script": "postgresql_conf.ps1",
     "level": "ERROR",
-    "title_fr": "SPN du compte de service",
-    "title_en": "Service Account SPN",
-    "file": "checks/service_account_spn.html"
+    "title_fr": "Configuration PostgreSQL",
+    "title_en": "PostgreSQL configuration",
+    "description_fr": "Contrôle que le fichier postgresql.conf contient les paramètres recommandés.",
+    "description_en": "Checks that the postgresql.conf file contains the recommended parameters.",
+    "file": null
   },
   {
     "id": "CHK057",
-    "script": "Check-ADConnectivity.ps1",
-    "level": "ERROR",
-    "title_fr": "Connectivité Active Directory",
-    "title_en": "Active Directory Connectivity",
-    "file": "checks/ad_connectivity.html"
+    "script": "powershell_activated.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "PowerShell activé",
+    "title_en": "PowerShell activated",
+    "description_fr": "S'assure que PowerShell est activé et exécutable sur le serveur.",
+    "description_en": "Ensures that PowerShell is enabled and executable on the server.",
+    "file": null
   },
   {
     "id": "CHK058",
-    "script": "Check-LDAPSSL.ps1",
-    "level": "WARNING",
-    "title_fr": "Disponibilité LDAP sur SSL",
-    "title_en": "LDAP over SSL Availability",
-    "file": "checks/ldap_over_ssl.html"
+    "script": "powershell_executionpolicy.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Stratégie d'exécution PowerShell",
+    "title_en": "PowerShell execution policy",
+    "description_fr": "Vérifie que la stratégie d'exécution est positionnée sur Unrestricted ou RemoteSigned.",
+    "description_en": "Checks that the execution policy is set to Unrestricted or RemoteSigned.",
+    "file": null
   },
   {
     "id": "CHK059",
-    "script": "Check-CertificateStore.ps1",
-    "level": "WARNING",
-    "title_fr": "Certificats requis",
-    "title_en": "Required Certificates",
-    "file": "checks/certificate_store.html"
+    "script": "powershell_version.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Version PowerShell minimale",
+    "title_en": "Minimum PowerShell version",
+    "description_fr": "Contrôle que la version de PowerShell installée répond aux prérequis.",
+    "description_en": "Ensures that the installed PowerShell version meets the prerequisites.",
+    "file": null
   },
   {
     "id": "CHK060",
-    "script": "Check-WindowsActivation.ps1",
-    "level": "WARNING",
-    "title_fr": "Activation de Windows",
-    "title_en": "Windows Activation",
-    "file": "checks/windows_activation.html"
+    "script": "registry_writable.ps1",
+    "level": "FATAL_ERROR",
+    "title_fr": "Registre accessible en écriture",
+    "title_en": "Registry writable",
+    "description_fr": "S'assure que les clés de registre critiques sont modifiables.",
+    "description_en": "Ensures that critical registry keys are writable.",
+    "file": null
   },
   {
     "id": "CHK061",
-    "script": "Check-SystemLocale.ps1",
-    "level": "INFO",
-    "title_fr": "Langue système",
-    "title_en": "System Locale",
-    "file": "checks/system_locale.html"
+    "script": "service_running.ps1",
+    "level": "ERROR",
+    "title_fr": "Services requis démarrés",
+    "title_en": "Required services running",
+    "description_fr": "Vérifie que les services Windows critiques nécessaires à MAESTRIA sont démarrés.",
+    "description_en": "Checks that the critical Windows services required by MAESTRIA are running.",
+    "file": null
   },
   {
     "id": "CHK062",
-    "script": "Check-Timezone.ps1",
-    "level": "WARNING",
-    "title_fr": "Fuseau horaire conforme",
-    "title_en": "Compliant Time Zone",
-    "file": "checks/timezone_configuration.html"
+    "script": "system_versions-common-functions.ps1",
+    "level": "INFORMATION",
+    "title_fr": "Fonctions versions système",
+    "title_en": "System version helper functions",
+    "description_fr": "Met à disposition les fonctions communes de collecte des versions système.",
+    "description_en": "Provides the shared helper functions used to collect system version information.",
+    "file": null
   },
   {
     "id": "CHK063",
-    "script": "Check-KeyboardLayout.ps1",
-    "level": "INFO",
-    "title_fr": "Disposition de clavier",
-    "title_en": "Keyboard Layout",
-    "file": "checks/keyboard_layout.html"
+    "script": "system_versions_maestria_before.ps1",
+    "level": "INFORMATION",
+    "title_fr": "Version MAESTRIA avant mise à jour",
+    "title_en": "MAESTRIA version before update",
+    "description_fr": "Collecte la version MAESTRIA actuellement installée avant migration.",
+    "description_en": "Collects the currently installed MAESTRIA version before migration.",
+    "file": null
   },
   {
     "id": "CHK064",
-    "script": "Check-RegionalSettings.ps1",
-    "level": "WARNING",
-    "title_fr": "Paramètres régionaux",
-    "title_en": "Regional Settings",
-    "file": "checks/regional_settings.html"
+    "script": "tse_config.ps1",
+    "level": "ERROR",
+    "title_fr": "Configuration TSE",
+    "title_en": "TSE configuration",
+    "description_fr": "Vérifie la configuration des services TSE/Remote Desktop selon les préconisations.",
+    "description_en": "Checks that the TSE/Remote Desktop services are configured as recommended.",
+    "file": null
   },
   {
     "id": "CHK065",
-    "script": "Check-HighContrast.ps1",
-    "level": "INFO",
-    "title_fr": "Mode contraste élevé",
-    "title_en": "High Contrast Mode",
-    "file": "checks/high_contrast.html"
+    "script": "VitekMS_30_not_enabled.ps1",
+    "level": "WARNING",
+    "title_fr": "Vitek MS 3.0 non activé",
+    "title_en": "Vitek MS 3.0 not enabled",
+    "description_fr": "S'assure que l'option Vitek MS 3.0 n'est pas activée quand elle n'est pas supportée.",
+    "description_en": "Ensures that the Vitek MS 3.0 option is not enabled when it is not supported.",
+    "file": null
   },
   {
     "id": "CHK066",
-    "script": "Check-ScreenResolution.ps1",
-    "level": "WARNING",
-    "title_fr": "Résolution d'écran minimale",
-    "title_en": "Minimum Screen Resolution",
-    "file": "checks/screen_resolution.html"
+    "script": "Windows_language.ps1",
+    "level": "ERROR",
+    "title_fr": "Langue Windows",
+    "title_en": "Windows language",
+    "description_fr": "Vérifie que la langue du système Windows est paramétrée sur Anglais (États-Unis).",
+    "description_en": "Checks that the Windows system language is set to English (United States).",
+    "file": null
   },
   {
     "id": "CHK067",
-    "script": "Check-EdgeVersion.ps1",
+    "script": "Windows_license.ps1",
     "level": "ERROR",
-    "title_fr": "Version de Microsoft Edge",
-    "title_en": "Microsoft Edge Version",
-    "file": "checks/edge_version.html"
+    "title_fr": "Licence Windows activée",
+    "title_en": "Windows license activated",
+    "description_fr": "S'assure que la licence Windows est activée et valide.",
+    "description_en": "Ensures that the Windows license is activated and valid.",
+    "file": null
   },
   {
     "id": "CHK068",
-    "script": "Check-ExecutionPolicy.ps1",
-    "level": "ERROR",
-    "title_fr": "Stratégie d'exécution PowerShell",
-    "title_en": "PowerShell Execution Policy",
-    "file": "checks/execution_policy.html"
+    "script": "Windows_update.ps1",
+    "level": "WARNING",
+    "title_fr": "Mises à jour Windows récentes",
+    "title_en": "Recent Windows updates",
+    "description_fr": "Vérifie qu'une mise à jour Windows récente a été appliquée.",
+    "description_en": "Checks that a recent Windows update has been applied.",
+    "file": null
   },
   {
     "id": "CHK069",
-    "script": "Check-WindowsVersion.ps1",
-    "level": "FATAL",
-    "title_fr": "Version de Windows supportée",
-    "title_en": "Supported Windows Version",
-    "file": "checks/windows_version.html"
+    "script": "Windows_version.ps1",
+    "level": "ERROR",
+    "title_fr": "Version Windows supportée",
+    "title_en": "Supported Windows version",
+    "description_fr": "Contrôle que le système d'exploitation Windows fait partie des versions supportées.",
+    "description_en": "Checks that the Windows operating system is within the supported versions.",
+    "file": null
   }
 ]
