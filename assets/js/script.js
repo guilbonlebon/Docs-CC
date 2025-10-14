@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     checks.forEach((check) => {
       const card = document.createElement('article');
-      card.className = 'check-card visible';
+      card.className = 'check-card';
       card.dataset.level = (check.level || '').toLowerCase();
 
       const cardInner = document.createElement('div');
@@ -210,13 +210,65 @@ document.addEventListener('DOMContentLoaded', () => {
     applyLanguage(getPreferredLanguage());
 
     function setCardVisibility(element, shouldShow) {
+      const EXIT_CLASS = 'is-hiding';
+      const ENTER_CLASS = 'is-entering';
+      const EXIT_ANIMATION = 'cardExit';
+      const ENTER_ANIMATION = 'cardEnter';
+
+      const detachHandler = (key) => {
+        const handler = element[key];
+        if (typeof handler === 'function') {
+          element.removeEventListener('animationend', handler);
+          delete element[key];
+        }
+      };
+
       if (shouldShow) {
-        element.classList.remove('hidden');
-        element.classList.add('visible');
-      } else {
-        element.classList.remove('visible');
-        element.classList.add('hidden');
+        if (!element.hasAttribute('hidden') && !element.classList.contains(EXIT_CLASS)) {
+          return;
+        }
+
+        detachHandler('__cardExitHandler');
+
+        element.classList.remove(EXIT_CLASS);
+        element.removeAttribute('hidden');
+
+        // Force reflow before playing the enter animation
+        void element.offsetWidth; // eslint-disable-line no-unused-expressions
+
+        element.classList.add(ENTER_CLASS);
+
+        const handleEnter = (event) => {
+          if (event.target !== element || event.animationName !== ENTER_ANIMATION) {
+            return;
+          }
+          element.classList.remove(ENTER_CLASS);
+          detachHandler('__cardEnterHandler');
+        };
+
+        element.__cardEnterHandler = handleEnter;
+        element.addEventListener('animationend', handleEnter);
+        return;
       }
+
+      if (element.hasAttribute('hidden') || element.classList.contains(EXIT_CLASS)) {
+        return;
+      }
+
+      detachHandler('__cardEnterHandler');
+      element.classList.add(EXIT_CLASS);
+
+      const handleExit = (event) => {
+        if (event.target !== element || event.animationName !== EXIT_ANIMATION) {
+          return;
+        }
+        detachHandler('__cardExitHandler');
+        element.classList.remove(EXIT_CLASS);
+        element.setAttribute('hidden', '');
+      };
+
+      element.__cardExitHandler = handleExit;
+      element.addEventListener('animationend', handleExit);
     }
 
     function filterChecks() {
