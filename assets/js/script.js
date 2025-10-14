@@ -16,6 +16,14 @@ const LEVEL_LABELS = {
   INFORMATION: { fr: 'INFO', en: 'INFORMATION' }
 };
 
+const SIDEBAR_GROUPS = [
+  { key: 'all', label: { fr: 'Tous', en: 'All' } },
+  { key: 'fatal_error', label: { fr: 'Fatal', en: 'Fatal' } },
+  { key: 'error', label: { fr: 'Erreur', en: 'Error' } },
+  { key: 'warning', label: { fr: 'Avertissement', en: 'Warning' } },
+  { key: 'information', label: { fr: 'Info', en: 'Info' } }
+];
+
 function getLevelGroup(level) {
   switch (level) {
     case 'FATAL':
@@ -107,29 +115,180 @@ document.addEventListener('DOMContentLoaded', () => {
   const filterButtons = Array.from(document.querySelectorAll('[data-filter-level]'));
   let sidebarButtons = [];
   let activeSidebarLevel = 'all';
+  let filterChecksRef = null;
+  let sidebarState = null;
+
+  function collapseSidebarPanels() {
+    if (!sidebarState) {
+      return;
+    }
+    sidebarState.groups.forEach(({ toggle, panel }) => {
+      toggle.classList.remove('is-active');
+      if (panel) {
+        panel.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+      } else {
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  function applySidebarState() {
+    if (!sidebarState) {
+      return;
+    }
+
+    collapseSidebarPanels();
+    const current = sidebarState.groups.get(activeSidebarLevel);
+
+    if (current) {
+      current.toggle.classList.add('is-active');
+      if (current.panel) {
+        current.panel.hidden = false;
+        current.toggle.setAttribute('aria-expanded', 'true');
+      }
+      return;
+    }
+
+    const fallback = sidebarState.groups.get('all');
+    if (fallback) {
+      fallback.toggle.classList.add('is-active');
+    }
+    activeSidebarLevel = 'all';
+  }
+
+  function handleSidebarToggle(levelKey) {
+    if (activeSidebarLevel === levelKey) {
+      activeSidebarLevel = 'all';
+    } else {
+      activeSidebarLevel = levelKey;
+    }
+    applySidebarState();
+
+    if (typeof filterChecksRef === 'function') {
+      filterChecksRef();
+    }
+  }
 
   function createSidebar() {
-    const sidebar = document.createElement('div');
+    const sidebar = document.createElement('nav');
     sidebar.id = 'sidebar';
-    sidebar.innerHTML = `
-      <h4>Criticité</h4>
-      <button class="filter-btn" data-level="all">Tous</button>
-      <button class="filter-btn" data-level="fatal_error">Fatal</button>
-      <button class="filter-btn" data-level="error">Erreur</button>
-      <button class="filter-btn" data-level="warning">Avertissement</button>
-      <button class="filter-btn" data-level="information">Info</button>
-    `;
+    sidebar.setAttribute('aria-label', 'Navigation par criticité');
+
+    const title = document.createElement('h2');
+    title.className = 'sidebar-title';
+    title.setAttribute('data-fr', 'Criticité');
+    title.setAttribute('data-en', 'Criticality');
+    title.textContent = 'Criticité';
+    sidebar.appendChild(title);
+
+    const list = document.createElement('ul');
+    list.className = 'sidebar-groups';
+    sidebar.appendChild(list);
+
+    const groups = new Map();
+
+    SIDEBAR_GROUPS.forEach((group) => {
+      const listItem = document.createElement('li');
+      listItem.className = 'sidebar-group';
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'sidebar-toggle';
+      toggle.dataset.level = group.key;
+      toggle.dataset.hasPanel = group.key !== 'all' ? 'true' : 'false';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = `<span data-fr="${group.label.fr}" data-en="${group.label.en}">${group.label.fr}</span>`;
+      listItem.appendChild(toggle);
+
+      let panel = null;
+      let linksList = null;
+      if (group.key !== 'all') {
+        panel = document.createElement('div');
+        panel.className = 'sidebar-panel';
+        panel.hidden = true;
+
+        linksList = document.createElement('ul');
+        linksList.className = 'sidebar-links';
+        panel.appendChild(linksList);
+        listItem.appendChild(panel);
+      }
+
+      list.appendChild(listItem);
+      groups.set(group.key, { toggle, panel, linksList, definition: group });
+    });
+
     document.body.appendChild(sidebar);
-    sidebarButtons = Array.from(sidebar.querySelectorAll('.filter-btn'));
-    const defaultButton = sidebarButtons[0];
-    if (defaultButton) {
-      defaultButton.classList.add('active');
-      activeSidebarLevel = defaultButton.dataset.level || 'all';
-    }
+    sidebarButtons = Array.from(sidebar.querySelectorAll('.sidebar-toggle'));
+    sidebarState = { sidebar, groups };
+
+    sidebarButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const levelKey = button.dataset.level || 'all';
+        handleSidebarToggle(levelKey);
+      });
+    });
+
+    applySidebarState();
+    applyLanguage(getPreferredLanguage());
   }
 
   if (pageType === 'index') {
     createSidebar();
+  }
+
+  function updateSidebar(checks) {
+    if (!sidebarState) {
+      return;
+    }
+
+    sidebarState.groups.forEach(({ linksList }, key) => {
+      if (!linksList) {
+        return;
+      }
+
+      linksList.innerHTML = '';
+      const matches = checks
+        .filter((check) => getLevelGroup(check.level) === key)
+        .slice()
+        .sort((a, b) => a.title_fr.localeCompare(b.title_fr));
+
+      if (!matches.length) {
+        const emptyItem = document.createElement('li');
+        const emptyText = document.createElement('span');
+        emptyText.className = 'sidebar-empty';
+        emptyText.setAttribute('data-fr', 'Aucun contrôle disponible');
+        emptyText.setAttribute('data-en', 'No checks available');
+        emptyText.textContent = 'Aucun contrôle disponible';
+        emptyItem.appendChild(emptyText);
+        linksList.appendChild(emptyItem);
+        return;
+      }
+
+      matches.forEach((check) => {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.className = 'sidebar-link';
+        link.setAttribute('data-fr', check.title_fr);
+        link.setAttribute('data-en', check.title_en);
+        link.textContent = check.title_fr;
+
+        if (check.file) {
+          link.href = check.file;
+        } else {
+          link.href = '#';
+          link.classList.add('is-disabled');
+          link.setAttribute('aria-disabled', 'true');
+          link.addEventListener('click', (event) => event.preventDefault());
+        }
+
+        listItem.appendChild(link);
+        linksList.appendChild(listItem);
+      });
+    });
+
+    applySidebarState();
+    applyLanguage(getPreferredLanguage());
   }
 
   function setupCardInteractions(card) {
@@ -258,6 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleFiltering(checks) {
     const sorted = checks.slice().sort((a, b) => a.title_fr.localeCompare(b.title_fr));
     const entries = renderChecks(sorted);
+    updateSidebar(sorted);
 
     const emptyMessage = document.createElement('p');
     emptyMessage.className = 'empty-state';
@@ -364,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     filterChecks();
+    filterChecksRef = filterChecks;
 
     if (searchInput) {
       searchInput.addEventListener('input', filterChecks);
@@ -376,14 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    sidebarButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        sidebarButtons.forEach((btn) => btn.classList.remove('active'));
-        button.classList.add('active');
-        activeSidebarLevel = button.dataset.level || 'all';
-        filterChecks();
-      });
-    });
+    applySidebarState();
   }
 
   function loadManifest() {
