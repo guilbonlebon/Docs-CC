@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Administration des checks · Consistency Checker</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f5f5f5;
+        --fg: #1f1f1f;
+        --accent: #0077cc;
+        --accent-dark: #005a99;
+        --border: #d0d0d0;
+        --danger: #c0392b;
+        --warning-bg: #fff4ce;
+        --warning-text: #7a4f01;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: #111827;
+        color: white;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+      }
+
+      header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.75rem;
+      }
+
+      header p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #d1d5db;
+      }
+
+      main {
+        flex: 1;
+        padding: 2rem;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+      }
+
+      .warning-banner {
+        background: var(--warning-bg);
+        color: var(--warning-text);
+        border: 1px solid rgba(122, 79, 1, 0.25);
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-weight: 600;
+      }
+
+      .warning-banner svg {
+        flex-shrink: 0;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+
+      .toolbar .actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        cursor: pointer;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      .primary-btn {
+        background: var(--accent);
+        color: white;
+        padding: 0.65rem 1.2rem;
+        transition: background 0.2s ease;
+      }
+
+      .primary-btn:hover {
+        background: var(--accent-dark);
+      }
+
+      .danger-btn {
+        background: var(--danger);
+        color: white;
+        padding: 0.55rem 1rem;
+      }
+
+      .ghost-btn {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 0.55rem 1rem;
+      }
+
+      .ghost-btn:disabled,
+      .primary-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      input[type="search"],
+      input[type="text"],
+      select,
+      textarea {
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        padding: 0.55rem 0.75rem;
+        font-size: 0.95rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      input[type="search"] {
+        min-width: 220px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        padding: 0.75rem 0.5rem;
+        text-align: left;
+      }
+
+      th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4b5563;
+      }
+
+      tbody tr:hover {
+        background: rgba(15, 23, 42, 0.04);
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(59, 130, 246, 0.12);
+        color: rgba(37, 99, 235, 0.9);
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6b7280;
+        font-size: 0.95rem;
+      }
+
+      .editor-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      .editor-overlay.active {
+        display: flex;
+      }
+
+      .editor {
+        background: white;
+        width: min(100%, 900px);
+        border-radius: 16px;
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        max-height: 90vh;
+      }
+
+      .editor header {
+        background: transparent;
+        color: inherit;
+        padding: 1.5rem;
+        box-shadow: none;
+      }
+
+      .editor header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .editor .close-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: transparent;
+        color: inherit;
+        border: none;
+        font-size: 1.5rem;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .editor .content {
+        padding: 0 1.5rem 1.5rem;
+        overflow-y: auto;
+      }
+
+      .editor form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4b5563;
+      }
+
+      textarea {
+        min-height: 200px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        resize: vertical;
+      }
+
+      .lang-tabs {
+        display: flex;
+        gap: 0.5rem;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.12);
+      }
+
+      .lang-tab {
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px 8px 0 0;
+        border: 1px solid transparent;
+        background: transparent;
+      }
+
+      .lang-tab.active {
+        background: white;
+        border-color: rgba(15, 23, 42, 0.12);
+        border-bottom-color: white;
+        font-weight: 600;
+      }
+
+      .lang-panel {
+        display: none;
+      }
+
+      .lang-panel.active {
+        display: block;
+      }
+
+      .editor-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 0 1.5rem 1.5rem;
+      }
+
+      .status {
+        font-size: 0.85rem;
+        color: #4b5563;
+      }
+
+      .error {
+        color: var(--danger);
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 768px) {
+        main {
+          padding: 1.25rem;
+        }
+
+        .editor {
+          padding-top: 2.5rem;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        textarea {
+          min-height: 180px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Administration des checks</h1>
+      <p>Page interne — non livrée au client</p>
+    </header>
+    <main>
+      <div class="card">
+        <div class="warning-banner">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 9v4" />
+            <path d="M12 17h.01" />
+            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+          </svg>
+          <div>
+            Cette interface est réservée aux équipes internes. Aucun lien public ne doit y mener.
+          </div>
+        </div>
+        <div class="field">
+          <label for="root-path">Dossier sélectionné</label>
+          <div id="root-path" class="status">Aucun dossier ouvert</div>
+        </div>
+        <div class="toolbar">
+          <div class="actions">
+            <button id="select-root" class="primary-btn">Sélectionner le dossier du projet</button>
+            <button id="refresh" class="ghost-btn" disabled>Actualiser</button>
+          </div>
+          <div class="actions">
+            <input id="search" type="search" placeholder="Rechercher un check" disabled />
+            <button id="add-check" class="primary-btn" disabled>Ajouter un check</button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Titre (FR)</th>
+                <th>Titre (EN)</th>
+                <th>Fichier</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="checks-body">
+              <tr class="empty">
+                <td colspan="5">Sélectionnez le dossier du projet pour afficher les checks.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <div id="editor-overlay" class="editor-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="editor">
+        <button class="close-btn" type="button" aria-label="Fermer">×</button>
+        <header>
+          <h2 id="editor-title">Modifier un check</h2>
+        </header>
+        <div class="content">
+          <form id="editor-form">
+            <div class="grid">
+              <div class="field">
+                <label for="check-id">Identifiant</label>
+                <input id="check-id" name="check-id" type="text" required />
+              </div>
+              <div class="field">
+                <label for="check-level">Niveau</label>
+                <input id="check-level" name="check-level" type="text" placeholder="FATAL_ERROR, WARNING..." />
+              </div>
+              <div class="field">
+                <label for="check-script">Script</label>
+                <input id="check-script" name="check-script" type="text" placeholder="N/A" />
+              </div>
+              <div class="field">
+                <label for="check-file">Nom du fichier</label>
+                <input id="check-file" name="check-file" type="text" required />
+              </div>
+            </div>
+
+            <div class="lang-tabs" role="tablist">
+              <button class="lang-tab active" type="button" role="tab" aria-selected="true" data-lang="fr">FR</button>
+              <button class="lang-tab" type="button" role="tab" aria-selected="false" data-lang="en">EN</button>
+            </div>
+            <div class="lang-panel active" data-lang="fr">
+              <div class="field">
+                <label for="title-fr">Titre (FR)</label>
+                <input id="title-fr" name="title-fr" type="text" />
+              </div>
+              <div class="field">
+                <label for="description-fr">Description (FR)</label>
+                <textarea id="description-fr" name="description-fr" rows="4"></textarea>
+              </div>
+            </div>
+            <div class="lang-panel" data-lang="en">
+              <div class="field">
+                <label for="title-en">Titre (EN)</label>
+                <input id="title-en" name="title-en" type="text" />
+              </div>
+              <div class="field">
+                <label for="description-en">Description (EN)</label>
+                <textarea id="description-en" name="description-en" rows="4"></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="file-content">Contenu du check (HTML)</label>
+              <p class="status">
+                Les deux onglets FR/EN affichent le même fichier bilingue. Modifiez les balises et attributs selon les besoins.
+              </p>
+              <div class="lang-tabs" role="tablist">
+                <button class="lang-tab active" type="button" role="tab" aria-selected="true" data-editor-lang="fr">Vue FR</button>
+                <button class="lang-tab" type="button" role="tab" aria-selected="false" data-editor-lang="en">Vue EN</button>
+              </div>
+              <div class="lang-panel active" data-editor-lang="fr">
+                <textarea id="file-content-fr" spellcheck="false"></textarea>
+              </div>
+              <div class="lang-panel" data-editor-lang="en">
+                <textarea id="file-content-en" spellcheck="false"></textarea>
+              </div>
+            </div>
+            <div id="form-error" class="error" role="alert"></div>
+          </form>
+        </div>
+        <div class="editor-actions">
+          <button class="ghost-btn" type="button" id="cancel-edit">Annuler</button>
+          <button class="primary-btn" type="button" id="save-check">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <template id="row-template">
+      <tr>
+        <td data-col="id"></td>
+        <td data-col="title-fr"></td>
+        <td data-col="title-en"></td>
+        <td data-col="file"></td>
+        <td>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="ghost-btn" data-action="edit">Modifier</button>
+            <button type="button" class="danger-btn" data-action="delete">Supprimer</button>
+          </div>
+        </td>
+      </tr>
+    </template>
+
+    <script>
+      const state = {
+        rootHandle: null,
+        checksHandle: null,
+        manifestHandle: null,
+        manifest: [],
+        checks: [],
+        editing: null,
+      };
+
+      const ui = {
+        rootPath: document.getElementById('root-path'),
+        selectRoot: document.getElementById('select-root'),
+        refresh: document.getElementById('refresh'),
+        search: document.getElementById('search'),
+        add: document.getElementById('add-check'),
+        tbody: document.getElementById('checks-body'),
+        rowTemplate: document.getElementById('row-template'),
+        overlay: document.getElementById('editor-overlay'),
+        editorTitle: document.getElementById('editor-title'),
+        editorForm: document.getElementById('editor-form'),
+        formError: document.getElementById('form-error'),
+        tabs: document.querySelectorAll('.lang-tab[data-lang]'),
+        panels: document.querySelectorAll('.lang-panel[data-lang]'),
+        editorTabs: document.querySelectorAll('.lang-tab[data-editor-lang]'),
+        editorPanels: document.querySelectorAll('.lang-panel[data-editor-lang]'),
+        inputs: {
+          id: document.getElementById('check-id'),
+          level: document.getElementById('check-level'),
+          script: document.getElementById('check-script'),
+          file: document.getElementById('check-file'),
+          titleFr: document.getElementById('title-fr'),
+          titleEn: document.getElementById('title-en'),
+          descriptionFr: document.getElementById('description-fr'),
+          descriptionEn: document.getElementById('description-en'),
+          fileContentFr: document.getElementById('file-content-fr'),
+          fileContentEn: document.getElementById('file-content-en'),
+        },
+        closeBtn: document.querySelector('#editor-overlay .close-btn'),
+        cancelBtn: document.getElementById('cancel-edit'),
+        saveBtn: document.getElementById('save-check'),
+      };
+
+      if (!('showDirectoryPicker' in window)) {
+        ui.selectRoot.disabled = true;
+        ui.rootPath.textContent =
+          "Votre navigateur ne supporte pas l'API File System Access. Utilisez la dernière version de Chrome ou Edge.";
+        document.querySelector('.table-wrapper table tbody').innerHTML =
+          '<tr class="empty"><td colspan="5">Cette interface nécessite un navigateur compatible (Chrome/Edge) et doit être utilisée en local.</td></tr>';
+      }
+
+      function formatPath(handle) {
+        return handle?.name ?? '';
+      }
+
+      function sanitizeFileName(name) {
+        return name.replace(/[^a-zA-Z0-9-_\.]/g, '_');
+      }
+
+      async function verifyPermission(handle, mode = 'readwrite') {
+        if (!handle) return false;
+        const opts = { mode };
+        if ((await handle.queryPermission(opts)) === 'granted') return true;
+        if ((await handle.requestPermission(opts)) === 'granted') return true;
+        return false;
+      }
+
+      function renderEmpty(message) {
+        ui.tbody.innerHTML = '';
+        const row = document.createElement('tr');
+        row.className = 'empty';
+        const cell = document.createElement('td');
+        cell.colSpan = 5;
+        cell.textContent = message;
+        row.appendChild(cell);
+        ui.tbody.appendChild(row);
+      }
+
+      function renderTable() {
+        const query = ui.search.value.toLowerCase();
+        const filtered = !query
+          ? state.checks
+          : state.checks.filter((item) => {
+              return [
+                item.manifest?.id,
+                item.manifest?.title_fr,
+                item.manifest?.title_en,
+                item.file,
+              ]
+                .filter(Boolean)
+                .some((value) => value.toLowerCase().includes(query));
+            });
+
+        if (!filtered.length) {
+          renderEmpty(query ? 'Aucun résultat pour cette recherche.' : 'Aucun check trouvé.');
+          return;
+        }
+
+        ui.tbody.innerHTML = '';
+        filtered
+          .sort((a, b) => (a.manifest?.id || a.file).localeCompare(b.manifest?.id || b.file))
+          .forEach((item) => {
+            const row = ui.rowTemplate.content.firstElementChild.cloneNode(true);
+            row.dataset.file = item.file;
+            row.querySelector('[data-col="id"]').textContent = item.manifest?.id || '—';
+            row.querySelector('[data-col="title-fr"]').textContent = item.manifest?.title_fr || '—';
+            row.querySelector('[data-col="title-en"]').textContent = item.manifest?.title_en || '—';
+            row.querySelector('[data-col="file"]').textContent = item.file;
+            ui.tbody.appendChild(row);
+          });
+      }
+
+      async function loadChecks() {
+        if (!state.checksHandle || !state.manifestHandle) return;
+        state.checks = [];
+        state.manifest = await readManifest();
+        for await (const entry of state.checksHandle.entries()) {
+          const [name, handle] = entry;
+          if (handle.kind !== 'file') continue;
+          if (!name.endsWith('.html')) continue;
+          const manifestEntry = state.manifest.find((item) => item.file === `checks/${name}`);
+          state.checks.push({
+            file: name,
+            handle,
+            manifest: manifestEntry || null,
+          });
+        }
+        renderTable();
+      }
+
+      async function readManifest() {
+        const file = await state.manifestHandle.getFile();
+        const text = await file.text();
+        try {
+          const data = JSON.parse(text);
+          return Array.isArray(data) ? data : [];
+        } catch (error) {
+          console.error('Impossible de parser manifest.json', error);
+          return [];
+        }
+      }
+
+      async function writeManifest(entries) {
+        const writer = await state.manifestHandle.createWritable();
+        await writer.write(JSON.stringify(entries, null, 2) + '\n');
+        await writer.close();
+      }
+
+      async function writeFile(handle, contents) {
+        const writer = await handle.createWritable();
+        await writer.write(contents);
+        await writer.close();
+      }
+
+      function upsertManifestEntry(entry, previousFile) {
+        let index = state.manifest.findIndex((item) => item.file === entry.file);
+        if (index < 0 && previousFile) {
+          index = state.manifest.findIndex((item) => item.file === previousFile);
+        }
+        if (index < 0 && entry.id) {
+          index = state.manifest.findIndex((item) => item.id === entry.id);
+        }
+        if (index >= 0) {
+          state.manifest[index] = entry;
+        } else {
+          state.manifest.push(entry);
+        }
+        state.manifest.sort((a, b) => {
+          const left = (a.id || a.file || '').toLowerCase();
+          const right = (b.id || b.file || '').toLowerCase();
+          return left.localeCompare(right);
+        });
+      }
+
+      function openEditor({ mode, item }) {
+        state.editing = { mode, item };
+        ui.formError.textContent = '';
+        ui.editorForm.reset();
+        ui.inputs.fileContentFr.value = '';
+        ui.inputs.fileContentEn.value = '';
+
+        if (mode === 'create') {
+          ui.editorTitle.textContent = 'Ajouter un check';
+          ui.inputs.id.value = '';
+          ui.inputs.level.value = 'FATAL_ERROR';
+          ui.inputs.script.value = 'N/A';
+          ui.inputs.file.value = 'nouveau_check.html';
+          ui.inputs.titleFr.value = '';
+          ui.inputs.titleEn.value = '';
+          ui.inputs.descriptionFr.value = '';
+          ui.inputs.descriptionEn.value = '';
+          const template = `<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nom du check · Consistency Checker</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+  </head>
+  <body data-page="detail">
+    <!-- Ajoutez votre contenu ici -->
+  </body>
+</html>`;
+          ui.inputs.fileContentFr.value = template;
+          ui.inputs.fileContentEn.value = template;
+        } else if (mode === 'edit' && item) {
+          ui.editorTitle.textContent = 'Modifier un check';
+          const manifest = item.manifest || {};
+          ui.inputs.id.value = manifest.id || '';
+          ui.inputs.level.value = manifest.level || '';
+          ui.inputs.script.value = manifest.script || 'N/A';
+          ui.inputs.file.value = item.file || '';
+          ui.inputs.titleFr.value = manifest.title_fr || '';
+          ui.inputs.titleEn.value = manifest.title_en || '';
+          ui.inputs.descriptionFr.value = manifest.description_fr || '';
+          ui.inputs.descriptionEn.value = manifest.description_en || '';
+          item.handle.getFile().then((file) => file.text()).then((content) => {
+            ui.inputs.fileContentFr.value = content;
+            ui.inputs.fileContentEn.value = content;
+          });
+        }
+
+        setActiveTab('fr');
+        setActiveEditorTab('fr');
+        ui.overlay.classList.add('active');
+        ui.overlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeEditor() {
+        ui.overlay.classList.remove('active');
+        ui.overlay.setAttribute('aria-hidden', 'true');
+        state.editing = null;
+      }
+
+      function setActiveTab(lang) {
+        ui.tabs.forEach((tab) => {
+          const isActive = tab.dataset.lang === lang;
+          tab.classList.toggle('active', isActive);
+          tab.setAttribute('aria-selected', String(isActive));
+        });
+        ui.panels.forEach((panel) => {
+          panel.classList.toggle('active', panel.dataset.lang === lang);
+        });
+      }
+
+      function setActiveEditorTab(lang) {
+        ui.editorTabs.forEach((tab) => {
+          const isActive = tab.dataset.editorLang === lang;
+          tab.classList.toggle('active', isActive);
+          tab.setAttribute('aria-selected', String(isActive));
+        });
+        ui.editorPanels.forEach((panel) => {
+          panel.classList.toggle('active', panel.dataset.editorLang === lang);
+        });
+      }
+
+      async function handleSave() {
+        if (!state.editing) return;
+        const mode = state.editing.mode;
+        const manifestEntry = {
+          id: ui.inputs.id.value.trim(),
+          script: ui.inputs.script.value.trim() || 'N/A',
+          level: ui.inputs.level.value.trim() || 'FATAL_ERROR',
+          title_fr: ui.inputs.titleFr.value.trim(),
+          title_en: ui.inputs.titleEn.value.trim(),
+          description_fr: ui.inputs.descriptionFr.value.trim(),
+          description_en: ui.inputs.descriptionEn.value.trim(),
+          file: '',
+        };
+
+        let fileName = ui.inputs.file.value.trim();
+        if (!fileName) {
+          ui.formError.textContent = 'Le nom de fichier est obligatoire.';
+          return;
+        }
+        if (!fileName.endsWith('.html')) {
+          fileName += '.html';
+        }
+        fileName = sanitizeFileName(fileName);
+
+        const htmlContent = ui.inputs.fileContentFr.value;
+        if (!htmlContent.trim()) {
+          ui.formError.textContent = 'Le contenu du fichier ne peut pas être vide.';
+          return;
+        }
+
+        try {
+          if (mode === 'create') {
+            const newHandle = await state.checksHandle.getFileHandle(fileName, { create: true });
+            await writeFile(newHandle, htmlContent);
+            manifestEntry.file = `checks/${fileName}`;
+            upsertManifestEntry(manifestEntry);
+            await writeManifest(state.manifest);
+          } else if (mode === 'edit') {
+            const { item } = state.editing;
+            let fileHandle = item.handle;
+            const originalName = item.file;
+            if (fileName !== originalName) {
+              const newHandle = await state.checksHandle.getFileHandle(fileName, { create: true });
+              await writeFile(newHandle, htmlContent);
+              await state.checksHandle.removeEntry(originalName);
+              fileHandle = newHandle;
+              item.handle = newHandle;
+              item.file = fileName;
+            } else {
+              await writeFile(fileHandle, htmlContent);
+            }
+
+            manifestEntry.file = `checks/${fileName}`;
+            upsertManifestEntry(manifestEntry, `checks/${originalName}`);
+            await writeManifest(state.manifest);
+          }
+
+          await loadChecks();
+          closeEditor();
+        } catch (error) {
+          console.error(error);
+          ui.formError.textContent = `Impossible de sauvegarder le check : ${error.message}`;
+        }
+      }
+
+      async function handleDelete(item) {
+        if (!confirm(`Supprimer le fichier ${item.file} ? Cette action est irréversible.`)) {
+          return;
+        }
+        try {
+          await state.checksHandle.removeEntry(item.file);
+          state.manifest = state.manifest.filter((entry) => entry.file !== `checks/${item.file}`);
+          await writeManifest(state.manifest);
+          await loadChecks();
+        } catch (error) {
+          alert(`Impossible de supprimer ce check : ${error.message}`);
+        }
+      }
+
+      async function openRootDirectory() {
+        try {
+          const handle = await window.showDirectoryPicker({ id: 'docs-cc-root', mode: 'readwrite' });
+          if (!(await verifyPermission(handle, 'readwrite'))) {
+            alert('Impossible d\'obtenir les permissions sur ce dossier.');
+            return;
+          }
+          state.rootHandle = handle;
+          ui.rootPath.textContent = formatPath(handle);
+          ui.search.value = '';
+          try {
+            state.checksHandle = await handle.getDirectoryHandle('checks');
+          } catch (error) {
+            throw new Error('Le dossier sélectionné ne contient pas de sous-dossier "checks".');
+          }
+          try {
+            state.manifestHandle = await handle.getFileHandle('manifest.json');
+          } catch (error) {
+            throw new Error('Le fichier manifest.json est introuvable à la racine du dossier sélectionné.');
+          }
+          await loadChecks();
+          ui.refresh.disabled = false;
+          ui.add.disabled = false;
+          ui.search.disabled = false;
+        } catch (error) {
+          if (error?.name !== 'AbortError') {
+            alert(`Impossible d'ouvrir le dossier : ${error.message}`);
+          }
+        }
+      }
+
+      ui.selectRoot.addEventListener('click', openRootDirectory);
+      ui.refresh.addEventListener('click', loadChecks);
+      ui.add.addEventListener('click', () => openEditor({ mode: 'create' }));
+      ui.search.addEventListener('input', renderTable);
+
+      ui.tabs.forEach((tab) => {
+        tab.addEventListener('click', () => setActiveTab(tab.dataset.lang));
+      });
+
+      ui.editorTabs.forEach((tab) => {
+        tab.addEventListener('click', () => setActiveEditorTab(tab.dataset.editorLang));
+      });
+
+      ui.overlay.addEventListener('click', (event) => {
+        if (event.target === ui.overlay) {
+          closeEditor();
+        }
+      });
+      ui.closeBtn.addEventListener('click', closeEditor);
+      ui.cancelBtn.addEventListener('click', closeEditor);
+      ui.saveBtn.addEventListener('click', handleSave);
+
+      ui.inputs.fileContentFr.addEventListener('input', (event) => {
+        ui.inputs.fileContentEn.value = event.target.value;
+      });
+      ui.inputs.fileContentEn.addEventListener('input', (event) => {
+        ui.inputs.fileContentFr.value = event.target.value;
+      });
+
+      ui.tbody.addEventListener('click', (event) => {
+        const row = event.target.closest('tr');
+        if (!row) return;
+        const file = row.dataset.file;
+        const item = state.checks.find((entry) => entry.file === file);
+        if (!item) return;
+
+        if (event.target.matches('button[data-action="edit"]')) {
+          openEditor({ mode: 'edit', item });
+        }
+        if (event.target.matches('button[data-action="delete"]')) {
+          handleDelete(item);
+        }
+      });
+    </script>
+  </body>
+</html>
