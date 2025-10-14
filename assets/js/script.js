@@ -1,9 +1,37 @@
 const LEVEL_STYLES = {
   FATAL: 'level-FATAL',
+  FATAL_ERROR: 'level-FATAL',
   ERROR: 'level-ERROR',
   WARNING: 'level-WARNING',
-  INFO: 'level-INFO'
+  INFO: 'level-INFO',
+  INFORMATION: 'level-INFO'
 };
+
+const LEVEL_LABELS = {
+  FATAL: { fr: 'FATAL', en: 'FATAL' },
+  FATAL_ERROR: { fr: 'FATAL', en: 'FATAL ERROR' },
+  ERROR: { fr: 'ERREUR', en: 'ERROR' },
+  WARNING: { fr: 'AVERTISSEMENT', en: 'WARNING' },
+  INFO: { fr: 'INFO', en: 'INFO' },
+  INFORMATION: { fr: 'INFO', en: 'INFORMATION' }
+};
+
+function getLevelGroup(level) {
+  switch (level) {
+    case 'FATAL':
+    case 'FATAL_ERROR':
+      return 'fatal_error';
+    case 'ERROR':
+      return 'error';
+    case 'WARNING':
+      return 'warning';
+    case 'INFO':
+    case 'INFORMATION':
+      return 'information';
+    default:
+      return (level || '').toLowerCase();
+  }
+}
 
 const STORAGE_KEY = 'precheck-doc-language';
 
@@ -86,10 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
     sidebar.innerHTML = `
       <h4>Criticité</h4>
       <button class="filter-btn" data-level="all">Tous</button>
-      <button class="filter-btn" data-level="fatal">Fatal</button>
+      <button class="filter-btn" data-level="fatal_error">Fatal</button>
       <button class="filter-btn" data-level="error">Erreur</button>
       <button class="filter-btn" data-level="warning">Avertissement</button>
-      <button class="filter-btn" data-level="info">Info</button>
+      <button class="filter-btn" data-level="information">Info</button>
     `;
     document.body.appendChild(sidebar);
     sidebarButtons = Array.from(sidebar.querySelectorAll('.filter-btn'));
@@ -130,7 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
     checks.forEach((check) => {
       const card = document.createElement('article');
       card.className = 'check-card';
-      card.dataset.level = (check.level || '').toLowerCase();
+      const levelGroup = getLevelGroup(check.level);
+      card.dataset.level = levelGroup;
 
       const cardInner = document.createElement('div');
       cardInner.className = 'card-inner';
@@ -141,8 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
       cardInner.appendChild(front);
 
       const levelPill = document.createElement('span');
-      levelPill.className = `level-pill ${LEVEL_STYLES[check.level] || ''}`;
-      levelPill.textContent = check.level;
+      const levelStyle = LEVEL_STYLES[check.level] || '';
+      levelPill.className = `level-pill ${levelStyle}`;
+      const levelLabel = LEVEL_LABELS[check.level] || {
+        fr: check.level || '',
+        en: check.level || ''
+      };
+      levelPill.setAttribute('data-fr', levelLabel.fr);
+      levelPill.setAttribute('data-en', levelLabel.en);
+      levelPill.textContent = levelLabel.fr;
       front.appendChild(levelPill);
 
       const title = document.createElement('h3');
@@ -155,18 +191,32 @@ document.addEventListener('DOMContentLoaded', () => {
       scriptInfo.setAttribute('data-en', `Script: ${check.script}`);
       front.appendChild(scriptInfo);
 
+      if (check.description_fr || check.description_en) {
+        const description = document.createElement('p');
+        description.className = 'card-description';
+        description.setAttribute('data-fr', check.description_fr || '');
+        description.setAttribute('data-en', check.description_en || check.description_fr || '');
+        front.appendChild(description);
+      }
+
       const back = document.createElement('div');
       back.className = 'card-back';
       cardInner.appendChild(back);
 
       const summary = document.createElement('p');
-      summary.setAttribute('data-fr', `Ce contrôle vérifie « ${check.title_fr} ».`);
-      summary.setAttribute('data-en', `This check verifies "${check.title_en}".`);
+      summary.setAttribute('data-fr', check.description_fr || '');
+      summary.setAttribute('data-en', check.description_en || check.description_fr || '');
       back.appendChild(summary);
 
       const button = document.createElement('a');
       button.className = 'btn';
-      button.href = check.file;
+      if (check.file) {
+        button.href = check.file;
+      } else {
+        button.href = '#';
+        button.setAttribute('aria-disabled', 'true');
+        button.classList.add('is-disabled');
+      }
       button.setAttribute('data-fr', 'Consulter la documentation');
       button.setAttribute('data-en', 'View documentation');
       back.appendChild(button);
@@ -174,7 +224,14 @@ document.addEventListener('DOMContentLoaded', () => {
       fragment.appendChild(card);
       setupCardInteractions(card);
 
-      const searchableParts = [check.title_fr, check.title_en, check.script, check.id]
+      const searchableParts = [
+        check.title_fr,
+        check.title_en,
+        check.script,
+        check.id,
+        check.description_fr,
+        check.description_en
+      ]
         .filter(Boolean)
         .join(' ');
       const normalizedText = normalize(searchableParts);
@@ -186,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
       entries.push({
         element: card,
         level: check.level,
+        levelGroup,
         normalizedText,
         normalizedWords
       });
@@ -281,10 +339,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let visibleCount = 0;
 
-      entries.forEach(({ element, level, normalizedText, normalizedWords }) => {
+      entries.forEach(({ element, level, levelGroup, normalizedText, normalizedWords }) => {
         const matchesLevel = !activeLevels.length || activeLevels.includes(level);
         const matchesSidebar =
-          activeSidebarLevel === 'all' || (level && level.toLowerCase() === activeSidebarLevel);
+          activeSidebarLevel === 'all' || (levelGroup && levelGroup === activeSidebarLevel);
 
         let matchesQuery = !normalizedQuery;
         if (!matchesQuery) {
