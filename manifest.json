@@ -1,7 +1,7 @@
 [
   {
     "id": "CHK-FAT-001",
-    "script": "N/A",
+    "script": "powershell_activated.ps1",
     "level": "FATAL_ERROR",
     "title_fr": "PowerShell activé",
     "title_en": "PowerShell activated",
@@ -11,7 +11,7 @@
   },
   {
     "id": "CHK-FAT-002",
-    "script": "N/A",
+    "script": "powershell_executionpolicy.ps1",
     "level": "FATAL_ERROR",
     "title_fr": "PowerShell en mode non restreint",
     "title_en": "PowerShell unrestricted",
@@ -21,7 +21,7 @@
   },
   {
     "id": "CHK-FAT-003",
-    "script": "N/A",
+    "script": "registry_writable.ps1",
     "level": "FATAL_ERROR",
     "title_fr": "Registre accessible en écriture",
     "title_en": "Registry is writable",
@@ -31,7 +31,7 @@
   },
   {
     "id": "CHK-FAT-004",
-    "script": "N/A",
+    "script": "service_running.ps1",
     "level": "FATAL_ERROR",
     "title_fr": "Service PostgreSQL actif",
     "title_en": "PostGre SQL running",
@@ -41,7 +41,7 @@
   },
   {
     "id": "CHK-FAT-005",
-    "script": "N/A",
+    "script": "Windows_language.ps1",
     "level": "FATAL_ERROR",
     "title_fr": "Langue système en anglais",
     "title_en": "Language set to English",
@@ -51,7 +51,7 @@
   },
   {
     "id": "CHK-FAT-006",
-    "script": "N/A",
+    "script": "environment_variable.ps1",
     "level": "FATAL_ERROR",
     "title_fr": "Variables Common Platform",
     "title_en": "CP Variables",
@@ -61,7 +61,7 @@
   },
   {
     "id": "CHK-FAT-007",
-    "script": "N/A",
+    "script": "check_access_drive.ps1",
     "level": "FATAL_ERROR",
     "title_fr": "Disques déverrouillés",
     "title_en": "Disks unlocked",
@@ -71,7 +71,7 @@
   },
   {
     "id": "CHK-ERR-001",
-    "script": "N/A",
+    "script": "admin_account.ps1",
     "level": "ERROR",
     "title_fr": "Compte courant avec privilèges admin",
     "title_en": "Current account ADMIN privilege",
@@ -91,7 +91,7 @@
   },
   {
     "id": "CHK-ERR-003",
-    "script": "N/A",
+    "script": "hostname.ps1",
     "level": "ERROR",
     "title_fr": "Nom d'hôte conforme",
     "title_en": "hostname",
@@ -101,7 +101,7 @@
   },
   {
     "id": "CHK-ERR-004",
-    "script": "N/A",
+    "script": "global_updater_not_already_running.ps1",
     "level": "ERROR",
     "title_fr": "Aucun Global Updater en cours",
     "title_en": "No Global Updater already running",
@@ -111,7 +111,7 @@
   },
   {
     "id": "CHK-ERR-005",
-    "script": "N/A",
+    "script": "no_dbeaver_or_pgadmin_running.ps1",
     "level": "ERROR",
     "title_fr": "Pas de DBeaver ni PGAdmin actifs",
     "title_en": "No running dbeaver nor PGAdmin",
@@ -121,7 +121,7 @@
   },
   {
     "id": "CHK-ERR-006",
-    "script": "N/A",
+    "script": "Windows_version.ps1",
     "level": "ERROR",
     "title_fr": "Version Windows supportée",
     "title_en": "Windows version",
@@ -131,7 +131,7 @@
   },
   {
     "id": "CHK-ERR-007",
-    "script": "N/A",
+    "script": "no_pending_reboot.ps1",
     "level": "ERROR",
     "title_fr": "Aucun redémarrage en attente",
     "title_en": "No pending reboot",
@@ -141,7 +141,7 @@
   },
   {
     "id": "CHK-ERR-008",
-    "script": "N/A",
+    "script": "disk_free_space.ps1",
     "level": "ERROR",
     "title_fr": "Espace disque libre suffisant",
     "title_en": "Free disk space",
@@ -151,7 +151,7 @@
   },
   {
     "id": "CHK-ERR-009",
-    "script": "N/A",
+    "script": "check_cas_conf_folder.ps1",
     "level": "ERROR",
     "title_fr": "Configuration CAS",
     "title_en": "CAS configuration",
@@ -161,7 +161,7 @@
   },
   {
     "id": "CHK-ERR-010",
-    "script": "N/A",
+    "script": "check_customization_done.ps1",
     "level": "ERROR",
     "title_fr": "Personnalisation All Hypervisor",
     "title_en": "All Hypervisor",
@@ -171,7 +171,7 @@
   },
   {
     "id": "CHK-ERR-011",
-    "script": "N/A",
+    "script": "instrument_id_bta.ps1",
     "level": "ERROR",
     "title_fr": "Identifiant BACT défini",
     "title_en": "BACT instrument ID",
@@ -181,7 +181,7 @@
   },
   {
     "id": "CHK-ERR-012",
-    "script": "N/A",
+    "script": "ip-v4_enabled.ps1",
     "level": "ERROR",
     "title_fr": "IPv4 activé",
     "title_en": "IPv4",
@@ -201,7 +201,7 @@
   },
   {
     "id": "CHK-ERR-014",
-    "script": "N/A",
+    "script": "no_modules_and_stations_duplication.ps1",
     "level": "ERROR",
     "title_fr": "Pas de doublons de modules et stations",
     "title_en": "No duplicates",
@@ -211,7 +211,7 @@
   },
   {
     "id": "CHK-ERR-015",
-    "script": "N/A",
+    "script": "no_backup_in_progress.ps1",
     "level": "ERROR",
     "title_fr": "Aucune sauvegarde en cours",
     "title_en": "No backup in progress",
@@ -221,7 +221,7 @@
   },
   {
     "id": "CHK-ERR-016",
-    "script": "N/A",
+    "script": "no_duplicate_or_null_uuid.ps1",
     "level": "ERROR",
     "title_fr": "UUID cohérents",
     "title_en": "UUID check",
@@ -241,7 +241,7 @@
   },
   {
     "id": "CHK-ERR-018",
-    "script": "N/A",
+    "script": "no_etl_in_progress.ps1",
     "level": "ERROR",
     "title_fr": "Aucun ETL en cours",
     "title_en": "No ETL in progress",
@@ -271,7 +271,7 @@
   },
   {
     "id": "CHK-ERR-021",
-    "script": "N/A",
+    "script": "no_shared_folders_on_acl.ps1",
     "level": "ERROR",
     "title_fr": "Partages réseau conformes",
     "title_en": "Shared folders",
@@ -311,7 +311,7 @@
   },
   {
     "id": "CHK-ERR-025",
-    "script": "N/A",
+    "script": "physical_memory.ps1",
     "level": "ERROR",
     "title_fr": "Mémoire physique minimale",
     "title_en": "Minimal physical memory",
@@ -321,7 +321,7 @@
   },
   {
     "id": "CHK-ERR-026",
-    "script": "N/A",
+    "script": "port_available.ps1",
     "level": "ERROR",
     "title_fr": "Ports conformes",
     "title_en": "Ports",
@@ -341,7 +341,7 @@
   },
   {
     "id": "CHK-ERR-028",
-    "script": "N/A",
+    "script": "powershell_version.ps1",
     "level": "ERROR",
     "title_fr": "Prérequis PowerShell",
     "title_en": "PowerShell requirements",
@@ -371,7 +371,7 @@
   },
   {
     "id": "CHK-ERR-031",
-    "script": "N/A",
+    "script": "VitekMS_30_not_enabled.ps1",
     "level": "ERROR",
     "title_fr": "Vitek MS 3.0 non installé",
     "title_en": "Vitek MS 3.0 not installed",
@@ -381,7 +381,7 @@
   },
   {
     "id": "CHK-ERR-032",
-    "script": "N/A",
+    "script": "MAESTRIA_BioFire_driver_not_installed.ps1",
     "level": "ERROR",
     "title_fr": "BioFire non installé",
     "title_en": "BioFire not installed",
@@ -391,7 +391,7 @@
   },
   {
     "id": "CHK-ERR-033",
-    "script": "N/A",
+    "script": "MAESTRIA_Sirweb_driver_not_installed.ps1",
     "level": "ERROR",
     "title_fr": "SirWeb non installé",
     "title_en": "SirWeb not installed",
@@ -501,7 +501,7 @@
   },
   {
     "id": "CHK-ERR-044",
-    "script": "N/A",
+    "script": "bmx_admin_not_in_bMxServices_group.ps1",
     "level": "ERROR",
     "title_fr": "Compte bmx_admin conforme",
     "title_en": "Check bmx_admin",
@@ -531,7 +531,7 @@
   },
   {
     "id": "CHK-ERR-047",
-    "script": "N/A",
+    "script": "no_duplicate_VITEK2_instrument_identifier.ps1",
     "level": "ERROR",
     "title_fr": "Doublons Vitek 2",
     "title_en": "Vitek2 duplicates",
@@ -541,7 +541,7 @@
   },
   {
     "id": "CHK-ERR-048",
-    "script": "N/A",
+    "script": "check_consistency_version.ps1",
     "level": "ERROR",
     "title_fr": "Valeurs de registre cohérentes",
     "title_en": "Inconsistent registry value",
@@ -581,7 +581,7 @@
   },
   {
     "id": "CHK-ERR-052",
-    "script": "N/A",
+    "script": "check_postgresTablespace.ps1",
     "level": "ERROR",
     "title_fr": "Tablespaces PostgreSQL cohérents",
     "title_en": "Tablespace mismatch (PostgreSQL)",
@@ -611,7 +611,7 @@
   },
   {
     "id": "CHK-WAR-003",
-    "script": "N/A",
+    "script": "no_common_platform_installed.ps1",
     "level": "WARNING",
     "title_fr": "Aucun Common Platform installé",
     "title_en": "No CP installed",
@@ -621,7 +621,7 @@
   },
   {
     "id": "CHK-WAR-004",
-    "script": "N/A",
+    "script": "etl_success_run_found.ps1",
     "level": "WARNING",
     "title_fr": "Succès ETL dernier mois",
     "title_en": "ETL success last month",
@@ -641,7 +641,7 @@
   },
   {
     "id": "CHK-INF-002",
-    "script": "N/A",
+    "script": "ip-v6_disabled.ps1",
     "level": "INFORMATION",
     "title_fr": "IPv6 désactivé",
     "title_en": "IPv6 disabled",
@@ -651,7 +651,7 @@
   },
   {
     "id": "CHK-INF-003",
-    "script": "N/A",
+    "script": "antivirus_installed.ps1",
     "level": "INFORMATION",
     "title_fr": "Antivirus absent",
     "title_en": "No antivirus installed",
@@ -661,7 +661,7 @@
   },
   {
     "id": "CHK-INF-004",
-    "script": "N/A",
+    "script": "check_server_certificate_alternativenames.ps1",
     "level": "INFORMATION",
     "title_fr": "Exigences certificats",
     "title_en": "Certificate requirements",
@@ -711,7 +711,7 @@
   },
   {
     "id": "CHK-INF-009",
-    "script": "N/A",
+    "script": "dotnet_version.ps1",
     "level": "INFORMATION",
     "title_fr": "Version .NET",
     "title_en": ".Net version",
@@ -721,7 +721,7 @@
   },
   {
     "id": "CHK-INF-010",
-    "script": "N/A",
+    "script": "DWH_initialized.ps1",
     "level": "INFORMATION",
     "title_fr": "Initialisation DWH",
     "title_en": "DWH initialization",
@@ -731,7 +731,7 @@
   },
   {
     "id": "CHK-INF-011",
-    "script": "N/A",
+    "script": "firewall_notification_rule.ps1",
     "level": "INFORMATION",
     "title_fr": "Notifications pare-feu",
     "title_en": "Firewall notifications",
@@ -741,7 +741,7 @@
   },
   {
     "id": "CHK-INF-012",
-    "script": "N/A",
+    "script": "full_system_backup_available.ps1",
     "level": "INFORMATION",
     "title_fr": "Dernière sauvegarde système",
     "title_en": "Last FSB",
@@ -751,7 +751,7 @@
   },
   {
     "id": "CHK-INF-013",
-    "script": "N/A",
+    "script": "MAESTRIA-BI_initialized.ps1",
     "level": "INFORMATION",
     "title_fr": "Initialisation BI",
     "title_en": "BI initialization",
@@ -821,7 +821,7 @@
   },
   {
     "id": "CHK-INF-020",
-    "script": "N/A",
+    "script": "Windows_license.ps1",
     "level": "INFORMATION",
     "title_fr": "Licence Windows",
     "title_en": "Windows license",
@@ -831,7 +831,7 @@
   },
   {
     "id": "CHK-INF-021",
-    "script": "N/A",
+    "script": "Windows_update.ps1",
     "level": "INFORMATION",
     "title_fr": "Mises à jour Windows",
     "title_en": "Windows updates",

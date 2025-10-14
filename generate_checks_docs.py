@@ -101,6 +101,57 @@ STATUS_LABELS = {
     },
 }
 
+# Mapping between documentation slugs and the underlying diagnostic script file.
+# Only a subset of the checks currently expose a dedicated script; checks that do
+# not have a matching entry fall back to the "N/A" placeholder used previously.
+SCRIPT_FILES = {
+    "powershell_activated": "powershell_activated.ps1",
+    "powershell_unrestricted": "powershell_executionpolicy.ps1",
+    "registry_writable": "registry_writable.ps1",
+    "postgresql_running": "service_running.ps1",
+    "language_set_to_english": "Windows_language.ps1",
+    "cp_variables": "environment_variable.ps1",
+    "disks_unlocked": "check_access_drive.ps1",
+    "current_account_admin_privilege": "admin_account.ps1",
+    "hostname_validation": "hostname.ps1",
+    "no_global_updater_running": "global_updater_not_already_running.ps1",
+    "no_dbeaver_pgadmin_running": "no_dbeaver_or_pgadmin_running.ps1",
+    "windows_version_supported": "Windows_version.ps1",
+    "no_pending_reboot": "no_pending_reboot.ps1",
+    "free_disk_space": "disk_free_space.ps1",
+    "cas_configuration": "check_cas_conf_folder.ps1",
+    "all_hypervisor": "check_customization_done.ps1",
+    "bact_instrument_id": "instrument_id_bta.ps1",
+    "ipv4_enabled": "ip-v4_enabled.ps1",
+    "no_duplicates_modules_stations": "no_modules_and_stations_duplication.ps1",
+    "no_backup_in_progress": "no_backup_in_progress.ps1",
+    "uuid_check": "no_duplicate_or_null_uuid.ps1",
+    "no_etl_in_progress": "no_etl_in_progress.ps1",
+    "shared_folders_acl": "no_shared_folders_on_acl.ps1",
+    "minimal_physical_memory": "physical_memory.ps1",
+    "ports_usage": "port_available.ps1",
+    "powershell_requirements": "powershell_version.ps1",
+    "vitek_ms_not_installed": "VitekMS_30_not_enabled.ps1",
+    "biofire_not_installed": "MAESTRIA_BioFire_driver_not_installed.ps1",
+    "sirweb_not_installed": "MAESTRIA_Sirweb_driver_not_installed.ps1",
+    "no_common_platform_installed": "no_common_platform_installed.ps1",
+    "etl_success_last_month": "etl_success_run_found.ps1",
+    "ipv6_disabled": "ip-v6_disabled.ps1",
+    "dotnet_version": "dotnet_version.ps1",
+    "dwh_initialization": "DWH_initialized.ps1",
+    "firewall_notifications": "firewall_notification_rule.ps1",
+    "last_fsb": "full_system_backup_available.ps1",
+    "bi_initialization": "MAESTRIA-BI_initialized.ps1",
+    "windows_license": "Windows_license.ps1",
+    "windows_updates": "Windows_update.ps1",
+    "certificate_requirements": "check_server_certificate_alternativenames.ps1",
+    "check_bmx_admin": "bmx_admin_not_in_bMxServices_group.ps1",
+    "inconsistent_registry_value": "check_consistency_version.ps1",
+    "tablespace_mismatch_postgresql": "check_postgresTablespace.ps1",
+    "no_antivirus_installed_info": "antivirus_installed.ps1",
+    "vitek2_duplicates": "no_duplicate_VITEK2_instrument_identifier.ps1",
+}
+
 CHECKS = [
     {
         "slug": "powershell_activated",
@@ -1122,10 +1173,14 @@ for index, check in enumerate(CHECKS, start=1):
     path = OUTPUT_DIR / f"{slug}.html"
     level = check["level"]
     status = STATUS_LABELS.get(level, {"fr": level, "en": level})
+    script_name = check.get("script", "N/A")
+    if script_name == "N/A":
+        script_name = SCRIPT_FILES.get(slug, "N/A")
     payload = {
         **check,
         "status_fr": check.get("status_fr", status["fr"]),
         "status_en": check.get("status_en", status["en"]),
+        "script": script_name,
     }
     html = TEMPLATE.format(**payload)
     path.write_text(html, encoding='utf-8')
@@ -1133,7 +1188,7 @@ for index, check in enumerate(CHECKS, start=1):
     manifest_entries.append(
         {
             "id": check["identifier"],
-            "script": check.get("script", "N/A"),
+            "script": script_name,
             "level": check["level"],
             "title_fr": check["title_fr"],
             "title_en": check["title_en"],
