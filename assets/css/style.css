@@ -34,7 +34,6 @@ body {
   color: var(--color-text);
   background: #F7F9FB;
   padding-top: var(--header-height);
-  padding-bottom: var(--footer-height);
 }
 
 @media (min-width: 901px) {
@@ -128,7 +127,7 @@ main {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  min-height: calc(100vh - var(--header-height));
 }
 
 .language-switcher {
@@ -885,10 +884,7 @@ main {
 }
 
 .primary-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: static;
   background: linear-gradient(90deg, var(--color-blue-primary), var(--color-blue-dark));
   color: #FFFFFF;
   padding: 2.5rem 2rem;
