@@ -74,8 +74,35 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const pageType = document.body ? document.body.getAttribute('data-page') : null;
   const searchInput = document.querySelector('[data-search]');
   const filterButtons = Array.from(document.querySelectorAll('[data-filter-level]'));
+  let sidebarButtons = [];
+  let activeSidebarLevel = 'all';
+
+  function createSidebar() {
+    const sidebar = document.createElement('div');
+    sidebar.id = 'sidebar';
+    sidebar.innerHTML = `
+      <h4>Criticité</h4>
+      <button class="filter-btn" data-level="all">Tous</button>
+      <button class="filter-btn" data-level="fatal">Fatal</button>
+      <button class="filter-btn" data-level="error">Erreur</button>
+      <button class="filter-btn" data-level="warning">Avertissement</button>
+      <button class="filter-btn" data-level="info">Info</button>
+    `;
+    document.body.appendChild(sidebar);
+    sidebarButtons = Array.from(sidebar.querySelectorAll('.filter-btn'));
+    const defaultButton = sidebarButtons[0];
+    if (defaultButton) {
+      defaultButton.classList.add('active');
+      activeSidebarLevel = defaultButton.dataset.level || 'all';
+    }
+  }
+
+  if (pageType === 'index') {
+    createSidebar();
+  }
 
   function setupCardInteractions(card) {
     const mediaQuery = typeof window.matchMedia === 'function' ? window.matchMedia('(hover: none)') : null;
@@ -102,7 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     checks.forEach((check) => {
       const card = document.createElement('article');
-      card.className = 'check-card';
+      card.className = 'check-card visible';
+      card.dataset.level = (check.level || '').toLowerCase();
 
       const cardInner = document.createElement('div');
       cardInner.className = 'card-inner';
@@ -132,14 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
       cardInner.appendChild(back);
 
       const summary = document.createElement('p');
-      summary.setAttribute(
-        'data-fr',
-        `Ce contrôle vérifie « ${check.title_fr} ». Consultez la fiche détaillée pour les actions recommandées.`
-      );
-      summary.setAttribute(
-        'data-en',
-        `This check verifies "${check.title_en}". Review the full sheet for recommended actions.`
-      );
+      summary.setAttribute('data-fr', `Ce contrôle vérifie « ${check.title_fr} ».`);
+      summary.setAttribute('data-en', `This check verifies "${check.title_en}".`);
       back.appendChild(summary);
 
       const button = document.createElement('a');
@@ -187,6 +209,16 @@ document.addEventListener('DOMContentLoaded', () => {
     manifestContainer.parentNode.insertBefore(emptyMessage, manifestContainer.nextSibling);
     applyLanguage(getPreferredLanguage());
 
+    function setCardVisibility(element, shouldShow) {
+      if (shouldShow) {
+        element.classList.remove('hidden');
+        element.classList.add('visible');
+      } else {
+        element.classList.remove('visible');
+        element.classList.add('hidden');
+      }
+    }
+
     function filterChecks() {
       const rawQuery = searchInput ? searchInput.value : '';
       const normalizedQuery = normalize(rawQuery.trim());
@@ -199,6 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       entries.forEach(({ element, level, normalizedText, normalizedWords }) => {
         const matchesLevel = !activeLevels.length || activeLevels.includes(level);
+        const matchesSidebar =
+          activeSidebarLevel === 'all' || (level && level.toLowerCase() === activeSidebarLevel);
 
         let matchesQuery = !normalizedQuery;
         if (!matchesQuery) {
@@ -209,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
           matchesQuery = hasExact || hasPrefix;
         }
 
-        const shouldShow = matchesQuery && matchesLevel;
-        element.classList.toggle('hidden', !shouldShow);
+        const shouldShow = matchesQuery && matchesLevel && matchesSidebar;
+        setCardVisibility(element, shouldShow);
         if (shouldShow) {
           visibleCount += 1;
         }
@@ -228,6 +262,15 @@ document.addEventListener('DOMContentLoaded', () => {
     filterButtons.forEach((button) => {
       button.addEventListener('click', () => {
         button.classList.toggle('active');
+        filterChecks();
+      });
+    });
+
+    sidebarButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        sidebarButtons.forEach((btn) => btn.classList.remove('active'));
+        button.classList.add('active');
+        activeSidebarLevel = button.dataset.level || 'all';
         filterChecks();
       });
     });

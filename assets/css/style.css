@@ -33,6 +33,79 @@ body {
   background: #F7F9FB;
 }
 
+@media (min-width: 901px) {
+  body[data-page="index"] {
+    padding-left: 210px;
+  }
+}
+
+#sidebar {
+  position: fixed;
+  top: 120px;
+  left: 0;
+  width: 180px;
+  background-color: #00427F;
+  color: #FFFFFF;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+#sidebar h4 {
+  font-size: 16px;
+  margin: 0 0 8px;
+  border-bottom: 2px solid #3C9845;
+  padding-bottom: 6px;
+}
+
+.filter-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #3C9845;
+  color: #FFFFFF;
+}
+
+@media (max-width: 900px) {
+  #sidebar {
+    position: static;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 0 0 12px 12px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #sidebar h4 {
+    margin-bottom: 0;
+    border: none;
+    padding-bottom: 0;
+    flex-basis: 100%;
+  }
+
+  .filter-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
 .primary-header {
   background: var(--color-blue-primary);
   color: #FFFFFF;
@@ -211,13 +284,21 @@ main {
   transform: rotateY(180deg);
 }
 
+.card.visible,
+.check-card.visible {
+  opacity: 1;
+  transform: scale(1);
+  filter: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
 .card.hidden,
 .check-card.hidden {
   opacity: 0;
+  transform: scale(0.96);
   filter: blur(4px);
-  transform: scale(0.98);
   pointer-events: none;
-  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease;
 }
 
 .card-front,
@@ -397,20 +478,23 @@ main {
 .btn {
   display: inline-block;
   margin-top: 16px;
-  border: 2px solid var(--color-green-primary);
-  color: var(--color-green-primary);
-  padding: 0.375rem 0.75rem;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 2px solid #3C9845;
+  color: #00427F;
+  padding: 8px 14px;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: bold;
   text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition: 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn:hover,
 .btn:focus-visible {
-  background: var(--color-yellow);
-  color: var(--color-blue-primary);
-  box-shadow: 0 8px 16px rgba(255, 221, 55, 0.3);
+  background-color: #FFDD37;
+  color: #00427F;
+  border-color: #FFDD37;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   outline: none;
 }
 
