@@ -70,6 +70,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.querySelector('[data-search]');
   const filterButtons = Array.from(document.querySelectorAll('[data-filter-level]'));
 
+  function setupCardInteractions(card) {
+    const mediaQuery = typeof window.matchMedia === 'function' ? window.matchMedia('(hover: none)') : null;
+
+    card.addEventListener('click', (event) => {
+      if (mediaQuery && !mediaQuery.matches) {
+        return;
+      }
+      if (!mediaQuery) {
+        return;
+      }
+      if (event.target.closest('.btn')) {
+        return;
+      }
+      card.classList.toggle('is-flipped');
+    });
+  }
+
   function renderChecks(checks) {
     manifestContainer.innerHTML = '';
 
@@ -86,28 +103,53 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('article');
       card.className = 'check-card';
 
+      const cardInner = document.createElement('div');
+      cardInner.className = 'card-inner';
+      card.appendChild(cardInner);
+
+      const front = document.createElement('div');
+      front.className = 'card-front';
+      cardInner.appendChild(front);
+
       const levelPill = document.createElement('span');
       levelPill.className = `level-pill ${LEVEL_STYLES[check.level] || ''}`;
       levelPill.textContent = check.level;
-      card.appendChild(levelPill);
+      front.appendChild(levelPill);
 
       const title = document.createElement('h3');
       title.setAttribute('data-fr', check.title_fr);
       title.setAttribute('data-en', check.title_en);
-      card.appendChild(title);
+      front.appendChild(title);
 
       const scriptInfo = document.createElement('p');
       scriptInfo.setAttribute('data-fr', `Script : ${check.script}`);
       scriptInfo.setAttribute('data-en', `Script: ${check.script}`);
-      card.appendChild(scriptInfo);
+      front.appendChild(scriptInfo);
 
-      const link = document.createElement('a');
-      link.href = check.file;
-      link.setAttribute('data-fr', 'Ouvrir la fiche du contrôle');
-      link.setAttribute('data-en', 'Open check documentation');
-      card.appendChild(link);
+      const back = document.createElement('div');
+      back.className = 'card-back';
+      cardInner.appendChild(back);
+
+      const summary = document.createElement('p');
+      summary.setAttribute(
+        'data-fr',
+        `Ce contrôle vérifie « ${check.title_fr} ». Consultez la fiche détaillée pour les actions recommandées.`
+      );
+      summary.setAttribute(
+        'data-en',
+        `This check verifies "${check.title_en}". Review the full sheet for recommended actions.`
+      );
+      back.appendChild(summary);
+
+      const button = document.createElement('a');
+      button.className = 'btn';
+      button.href = check.file;
+      button.setAttribute('data-fr', 'Consulter la documentation');
+      button.setAttribute('data-en', 'View documentation');
+      back.appendChild(button);
 
       manifestContainer.appendChild(card);
+      setupCardInteractions(card);
     });
 
     applyLanguage(getPreferredLanguage());
