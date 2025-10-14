@@ -444,11 +444,6 @@ document.addEventListener('DOMContentLoaded', () => {
       title.setAttribute('data-en', check.title_en);
       front.appendChild(title);
 
-      const scriptInfo = document.createElement('p');
-      scriptInfo.setAttribute('data-fr', `Script : ${check.script}`);
-      scriptInfo.setAttribute('data-en', `Script: ${check.script}`);
-      front.appendChild(scriptInfo);
-
       if (check.description_fr || check.description_en) {
         const description = document.createElement('p');
         description.className = 'card-description';
