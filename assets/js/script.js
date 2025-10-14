@@ -75,6 +75,26 @@ function setPreferredLanguage(lang) {
   }
 }
 
+function updateLanguageToggle(lang) {
+  const toggle = document.querySelector('[data-language-toggle]');
+  if (!toggle) {
+    return;
+  }
+
+  toggle.setAttribute('data-active-lang', lang);
+  toggle.setAttribute('aria-checked', lang === 'en' ? 'true' : 'false');
+
+  const label =
+    lang === 'fr'
+      ? toggle.dataset.ariaLabelToEn || ''
+      : toggle.dataset.ariaLabelToFr || '';
+
+  if (label) {
+    toggle.setAttribute('aria-label', label);
+    toggle.setAttribute('title', label);
+  }
+}
+
 function getPreferredDisplayMode() {
   try {
     if (!window.localStorage) {
@@ -115,9 +135,7 @@ function applyLanguage(lang) {
     }
   });
 
-  document.querySelectorAll('.language-toggle').forEach((button) => {
-    button.classList.toggle('active', button.dataset.lang === lang);
-  });
+  updateLanguageToggle(lang);
 }
 
 function switchLanguage(lang) {
@@ -129,9 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const initialLang = getPreferredLanguage();
   applyLanguage(initialLang);
 
-  document.querySelectorAll('.language-toggle').forEach((button) => {
-    button.addEventListener('click', () => switchLanguage(button.dataset.lang));
-  });
+  const languageToggle = document.querySelector('[data-language-toggle]');
+  if (languageToggle) {
+    languageToggle.addEventListener('click', () => {
+      const currentLang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'fr';
+      const nextLang = currentLang === 'fr' ? 'en' : 'fr';
+      switchLanguage(nextLang);
+    });
+  }
 
   const manifestContainer = document.querySelector('[data-manifest-container]');
   if (!manifestContainer) {

@@ -7,14 +7,33 @@
     <link rel="stylesheet" href="../assets/css/style.css" />
   </head>
   <body data-page="detail">
-    <header class="primary-header">
-      <div class="brand">BIOMÉRIEUX · PRE-CHECK</div>
+    <header class="primary-header" role="banner">
+      <div class="header-content">
+        <a class="brand" href="../index.html">
+          <span class="brand-title">Centre MAESTRIA</span>
+          <span class="brand-subtitle">Consistency Checker</span>
+        </a>
+        <button
+          class="language-switch"
+          type="button"
+          role="switch"
+          data-language-toggle
+          data-aria-label-to-en="Passer l'interface en anglais"
+          data-aria-label-to-fr="Switch interface to French"
+          aria-checked="false"
+          data-active-lang="fr"
+          aria-label="Passer l'interface en anglais"
+          title="Passer l'interface en anglais"
+        >
+          <span class="language-switch-track">
+            <span class="language-switch-option language-switch-option--fr">FR</span>
+            <span class="language-switch-option language-switch-option--en">EN</span>
+            <span class="language-switch-thumb" aria-hidden="true"></span>
+          </span>
+        </button>
+      </div>
     </header>
     <main>
-      <div class="language-switcher">
-        <button class="language-toggle active" data-lang="fr" data-fr="FR" data-en="FR">FR</button>
-        <button class="language-toggle" data-lang="en" data-fr="EN" data-en="EN">EN</button>
-      </div>
       <h1 class="page-title" data-fr="Ports conformes" data-en="Ports"></h1>
       <table class="info-table">
         <tbody>
