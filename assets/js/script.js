@@ -42,6 +42,9 @@ function getLevelGroup(level) {
 }
 
 const STORAGE_KEY = 'precheck-doc-language';
+const DISPLAY_MODE_STORAGE_KEY = 'precheck-display-mode';
+const DISPLAY_MODES = new Set(['grid-8x8', 'grid-4x4', 'list']);
+const DEFAULT_DISPLAY_MODE = 'grid-4x4';
 
 const normalize = (value) =>
   (value || '')
@@ -69,6 +72,31 @@ function setPreferredLanguage(lang) {
     }
   } catch (error) {
     console.warn('Unable to persist language preference', error);
+  }
+}
+
+function getPreferredDisplayMode() {
+  try {
+    if (!window.localStorage) {
+      return DEFAULT_DISPLAY_MODE;
+    }
+    const stored = localStorage.getItem(DISPLAY_MODE_STORAGE_KEY);
+    if (DISPLAY_MODES.has(stored)) {
+      return stored;
+    }
+  } catch (error) {
+    console.warn('Unable to read stored display mode', error);
+  }
+  return DEFAULT_DISPLAY_MODE;
+}
+
+function setPreferredDisplayMode(mode) {
+  try {
+    if (window.localStorage) {
+      localStorage.setItem(DISPLAY_MODE_STORAGE_KEY, mode);
+    }
+  } catch (error) {
+    console.warn('Unable to persist display mode preference', error);
   }
 }
 
@@ -113,10 +141,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const pageType = document.body ? document.body.getAttribute('data-page') : null;
   const searchInput = document.querySelector('[data-search]');
   const filterButtons = Array.from(document.querySelectorAll('[data-filter-level]'));
+  const displayModeButtons = Array.from(
+    document.querySelectorAll('[data-display-mode-button]')
+  );
   let sidebarButtons = [];
   let activeSidebarLevel = 'all';
   let filterChecksRef = null;
   let sidebarState = null;
+
+  function applyDisplayMode(mode, options = {}) {
+    if (!document.body) {
+      return;
+    }
+
+    const normalizedMode = DISPLAY_MODES.has(mode) ? mode : DEFAULT_DISPLAY_MODE;
+    document.body.setAttribute('data-display-mode', normalizedMode);
+
+    displayModeButtons.forEach((button) => {
+      const isActive = button.dataset.mode === normalizedMode;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    if (!options.skipStorage) {
+      setPreferredDisplayMode(normalizedMode);
+    }
+  }
 
   function collapseSidebarPanels() {
     if (!sidebarState) {
@@ -235,6 +285,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (pageType === 'index') {
     createSidebar();
+  }
+
+  if (displayModeButtons.length) {
+    const storedMode = getPreferredDisplayMode();
+    applyDisplayMode(storedMode, { skipStorage: true });
+
+    displayModeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        applyDisplayMode(button.dataset.mode || DEFAULT_DISPLAY_MODE);
+      });
+    });
+  } else {
+    applyDisplayMode(DEFAULT_DISPLAY_MODE, { skipStorage: true });
   }
 
   function updateSidebar(checks) {

@@ -59,6 +59,63 @@
           <button class="filter-button" data-filter-level="WARNING" data-fr="AVERTISSEMENT" data-en="WARNING"></button>
           <button class="filter-button" data-filter-level="INFORMATION" data-fr="INFO" data-en="INFO"></button>
         </div>
+        <div class="display-mode-controls">
+          <span class="display-mode-label" data-fr="Affichage" data-en="Display">Affichage</span>
+          <div class="display-mode-toggle" role="group" aria-label="Mode d'affichage">
+            <button
+              type="button"
+              class="mode-button"
+              data-display-mode-button
+              data-mode="grid-8x8"
+            >
+              <span class="mode-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="3" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="10" y="3" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="17" y="3" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="3" y="10" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="10" y="10" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="17" y="10" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="3" y="17" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="10" y="17" width="4" height="4" rx="1" fill="currentColor" />
+                  <rect x="17" y="17" width="4" height="4" rx="1" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="sr-only" data-fr="Grille 8×8" data-en="Grid 8×8">Grille 8×8</span>
+            </button>
+            <button
+              type="button"
+              class="mode-button"
+              data-display-mode-button
+              data-mode="grid-4x4"
+            >
+              <span class="mode-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" />
+                  <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" />
+                  <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" />
+                  <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="sr-only" data-fr="Grille 4×4" data-en="Grid 4×4">Grille 4×4</span>
+            </button>
+            <button
+              type="button"
+              class="mode-button"
+              data-display-mode-button
+              data-mode="list"
+            >
+              <span class="mode-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="4" width="18" height="3" rx="1.5" fill="currentColor" />
+                  <rect x="3" y="10.5" width="18" height="3" rx="1.5" fill="currentColor" />
+                  <rect x="3" y="17" width="18" height="3" rx="1.5" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="sr-only" data-fr="Liste" data-en="List">Liste</span>
+            </button>
+          </div>
+        </div>
       </section>
       <section id="checks" class="checks-grid" data-manifest-container></section>
     </main>
