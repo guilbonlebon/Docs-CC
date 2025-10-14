@@ -1,702 +1,842 @@
 [
   {
-    "id": "CHK001",
-    "script": "admin_account.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Compte administrateur disponible",
-    "title_en": "Administrator account available",
-    "description_fr": "S'assure qu'un compte administrateur local ou de domaine est disponible pour l'installation.",
-    "description_en": "Ensures that a local or domain administrator account is available for the installation.",
-    "file": null
-  },
-  {
-    "id": "CHK002",
-    "script": "antivirus_installed.ps1",
-    "level": "ERROR",
-    "title_fr": "Antivirus installé",
-    "title_en": "Antivirus installed",
-    "description_fr": "Vérifie qu'un antivirus supporté est présent, actif et à jour sur le serveur.",
-    "description_en": "Checks that a supported antivirus solution is installed, running and up to date on the server.",
-    "file": null
-  },
-  {
-    "id": "CHK003",
-    "script": "bmt_recommended.ps1",
-    "level": "WARNING",
-    "title_fr": "Configuration BMT recommandée",
-    "title_en": "Recommended BMT configuration",
-    "description_fr": "Contrôle que le poste BMT répond aux recommandations fonctionnelles (options et prérequis attendus).",
-    "description_en": "Verifies that the BMT workstation follows the recommended functional options and prerequisites.",
-    "file": null
-  },
-  {
-    "id": "CHK004",
-    "script": "bmx_admin_not_in_bMxServices_group.ps1",
-    "level": "ERROR",
-    "title_fr": "Compte bMx hors groupe bMxServices",
-    "title_en": "bMx admin outside bMxServices group",
-    "description_fr": "S'assure que le compte administrateur utilisé n'est pas membre du groupe bMxServices pour éviter les conflits de droits.",
-    "description_en": "Ensures that the administrator account in use does not belong to the bMxServices group to avoid permission conflicts.",
-    "file": null
-  },
-  {
-    "id": "CHK005",
-    "script": "check_access_drive.ps1",
-    "level": "ERROR",
-    "title_fr": "Accès au lecteur d'installation",
-    "title_en": "Installation drive access",
-    "description_fr": "Contrôle que le lecteur cible et ses partages sont accessibles en lecture et en écriture.",
-    "description_en": "Checks that the target drive and required shares are reachable with read and write permissions.",
-    "file": null
-  },
-  {
-    "id": "CHK006",
-    "script": "check_bmt_execution.ps1",
-    "level": "WARNING",
-    "title_fr": "Exécution récente du BMT",
-    "title_en": "Recent BMT execution",
-    "description_fr": "Vérifie qu'une exécution récente des scripts BMT est disponible avant migration.",
-    "description_en": "Confirms that a recent execution of the BMT scripts is available before the migration.",
-    "file": null
-  },
-  {
-    "id": "CHK007",
-    "script": "check_cas_conf_folder.ps1",
-    "level": "ERROR",
-    "title_fr": "Dossier CAS présent",
-    "title_en": "CAS folder present",
-    "description_fr": "S'assure que le dossier de configuration CAS requis est présent avec tous ses sous-répertoires.",
-    "description_en": "Ensures that the required CAS configuration folder and its subdirectories are available.",
-    "file": null
-  },
-  {
-    "id": "CHK008",
-    "script": "check_consistency_version.ps1",
-    "level": "WARNING",
-    "title_fr": "Version de Consistency Checker",
-    "title_en": "Consistency Checker version",
-    "description_fr": "Contrôle que la version du Consistency Checker correspond à la version cible du projet.",
-    "description_en": "Checks that the Consistency Checker version matches the target project release.",
-    "file": null
-  },
-  {
-    "id": "CHK009",
-    "script": "check_customization_done.ps1",
-    "level": "WARNING",
-    "title_fr": "Personnalisation appliquée",
-    "title_en": "Customization applied",
-    "description_fr": "Vérifie que les personnalisations attendues ont été appliquées sur l'environnement client.",
-    "description_en": "Verifies that the expected customer customizations have been applied on the environment.",
-    "file": null
-  },
-  {
-    "id": "CHK010",
-    "script": "check_installation_path.ps1",
-    "level": "ERROR",
-    "title_fr": "Chemin d'installation valide",
-    "title_en": "Valid installation path",
-    "description_fr": "Contrôle que le chemin d'installation sélectionné respecte les bonnes pratiques (volume et droits).",
-    "description_en": "Checks that the chosen installation path follows the recommended volume and permission rules.",
-    "file": null
-  },
-  {
-    "id": "CHK011",
-    "script": "check_postgresTablespace.ps1",
-    "level": "ERROR",
-    "title_fr": "Tablespace PostgreSQL disponible",
-    "title_en": "PostgreSQL tablespace available",
-    "description_fr": "Vérifie que le tablespace PostgreSQL dédié existe et dispose d'un espace libre suffisant.",
-    "description_en": "Ensures that the dedicated PostgreSQL tablespace exists and provides sufficient free space.",
-    "file": null
-  },
-  {
-    "id": "CHK012",
-    "script": "check_registry_key.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Clés de registre requises",
-    "title_en": "Required registry keys",
-    "description_fr": "Confirme la présence des clés de registre nécessaires au fonctionnement de la solution.",
-    "description_en": "Confirms that the registry keys required by the solution are present.",
-    "file": null
-  },
-  {
-    "id": "CHK013",
-    "script": "check_server_certificate_alternativenames.out",
-    "level": "INFORMATION",
-    "title_fr": "Rapport SAN certificat serveur",
-    "title_en": "Server certificate SAN report",
-    "description_fr": "Fichier de sortie listant les Subject Alternative Names relevés pour le certificat serveur.",
-    "description_en": "Output file listing the Subject Alternative Names detected for the server certificate.",
-    "file": null
-  },
-  {
-    "id": "CHK014",
-    "script": "check_server_certificate_alternativenames.out.err",
-    "level": "ERROR",
-    "title_fr": "Erreurs SAN certificat serveur",
-    "title_en": "Server certificate SAN errors",
-    "description_fr": "Trace les erreurs rencontrées lors de la récupération des Subject Alternative Names du certificat serveur.",
-    "description_en": "Logs any errors raised while retrieving the server certificate Subject Alternative Names.",
-    "file": null
-  },
-  {
-    "id": "CHK015",
-    "script": "check_server_certificate_alternativenames.ps1",
-    "level": "ERROR",
-    "title_fr": "Contrôle SAN du certificat serveur",
-    "title_en": "Server certificate SAN check",
-    "description_fr": "Vérifie que le certificat serveur comporte les Subject Alternative Names requis.",
-    "description_en": "Checks that the server certificate includes the required Subject Alternative Names.",
-    "file": null
-  },
-  {
-    "id": "CHK016",
-    "script": "check_server_certificate_alternativenames_Cert-Number.out",
-    "level": "INFORMATION",
-    "title_fr": "Détail certificat serveur",
-    "title_en": "Server certificate detail",
-    "description_fr": "Fichier texte contenant le numéro et les métadonnées du certificat serveur analysé.",
-    "description_en": "Text output containing the number and metadata of the analysed server certificate.",
-    "file": null
-  },
-  {
-    "id": "CHK017",
-    "script": "check_systems_certificate.ps1",
-    "level": "ERROR",
-    "title_fr": "Certificat systèmes valide",
-    "title_en": "Systems certificate valid",
-    "description_fr": "Contrôle que le certificat systèmes est présent, non expiré et approuvé.",
-    "description_en": "Checks that the systems certificate is present, valid and trusted.",
-    "file": null
-  },
-  {
-    "id": "CHK018",
-    "script": "check_systems_certificate_Cert-Number.out",
-    "level": "INFORMATION",
-    "title_fr": "Détail certificat systèmes",
-    "title_en": "Systems certificate detail",
-    "description_fr": "Capture des informations détaillées du certificat systèmes contrôlé.",
-    "description_en": "Records the detailed information for the systems certificate that was checked.",
-    "file": null
-  },
-  {
-    "id": "CHK019",
-    "script": "check_systems_certificate_maestria.sql",
-    "level": "INFORMATION",
-    "title_fr": "Script SQL certificat systèmes",
-    "title_en": "Systems certificate SQL script",
-    "description_fr": "Script SQL utilisé pour collecter les informations de certificat au sein de la base MAESTRIA.",
-    "description_en": "SQL script used to collect certificate information within the MAESTRIA database.",
-    "file": null
-  },
-  {
-    "id": "CHK020",
-    "script": "check_unsuported_hardware.ps1",
-    "level": "ERROR",
-    "title_fr": "Matériel non supporté",
-    "title_en": "Unsupported hardware",
-    "description_fr": "Détecte la présence de composants matériels non supportés par la plateforme MAESTRIA.",
-    "description_en": "Detects hardware components that are not supported by the MAESTRIA platform.",
-    "file": null
-  },
-  {
-    "id": "CHK021",
-    "script": "cpu_core_number.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Nombre de cœurs CPU suffisant",
-    "title_en": "Sufficient CPU cores",
-    "description_fr": "Vérifie que le serveur dispose du nombre minimal de cœurs CPU requis.",
-    "description_en": "Ensures that the server provides the minimum required number of CPU cores.",
-    "file": null
-  },
-  {
-    "id": "CHK022",
-    "script": "cpu_speed.ps1",
-    "level": "WARNING",
-    "title_fr": "Fréquence CPU conforme",
-    "title_en": "CPU frequency compliant",
-    "description_fr": "Contrôle que la fréquence processeur atteint le seuil recommandé pour les performances.",
-    "description_en": "Checks that the processor frequency meets the recommended performance threshold.",
-    "file": null
-  },
-  {
-    "id": "CHK023",
-    "script": "CUSTOMER__no_major_version_update.ps1",
-    "level": "WARNING",
-    "title_fr": "Pas de mise à jour majeure en cours",
-    "title_en": "No major update in progress",
-    "description_fr": "S'assure qu'aucune mise à jour majeure de la plateforme n'est planifiée ou active durant l'installation.",
-    "description_en": "Ensures that no major platform update is planned or running during the installation window.",
-    "file": null
-  },
-  {
-    "id": "CHK024",
-    "script": "disk_free_space.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Espace disque libre (Go)",
-    "title_en": "Free disk space (GB)",
-    "description_fr": "Vérifie que le volume requis dispose d'au moins l'espace libre minimal en giga-octets.",
-    "description_en": "Checks that the target volume provides at least the minimum free space in gigabytes.",
-    "file": null
-  },
-  {
-    "id": "CHK025",
-    "script": "disk_free_space_percentage.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Espace disque libre (%)",
-    "title_en": "Free disk space (%)",
-    "description_fr": "Contrôle que le pourcentage d'espace disque libre reste au-dessus du seuil exigé.",
-    "description_en": "Ensures that the percentage of free disk space stays above the required threshold.",
-    "file": null
-  },
-  {
-    "id": "CHK026",
-    "script": "dotnet_version.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Version .NET conforme",
-    "title_en": ".NET version compliant",
-    "description_fr": "Vérifie que la version minimale du framework .NET demandée est installée.",
-    "description_en": "Checks that the required minimum .NET Framework version is installed.",
-    "file": null
-  },
-  {
-    "id": "CHK027",
-    "script": "DWH_initialized.ps1",
-    "level": "INFORMATION",
-    "title_fr": "Entrepôt de données initialisé",
-    "title_en": "Data warehouse initialized",
-    "description_fr": "Informe sur l'initialisation de l'entrepôt de données MAESTRIA.",
-    "description_en": "Reports whether the MAESTRIA data warehouse has been initialized.",
-    "file": null
-  },
-  {
-    "id": "CHK028",
-    "script": "environment_variable.ps1",
-    "level": "ERROR",
-    "title_fr": "Variables d'environnement définies",
-    "title_en": "Environment variables set",
-    "description_fr": "Contrôle la présence et la valeur des variables d'environnement nécessaires.",
-    "description_en": "Checks that the required environment variables exist and are correctly set.",
-    "file": null
-  },
-  {
-    "id": "CHK029",
-    "script": "etl_success_run_found.ps1",
-    "level": "WARNING",
-    "title_fr": "Dernière exécution ETL réussie",
-    "title_en": "Latest ETL run successful",
-    "description_fr": "Vérifie qu'une exécution ETL récente s'est terminée avec succès.",
-    "description_en": "Checks that a recent ETL execution completed successfully.",
-    "file": null
-  },
-  {
-    "id": "CHK030",
-    "script": "firewall_notification_rule.ps1",
-    "level": "WARNING",
-    "title_fr": "Règle de notification pare-feu",
-    "title_en": "Firewall notification rule",
-    "description_fr": "Confirme que la règle de notification requise est configurée dans le pare-feu Windows.",
-    "description_en": "Confirms that the required notification rule is configured in Windows Firewall.",
-    "file": null
-  },
-  {
-    "id": "CHK031",
-    "script": "full_system_backup_available.ps1",
-    "level": "WARNING",
-    "title_fr": "Sauvegarde système disponible",
-    "title_en": "System backup available",
-    "description_fr": "Vérifie qu'une sauvegarde complète et récente du système est disponible.",
-    "description_en": "Checks that a recent and complete system backup is available.",
-    "file": null
-  },
-  {
-    "id": "CHK032",
-    "script": "global_updater_not_already_running.ps1",
-    "level": "ERROR",
-    "title_fr": "Global Updater arrêté",
-    "title_en": "Global Updater stopped",
-    "description_fr": "S'assure qu'aucun processus Global Updater n'est déjà en cours d'exécution.",
-    "description_en": "Ensures that no Global Updater process is currently running.",
-    "file": null
-  },
-  {
-    "id": "CHK033",
-    "script": "hostname.ps1",
-    "level": "WARNING",
-    "title_fr": "Nom d'hôte conforme",
-    "title_en": "Hostname compliant",
-    "description_fr": "Vérifie que le nom du serveur respecte la convention attendue et ne contient pas de caractères interdits.",
-    "description_en": "Checks that the server hostname follows the expected convention and contains no invalid characters.",
-    "file": null
-  },
-  {
-    "id": "CHK034",
-    "script": "instrument_id_bta.ps1",
-    "level": "ERROR",
-    "title_fr": "Identifiant instrument BTA",
-    "title_en": "BTA instrument identifier",
-    "description_fr": "Contrôle la validité et l'unicité des identifiants d'instrument BTA déclarés.",
-    "description_en": "Checks the validity and uniqueness of the declared BTA instrument identifiers.",
-    "file": null
-  },
-  {
-    "id": "CHK035",
-    "script": "internet_connectivity.ps1",
-    "level": "ERROR",
-    "title_fr": "Connectivité Internet",
-    "title_en": "Internet connectivity",
-    "description_fr": "Valide que le serveur peut accéder aux ressources Internet nécessaires.",
-    "description_en": "Validates that the server can reach the required internet resources.",
-    "file": null
-  },
-  {
-    "id": "CHK036",
-    "script": "ip-v4_enabled.ps1",
-    "level": "ERROR",
-    "title_fr": "IPv4 activé",
-    "title_en": "IPv4 enabled",
-    "description_fr": "S'assure que la pile IPv4 est activée et configurée.",
-    "description_en": "Ensures that the IPv4 stack is enabled and configured.",
-    "file": null
-  },
-  {
-    "id": "CHK037",
-    "script": "ip-v6_disabled.ps1",
-    "level": "WARNING",
-    "title_fr": "IPv6 désactivé",
-    "title_en": "IPv6 disabled",
-    "description_fr": "Vérifie que la pile IPv6 est désactivée conformément aux recommandations projet.",
-    "description_en": "Checks that the IPv6 stack is disabled as recommended for the project.",
-    "file": null
-  },
-  {
-    "id": "CHK038",
-    "script": "MAESTRIA-BI_initialized.ps1",
-    "level": "INFORMATION",
-    "title_fr": "MAESTRIA BI initialisé",
-    "title_en": "MAESTRIA BI initialized",
-    "description_fr": "Informe sur l'état d'initialisation du module BI de MAESTRIA.",
-    "description_en": "Reports the initialization state of the MAESTRIA BI module.",
-    "file": null
-  },
-  {
-    "id": "CHK039",
-    "script": "MAESTRIA_BioFire_driver_not_installed.ps1",
-    "level": "WARNING",
-    "title_fr": "Driver BioFire absent",
-    "title_en": "BioFire driver not installed",
-    "description_fr": "S'assure que le driver BioFire n'est pas installé lorsque non requis.",
-    "description_en": "Ensures that the BioFire driver is not installed when it is not required.",
-    "file": null
-  },
-  {
-    "id": "CHK040",
-    "script": "MAESTRIA_Sirweb_driver_not_installed.ps1",
-    "level": "WARNING",
-    "title_fr": "Driver Sirweb absent",
-    "title_en": "Sirweb driver not installed",
-    "description_fr": "Vérifie que le driver Sirweb n'est pas présent si l'intégration n'est pas prévue.",
-    "description_en": "Checks that the Sirweb driver is absent when the integration is not planned.",
-    "file": null
-  },
-  {
-    "id": "CHK041",
-    "script": "no_backup_in_progress.ps1",
-    "level": "ERROR",
-    "title_fr": "Aucune sauvegarde en cours",
-    "title_en": "No backup in progress",
-    "description_fr": "Vérifie qu'aucune sauvegarde système ou applicative n'est en cours.",
-    "description_en": "Checks that no system or application backup is currently running.",
-    "file": null
-  },
-  {
-    "id": "CHK042",
-    "script": "no_common_platform_installed.ps1",
-    "level": "ERROR",
-    "title_fr": "Plateformes communes absentes",
-    "title_en": "Common platforms absent",
-    "description_fr": "S'assure qu'aucune plateforme logicielle incompatible n'est installée.",
-    "description_en": "Ensures that no incompatible common platform is installed.",
-    "file": null
-  },
-  {
-    "id": "CHK043",
-    "script": "no_dbeaver_or_pgadmin_running.ps1",
-    "level": "WARNING",
-    "title_fr": "Outils SQL fermés",
-    "title_en": "SQL tools closed",
-    "description_fr": "Vérifie que DBeaver, pgAdmin ou outils équivalents ne sont pas en cours d'exécution.",
-    "description_en": "Checks that DBeaver, pgAdmin or similar SQL tools are not running.",
-    "file": null
-  },
-  {
-    "id": "CHK044",
-    "script": "no_duplicate_or_null_uuid.ps1",
-    "level": "ERROR",
-    "title_fr": "UUID sans doublon",
-    "title_en": "UUID without duplicates",
-    "description_fr": "Contrôle l'absence d'UUID dupliqués ou nuls dans les données.",
-    "description_en": "Checks that there are no duplicate or null UUID values in the data.",
-    "file": null
-  },
-  {
-    "id": "CHK045",
-    "script": "no_duplicate_VITEK2_instrument_identifier.ps1",
-    "level": "ERROR",
-    "title_fr": "Identifiant VITEK2 unique",
-    "title_en": "Unique VITEK2 identifier",
-    "description_fr": "Vérifie qu'aucun identifiant VITEK2 n'est dupliqué dans la configuration.",
-    "description_en": "Ensures that no VITEK2 identifier is duplicated in the configuration.",
-    "file": null
-  },
-  {
-    "id": "CHK046",
-    "script": "no_etl_in_progress.ps1",
-    "level": "ERROR",
-    "title_fr": "Aucun ETL en cours",
-    "title_en": "No ETL in progress",
-    "description_fr": "S'assure qu'aucune tâche ETL n'est active avant les opérations.",
-    "description_en": "Ensures that no ETL job is running before performing the operations.",
-    "file": null
-  },
-  {
-    "id": "CHK047",
-    "script": "no_jms_virtuo_31_maestria.sql",
-    "level": "WARNING",
-    "title_fr": "Absence de JMS Virtuo 3.1 MAESTRIA",
-    "title_en": "No JMS Virtuo 3.1 MAESTRIA",
-    "description_fr": "Vérifie via SQL qu'aucune configuration JMS Virtuo 3.1 spécifique MAESTRIA n'est active.",
-    "description_en": "Uses SQL to ensure that no MAESTRIA specific JMS Virtuo 3.1 configuration is active.",
-    "file": null
-  },
-  {
-    "id": "CHK048",
-    "script": "no_jms_virtuo_31_post.ps1",
-    "level": "WARNING",
-    "title_fr": "Tâches JMS post désactivées",
-    "title_en": "JMS post tasks disabled",
-    "description_fr": "S'assure qu'aucun traitement JMS Virtuo 3.1 post-installation n'est en cours.",
-    "description_en": "Ensures that no JMS Virtuo 3.1 post-installation task is running.",
-    "file": null
-  },
-  {
-    "id": "CHK049",
-    "script": "no_jms_virtuo_31_pre.ps1",
-    "level": "WARNING",
-    "title_fr": "Tâches JMS pré désactivées",
-    "title_en": "JMS pre tasks disabled",
-    "description_fr": "Vérifie qu'aucun traitement JMS Virtuo 3.1 pré-installation n'est actif.",
-    "description_en": "Checks that no JMS Virtuo 3.1 pre-installation task is active.",
-    "file": null
-  },
-  {
-    "id": "CHK050",
-    "script": "no_modules_and_stations_duplication.ps1",
-    "level": "ERROR",
-    "title_fr": "Pas de doublon modules/stations",
-    "title_en": "No module or station duplication",
-    "description_fr": "Contrôle l'absence de doublons dans la définition des modules et stations.",
-    "description_en": "Ensures that no modules or stations are duplicated in the configuration.",
-    "file": null
-  },
-  {
-    "id": "CHK051",
-    "script": "no_pending_reboot.ps1",
-    "level": "ERROR",
-    "title_fr": "Aucun redémarrage en attente",
-    "title_en": "No pending reboot",
-    "description_fr": "Vérifie qu'aucun redémarrage Windows n'est requis avant de continuer.",
-    "description_en": "Checks that Windows does not require a pending reboot before proceeding.",
-    "file": null
-  },
-  {
-    "id": "CHK052",
-    "script": "no_shared_folders_on_acl.ps1",
-    "level": "WARNING",
-    "title_fr": "Partages hors ACL",
-    "title_en": "No shared folders in ACL",
-    "description_fr": "S'assure que des dossiers partagés non souhaités ne sont pas présents dans les ACL critiques.",
-    "description_en": "Ensures that unwanted shared folders are not referenced in critical ACLs.",
-    "file": null
-  },
-  {
-    "id": "CHK053",
-    "script": "no_sysmon_running.ps1",
-    "level": "INFORMATION",
-    "title_fr": "Sysmon non actif",
-    "title_en": "Sysmon not running",
-    "description_fr": "Informe sur l'absence d'un service Sysmon actif susceptible d'impacter les performances.",
-    "description_en": "Reports whether a Sysmon service is absent to avoid potential performance impact.",
-    "file": null
-  },
-  {
-    "id": "CHK054",
-    "script": "physical_memory.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Mémoire physique suffisante",
-    "title_en": "Sufficient physical memory",
-    "description_fr": "Contrôle que la mémoire RAM disponible répond à la capacité minimale requise.",
-    "description_en": "Checks that the available RAM meets the minimum capacity requirement.",
-    "file": null
-  },
-  {
-    "id": "CHK055",
-    "script": "port_available.ps1",
-    "level": "ERROR",
-    "title_fr": "Ports requis disponibles",
-    "title_en": "Required ports available",
-    "description_fr": "Vérifie que les ports réseau attendus sont libres et non utilisés par d'autres services.",
-    "description_en": "Ensures that the required network ports are free and unused by other services.",
-    "file": null
-  },
-  {
-    "id": "CHK056",
-    "script": "postgresql_conf.ps1",
-    "level": "ERROR",
-    "title_fr": "Configuration PostgreSQL",
-    "title_en": "PostgreSQL configuration",
-    "description_fr": "Contrôle que le fichier postgresql.conf contient les paramètres recommandés.",
-    "description_en": "Checks that the postgresql.conf file contains the recommended parameters.",
-    "file": null
-  },
-  {
-    "id": "CHK057",
-    "script": "powershell_activated.ps1",
+    "id": "CHK-FAT-001",
+    "script": "N/A",
     "level": "FATAL_ERROR",
     "title_fr": "PowerShell activé",
     "title_en": "PowerShell activated",
-    "description_fr": "S'assure que PowerShell est activé et exécutable sur le serveur.",
-    "description_en": "Ensures that PowerShell is enabled and executable on the server.",
-    "file": null
+    "description_fr": "S'assure que PowerShell est disponible et que la stratégie d'exécution n'est pas définie sur Restreint.",
+    "description_en": "Ensures that PowerShell is available and that the execution policy is not set to Restricted.",
+    "file": "checks/powershell_activated.html"
   },
   {
-    "id": "CHK058",
-    "script": "powershell_executionpolicy.ps1",
+    "id": "CHK-FAT-002",
+    "script": "N/A",
     "level": "FATAL_ERROR",
-    "title_fr": "Stratégie d'exécution PowerShell",
-    "title_en": "PowerShell execution policy",
-    "description_fr": "Vérifie que la stratégie d'exécution est positionnée sur Unrestricted ou RemoteSigned.",
-    "description_en": "Checks that the execution policy is set to Unrestricted or RemoteSigned.",
-    "file": null
+    "title_fr": "PowerShell en mode non restreint",
+    "title_en": "PowerShell unrestricted",
+    "description_fr": "Contrôle que la stratégie d'exécution PowerShell de la machine locale est définie sur Unrestricted et qu'aucune politique n'est en mode Restreint ou Indéfini.",
+    "description_en": "Checks that the local machine PowerShell execution policy is set to Unrestricted and that no policy remains Restricted or Undefined.",
+    "file": "checks/powershell_unrestricted.html"
   },
   {
-    "id": "CHK059",
-    "script": "powershell_version.ps1",
-    "level": "FATAL_ERROR",
-    "title_fr": "Version PowerShell minimale",
-    "title_en": "Minimum PowerShell version",
-    "description_fr": "Contrôle que la version de PowerShell installée répond aux prérequis.",
-    "description_en": "Ensures that the installed PowerShell version meets the prerequisites.",
-    "file": null
-  },
-  {
-    "id": "CHK060",
-    "script": "registry_writable.ps1",
+    "id": "CHK-FAT-003",
+    "script": "N/A",
     "level": "FATAL_ERROR",
     "title_fr": "Registre accessible en écriture",
-    "title_en": "Registry writable",
-    "description_fr": "S'assure que les clés de registre critiques sont modifiables.",
-    "description_en": "Ensures that critical registry keys are writable.",
-    "file": null
+    "title_en": "Registry is writable",
+    "description_fr": "Vérifie que le registre système peut être modifié par l'installateur.",
+    "description_en": "Verifies that the system registry can be modified by the installer.",
+    "file": "checks/registry_writable.html"
   },
   {
-    "id": "CHK061",
-    "script": "service_running.ps1",
+    "id": "CHK-FAT-004",
+    "script": "N/A",
+    "level": "FATAL_ERROR",
+    "title_fr": "Service PostgreSQL actif",
+    "title_en": "PostGre SQL running",
+    "description_fr": "Confirme que le service bMx PostGre QLI Server est présent et démarré sur le système.",
+    "description_en": "Confirms that the bMx PostGre QLI Server service is installed and running on the system.",
+    "file": "checks/postgresql_running.html"
+  },
+  {
+    "id": "CHK-FAT-005",
+    "script": "N/A",
+    "level": "FATAL_ERROR",
+    "title_fr": "Langue système en anglais",
+    "title_en": "Language set to English",
+    "description_fr": "Vérifie que la langue de Windows est définie sur Anglais afin de garantir la compatibilité de l'application.",
+    "description_en": "Checks that the Windows language is set to English to guarantee application compatibility.",
+    "file": "checks/language_set_to_english.html"
+  },
+  {
+    "id": "CHK-FAT-006",
+    "script": "N/A",
+    "level": "FATAL_ERROR",
+    "title_fr": "Variables Common Platform",
+    "title_en": "CP Variables",
+    "description_fr": "Contrôle que les variables d'environnement Common Platform (programs, data, db, backup) pointent vers les emplacements recommandés.",
+    "description_en": "Checks that the Common Platform environment variables (programs, data, db, backup) target the recommended locations.",
+    "file": "checks/cp_variables.html"
+  },
+  {
+    "id": "CHK-FAT-007",
+    "script": "N/A",
+    "level": "FATAL_ERROR",
+    "title_fr": "Disques déverrouillés",
+    "title_en": "Disks unlocked",
+    "description_fr": "S'assure qu'aucun volume requis par l'installation n'est verrouillé.",
+    "description_en": "Ensures that no volume required for the installation is locked.",
+    "file": "checks/disks_unlocked.html"
+  },
+  {
+    "id": "CHK-ERR-001",
+    "script": "N/A",
     "level": "ERROR",
-    "title_fr": "Services requis démarrés",
-    "title_en": "Required services running",
-    "description_fr": "Vérifie que les services Windows critiques nécessaires à MAESTRIA sont démarrés.",
-    "description_en": "Checks that the critical Windows services required by MAESTRIA are running.",
-    "file": null
+    "title_fr": "Compte courant avec privilèges admin",
+    "title_en": "Current account ADMIN privilege",
+    "description_fr": "Vérifie que le compte utilisé dispose des privilèges administrateur.",
+    "description_en": "Ensures that the account in use has administrator privileges.",
+    "file": "checks/current_account_admin_privilege.html"
   },
   {
-    "id": "CHK062",
-    "script": "system_versions-common-functions.ps1",
-    "level": "INFORMATION",
-    "title_fr": "Fonctions versions système",
-    "title_en": "System version helper functions",
-    "description_fr": "Met à disposition les fonctions communes de collecte des versions système.",
-    "description_en": "Provides the shared helper functions used to collect system version information.",
-    "file": null
-  },
-  {
-    "id": "CHK063",
-    "script": "system_versions_maestria_before.ps1",
-    "level": "INFORMATION",
-    "title_fr": "Version MAESTRIA avant mise à jour",
-    "title_en": "MAESTRIA version before update",
-    "description_fr": "Collecte la version MAESTRIA actuellement installée avant migration.",
-    "description_en": "Collects the currently installed MAESTRIA version before migration.",
-    "file": null
-  },
-  {
-    "id": "CHK064",
-    "script": "tse_config.ps1",
+    "id": "CHK-ERR-002",
+    "script": "N/A",
     "level": "ERROR",
-    "title_fr": "Configuration TSE",
-    "title_en": "TSE configuration",
-    "description_fr": "Vérifie la configuration des services TSE/Remote Desktop selon les préconisations.",
-    "description_en": "Checks that the TSE/Remote Desktop services are configured as recommended.",
-    "file": null
+    "title_fr": "BCI Link désactivé",
+    "title_en": "BCI Link not enabled",
+    "description_fr": "S'assure que BCI Link n'est pas installé ou est désactivé.",
+    "description_en": "Ensures that BCI Link is not installed or is disabled.",
+    "file": "checks/bci_link_not_enabled.html"
   },
   {
-    "id": "CHK065",
-    "script": "VitekMS_30_not_enabled.ps1",
-    "level": "WARNING",
-    "title_fr": "Vitek MS 3.0 non activé",
-    "title_en": "Vitek MS 3.0 not enabled",
-    "description_fr": "S'assure que l'option Vitek MS 3.0 n'est pas activée quand elle n'est pas supportée.",
-    "description_en": "Ensures that the Vitek MS 3.0 option is not enabled when it is not supported.",
-    "file": null
-  },
-  {
-    "id": "CHK066",
-    "script": "Windows_language.ps1",
+    "id": "CHK-ERR-003",
+    "script": "N/A",
     "level": "ERROR",
-    "title_fr": "Langue Windows",
-    "title_en": "Windows language",
-    "description_fr": "Vérifie que la langue du système Windows est paramétrée sur Anglais (États-Unis).",
-    "description_en": "Checks that the Windows system language is set to English (United States).",
-    "file": null
+    "title_fr": "Nom d'hôte conforme",
+    "title_en": "hostname",
+    "description_fr": "Contrôle que le nom d'hôte ne contient pas de soulignement et comporte moins de 16 caractères.",
+    "description_en": "Checks that the hostname does not contain underscores and is shorter than 16 characters.",
+    "file": "checks/hostname_validation.html"
   },
   {
-    "id": "CHK067",
-    "script": "Windows_license.ps1",
+    "id": "CHK-ERR-004",
+    "script": "N/A",
     "level": "ERROR",
-    "title_fr": "Licence Windows activée",
-    "title_en": "Windows license activated",
-    "description_fr": "S'assure que la licence Windows est activée et valide.",
-    "description_en": "Ensures that the Windows license is activated and valid.",
-    "file": null
+    "title_fr": "Aucun Global Updater en cours",
+    "title_en": "No Global Updater already running",
+    "description_fr": "Vérifie qu'aucun processus Global Updater n'est actuellement actif.",
+    "description_en": "Ensures that no Global Updater process is currently running.",
+    "file": "checks/no_global_updater_running.html"
   },
   {
-    "id": "CHK068",
-    "script": "Windows_update.ps1",
-    "level": "WARNING",
-    "title_fr": "Mises à jour Windows récentes",
-    "title_en": "Recent Windows updates",
-    "description_fr": "Vérifie qu'une mise à jour Windows récente a été appliquée.",
-    "description_en": "Checks that a recent Windows update has been applied.",
-    "file": null
+    "id": "CHK-ERR-005",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pas de DBeaver ni PGAdmin actifs",
+    "title_en": "No running dbeaver nor PGAdmin",
+    "description_fr": "Confirme que DBeaver et pgAdmin ne sont pas en cours d'exécution.",
+    "description_en": "Confirms that neither DBeaver nor pgAdmin is running.",
+    "file": "checks/no_dbeaver_pgadmin_running.html"
   },
   {
-    "id": "CHK069",
-    "script": "Windows_version.ps1",
+    "id": "CHK-ERR-006",
+    "script": "N/A",
     "level": "ERROR",
     "title_fr": "Version Windows supportée",
-    "title_en": "Supported Windows version",
-    "description_fr": "Contrôle que le système d'exploitation Windows fait partie des versions supportées.",
-    "description_en": "Checks that the Windows operating system is within the supported versions.",
-    "file": null
+    "title_en": "Windows version",
+    "description_fr": "Vérifie que le système d'exploitation est Windows 10, Server 2016, 2019 ou 2022.",
+    "description_en": "Checks that the operating system is Windows 10, Server 2016, 2019, or 2022.",
+    "file": "checks/windows_version_supported.html"
   },
   {
-    "id": "CHK070",
-    "script": "data_verification_overview",
+    "id": "CHK-ERR-007",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Aucun redémarrage en attente",
+    "title_en": "No pending reboot",
+    "description_fr": "S'assure qu'aucun redémarrage Windows n'est requis (ex. suite à une mise à jour).",
+    "description_en": "Ensures that Windows does not require a reboot (for example after updates).",
+    "file": "checks/no_pending_reboot.html"
+  },
+  {
+    "id": "CHK-ERR-008",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Espace disque libre suffisant",
+    "title_en": "Free disk space",
+    "description_fr": "Vérifie que les lecteurs C:, D:, E: disposent d'au moins 5 Go et que F: possède 30 Go libres.",
+    "description_en": "Checks that drives C:, D:, E: have at least 5 GB free and drive F: has 30 GB available.",
+    "file": "checks/free_disk_space.html"
+  },
+  {
+    "id": "CHK-ERR-009",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Configuration CAS",
+    "title_en": "CAS configuration",
+    "description_fr": "Contrôle la cohérence des dossiers de configuration liés à CAS.",
+    "description_en": "Checks that the CAS configuration folders are consistent.",
+    "file": "checks/cas_configuration.html"
+  },
+  {
+    "id": "CHK-ERR-010",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Personnalisation All Hypervisor",
+    "title_en": "All Hypervisor",
+    "description_fr": "Vérifie que la personnalisation système All Hypervisor a été appliquée.",
+    "description_en": "Ensures that the All Hypervisor system customization has been applied.",
+    "file": "checks/all_hypervisor.html"
+  },
+  {
+    "id": "CHK-ERR-011",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Identifiant BACT défini",
+    "title_en": "BACT instrument ID",
+    "description_fr": "Vérifie que l'identifiant d'instrument BACT existe et vaut 1.",
+    "description_en": "Checks that the BACT instrument ID exists and equals 1.",
+    "file": "checks/bact_instrument_id.html"
+  },
+  {
+    "id": "CHK-ERR-012",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "IPv4 activé",
+    "title_en": "IPv4",
+    "description_fr": "S'assure que le protocole IPv4 est activé sur les interfaces réseau.",
+    "description_en": "Ensures that IPv4 is enabled on the network interfaces.",
+    "file": "checks/ipv4_enabled.html"
+  },
+  {
+    "id": "CHK-ERR-013",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Aucun message MYLA en attente",
+    "title_en": "No pending messages",
+    "description_fr": "Vérifie que la table jbmm.msg ne contient plus de messages en attente.",
+    "description_en": "Checks that the jbmm.msg table no longer contains pending messages.",
+    "file": "checks/no_pending_messages.html"
+  },
+  {
+    "id": "CHK-ERR-014",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pas de doublons de modules et stations",
+    "title_en": "No duplicates",
+    "description_fr": "S'assure qu'il n'existe pas de doublon de modules ou de stations dans MYLA.",
+    "description_en": "Ensures that modules and stations in MYLA are not duplicated.",
+    "file": "checks/no_duplicates_modules_stations.html"
+  },
+  {
+    "id": "CHK-ERR-015",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Aucune sauvegarde en cours",
+    "title_en": "No backup in progress",
+    "description_fr": "Vérifie qu'aucune sauvegarde système n'est en exécution.",
+    "description_en": "Checks that no system backup is currently running.",
+    "file": "checks/no_backup_in_progress.html"
+  },
+  {
+    "id": "CHK-ERR-016",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "UUID cohérents",
+    "title_en": "UUID check",
+    "description_fr": "S'assure qu'aucun UUID n'est dupliqué ou vide.",
+    "description_en": "Ensures that there are no duplicate or null UUID values.",
+    "file": "checks/uuid_check.html"
+  },
+  {
+    "id": "CHK-ERR-017",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pas de doublons de pseudo médicaments",
+    "title_en": "No duplicates in pseudo drugs",
+    "description_fr": "Vérifie qu'il n'existe pas de pseudo médicament dupliqué.",
+    "description_en": "Checks that no pseudo drug entries are duplicated.",
+    "file": "checks/no_duplicates_pseudo_drugs.html"
+  },
+  {
+    "id": "CHK-ERR-018",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Aucun ETL en cours",
+    "title_en": "No ETL in progress",
+    "description_fr": "Confirme qu'aucun processus ETL n'est actif.",
+    "description_en": "Confirms that no ETL process is running.",
+    "file": "checks/no_etl_in_progress.html"
+  },
+  {
+    "id": "CHK-ERR-019",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Aucun LIS actif pour BCI Link",
+    "title_en": "No active LIS for BCI Link",
+    "description_fr": "S'assure qu'aucun LIS n'utilise actuellement le BCI Link.",
+    "description_en": "Ensures that no LIS is currently using the BCI Link.",
+    "file": "checks/no_active_lis_bci.html"
+  },
+  {
+    "id": "CHK-ERR-020",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pas de doublons dans la topologie",
+    "title_en": "No duplicates in topo",
+    "description_fr": "Vérifie l'absence de doublons dans les tables topo.station et topo.module.",
+    "description_en": "Checks for duplicates in the topo.station and topo.module tables.",
+    "file": "checks/no_duplicates_topology.html"
+  },
+  {
+    "id": "CHK-ERR-021",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Partages réseau conformes",
+    "title_en": "Shared folders",
+    "description_fr": "Vérifie qu'aucun dossier partagé avec des ACL spécifiques n'est défini sur les répertoires critiques.",
+    "description_en": "Ensures that no shared folder with specific ACLs is configured on critical directories.",
+    "file": "checks/shared_folders_acl.html"
+  },
+  {
+    "id": "CHK-ERR-022",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Procédures SQL propriété Postgre",
+    "title_en": "SQL procedures",
+    "description_fr": "S'assure qu'aucune procédure SQL du schéma public n'est détenue par l'utilisateur Postgre.",
+    "description_en": "Ensures that no SQL procedures in the public schema are owned by Postgre.",
+    "file": "checks/sql_procedures_owned_by_postgre.html"
+  },
+  {
+    "id": "CHK-ERR-023",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Caractères supportés dans Code Mapper",
+    "title_en": "Unsupported characters in Code mapper",
+    "description_fr": "Contrôle l'absence d'espaces en début ou fin et de caractères interdits dans Code Mapper.",
+    "description_en": "Checks for leading/trailing spaces or forbidden characters in Code Mapper.",
+    "file": "checks/unsupported_characters_code_mapper.html"
+  },
+  {
+    "id": "CHK-ERR-024",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Longueur des catégories de prélèvements",
+    "title_en": "Specimen category length",
+    "description_fr": "Vérifie que les codes de catégorie de prélèvement ne sont ni dupliqués ni supérieurs à 24 caractères.",
+    "description_en": "Checks that specimen category codes are unique and shorter than 24 characters.",
+    "file": "checks/specimen_category_length.html"
+  },
+  {
+    "id": "CHK-ERR-025",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Mémoire physique minimale",
+    "title_en": "Minimal physical memory",
+    "description_fr": "Confirme que la mémoire physique installée est d'au moins 16 Go.",
+    "description_en": "Confirms that at least 16 GB of physical memory is installed.",
+    "file": "checks/minimal_physical_memory.html"
+  },
+  {
+    "id": "CHK-ERR-026",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Ports conformes",
+    "title_en": "Ports",
+    "description_fr": "Contrôle que les ports requis sont utilisés par les bons processus ou disponibles.",
+    "description_en": "Checks that required ports are used by the expected processes or remain free.",
+    "file": "checks/ports_usage.html"
+  },
+  {
+    "id": "CHK-ERR-027",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Locale base de données",
+    "title_en": "Database locale",
+    "description_fr": "S'assure que la base de données est configurée en 'English United States'.",
+    "description_en": "Ensures that the database locale is 'English United States'.",
+    "file": "checks/database_locale.html"
+  },
+  {
+    "id": "CHK-ERR-028",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Prérequis PowerShell",
+    "title_en": "PowerShell requirements",
+    "description_fr": "Vérifie que la version de PowerShell installée répond à la version minimale attendue (5.1).",
+    "description_en": "Checks that the installed PowerShell version meets the minimal requirement (5.1).",
+    "file": "checks/powershell_requirements.html"
+  },
+  {
+    "id": "CHK-ERR-029",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Variables Common Platform cohérentes",
+    "title_en": "Common Platform variables",
+    "description_fr": "Vérifie la correspondance des variables Common Platform pour MAESTRIA et MYLA.",
+    "description_en": "Ensures Common Platform variables align with MAESTRIA and MYLA expectations.",
+    "file": "checks/common_platform_variables_alignment.html"
+  },
+  {
+    "id": "CHK-ERR-030",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Délai d'expiration de session",
+    "title_en": "Session timeout",
+    "description_fr": "S'assure que le délai d'expiration de session est au moins de 4 heures.",
+    "description_en": "Ensures that the session timeout is at least 4 hours.",
+    "file": "checks/session_timeout.html"
+  },
+  {
+    "id": "CHK-ERR-031",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Vitek MS 3.0 non installé",
+    "title_en": "Vitek MS 3.0 not installed",
+    "description_fr": "S'assure que Vitek MS 3.0 n'est pas installé ou est désactivé.",
+    "description_en": "Ensures that Vitek MS 3.0 is not installed or is disabled.",
+    "file": "checks/vitek_ms_not_installed.html"
+  },
+  {
+    "id": "CHK-ERR-032",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "BioFire non installé",
+    "title_en": "BioFire not installed",
+    "description_fr": "Vérifie que le pilote MAESTRIA@BioFire n'est pas présent avant migration.",
+    "description_en": "Checks that the MAESTRIA@BioFire driver is not installed before migration.",
+    "file": "checks/biofire_not_installed.html"
+  },
+  {
+    "id": "CHK-ERR-033",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "SirWeb non installé",
+    "title_en": "SirWeb not installed",
+    "description_fr": "S'assure que le pilote MAESTRIA@Sirweb n'est pas installé avant migration.",
+    "description_en": "Ensures that the MAESTRIA@Sirweb driver is not installed before migration.",
+    "file": "checks/sirweb_not_installed.html"
+  },
+  {
+    "id": "CHK-ERR-034",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pilote LIS installé",
+    "title_en": "LIS driver installed",
+    "description_fr": "Vérifie que le pilote MYLA@LIS est installé avant migration.",
+    "description_en": "Verifies that the MYLA@LIS driver is installed before migration.",
+    "file": "checks/lis_driver_installed.html"
+  },
+  {
+    "id": "CHK-ERR-035",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Reveal non installé",
+    "title_en": "Reveal not installed",
+    "description_fr": "S'assure que le pilote MYLA@Reveal n'est pas installé avant migration.",
+    "description_en": "Ensures that the MYLA@Reveal driver is not installed before migration.",
+    "file": "checks/reveal_not_installed.html"
+  },
+  {
+    "id": "CHK-ERR-036",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Ancien pilote Vitek MS",
+    "title_en": "Old Vitek MS driver",
+    "description_fr": "Vérifie que le pilote MYLA@VitekMS 1.0.0.0 n'est pas installé.",
+    "description_en": "Ensures that the MYLA@VitekMS 1.0.0.0 driver is not installed.",
+    "file": "checks/old_vitek_ms_driver.html"
+  },
+  {
+    "id": "CHK-ERR-037",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Nom Adagio conforme",
+    "title_en": "Adagio name",
+    "description_fr": "S'assure que le nom de l'instrument Adagio n'excède pas 14 caractères et ne contient pas de soulignement.",
+    "description_en": "Ensures that the Adagio instrument name is at most 14 characters and has no underscore.",
+    "file": "checks/adagio_name.html"
+  },
+  {
+    "id": "CHK-ERR-038",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Nom Biomic conforme",
+    "title_en": "Biomic name",
+    "description_fr": "Vérifie que le nom de l'instrument BIOMIC ne dépasse pas 14 caractères.",
+    "description_en": "Checks that the BIOMIC instrument name is not longer than 14 characters.",
+    "file": "checks/biomic_name.html"
+  },
+  {
+    "id": "CHK-ERR-039",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Nom BacT conforme",
+    "title_en": "BacT name",
+    "description_fr": "Vérifie que le nom BacT ne contient que des caractères autorisés et aucun espace final.",
+    "description_en": "Ensures that the BacT name only uses allowed characters and no trailing space.",
+    "file": "checks/bact_name.html"
+  },
+  {
+    "id": "CHK-ERR-040",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pas de doublons BacT",
+    "title_en": "No BacT duplicate",
+    "description_fr": "S'assure que les noms BacT ne sont pas dupliqués dans BTA.",
+    "description_en": "Ensures that BacT names are not duplicated in BTA.",
+    "file": "checks/no_bact_duplicate.html"
+  },
+  {
+    "id": "CHK-ERR-041",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pas de tablespace d'anonymisation",
+    "title_en": "No anonymization tablespace",
+    "description_fr": "Vérifie qu'aucun tablespace d'anonymisation n'est présent dans la base.",
+    "description_en": "Ensures that no anonymization tablespace exists in the database.",
+    "file": "checks/no_anonymization_tablespace.html"
+  },
+  {
+    "id": "CHK-ERR-042",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pas de doublons LIS",
+    "title_en": "No LIS duplicate",
+    "description_fr": "S'assure qu'aucun identifiant de système LIS n'est dupliqué.",
+    "description_en": "Ensures that LIS system identifiers are not duplicated.",
+    "file": "checks/no_lis_duplicate.html"
+  },
+  {
+    "id": "CHK-ERR-043",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Résultat VC cohérent",
+    "title_en": "VC Result",
+    "description_fr": "Vérifie la cohérence du résultat VC 100.613.03.01.",
+    "description_en": "Ensures that VC result ID 100.613.03.01 is consistent.",
+    "file": "checks/vc_result.html"
+  },
+  {
+    "id": "CHK-ERR-044",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Compte bmx_admin conforme",
+    "title_en": "Check bmx_admin",
+    "description_fr": "S'assure que le compte en cours n'appartient pas au groupe bMxServices.",
+    "description_en": "Ensures that the current account does not belong to the bMxServices group.",
+    "file": "checks/check_bmx_admin.html"
+  },
+  {
+    "id": "CHK-ERR-045",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Service Lab Analytics SSO arrêté",
+    "title_en": "Check Lab Analytics SSO",
+    "description_fr": "Signale la présence du service Lab Analytics SSO encore actif.",
+    "description_en": "Flags the Lab Analytics SSO service if it is still running.",
+    "file": "checks/check_lab_analytics_sso.html"
+  },
+  {
+    "id": "CHK-ERR-046",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Activation FIPS",
+    "title_en": "Check FIPS activation",
+    "description_fr": "Vérifie que FIPS est activé côté système et côté chocolately si requis.",
+    "description_en": "Checks that FIPS is enabled both on the system and within chocolately when required.",
+    "file": "checks/check_fips_activation.html"
+  },
+  {
+    "id": "CHK-ERR-047",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Doublons Vitek 2",
+    "title_en": "Vitek2 duplicates",
+    "description_fr": "Détecte les identifiants d'instrument Vitek 2 en double pouvant bloquer la migration.",
+    "description_en": "Detects duplicate Vitek 2 instrument identifiers that may block migration.",
+    "file": "checks/vitek2_duplicates.html"
+  },
+  {
+    "id": "CHK-ERR-048",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Valeurs de registre cohérentes",
+    "title_en": "Inconsistent registry value",
+    "description_fr": "Signale des clés de registre ne reflétant pas la version système réelle.",
+    "description_en": "Detects registry keys that do not reflect the actual system version.",
+    "file": "checks/inconsistent_registry_value.html"
+  },
+  {
+    "id": "CHK-ERR-049",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "ACL Lab Analytics SSO",
+    "title_en": "ACL Failure - Lab Analytics SSO",
+    "description_fr": "Détecte des fichiers ACL non conformes (MD5) sur plateformes Lab Analytics 5.0 en mode FIPS.",
+    "description_en": "Detects non-compliant ACL files (MD5) on Lab Analytics 5.0 platforms in FIPS mode.",
+    "file": "checks/acl_failure_lab_analytics_sso.html"
+  },
+  {
+    "id": "CHK-ERR-050",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Pilote Biotyper installé",
+    "title_en": "Biotyper driver is installed",
+    "description_fr": "Vérifie si le pilote Biotyper est présent et susceptible de perturber la migration.",
+    "description_en": "Checks whether the Biotyper driver is installed and may cause migration issues.",
+    "file": "checks/biotyper_driver_installed.html"
+  },
+  {
+    "id": "CHK-ERR-051",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Clé de registre matériel présente",
+    "title_en": "Missing hardware registry key",
+    "description_fr": "Vérifie l'existence de la clé HKEY_LOCAL_MACHINE\\SOFTWARE\\BioMerieux\\Hardware.",
+    "description_en": "Ensures that the HKEY_LOCAL_MACHINE\\SOFTWARE\\BioMerieux\\Hardware key exists.",
+    "file": "checks/missing_hardware_registry_key.html"
+  },
+  {
+    "id": "CHK-ERR-052",
+    "script": "N/A",
+    "level": "ERROR",
+    "title_fr": "Tablespaces PostgreSQL cohérents",
+    "title_en": "Tablespace mismatch (PostgreSQL)",
+    "description_fr": "Détecte une incohérence entre les tablespaces PostgreSQL et les disques physiques.",
+    "description_en": "Detects mismatches between PostgreSQL tablespaces and physical disks.",
+    "file": "checks/tablespace_mismatch_postgresql.html"
+  },
+  {
+    "id": "CHK-WAR-001",
+    "script": "N/A",
+    "level": "WARNING",
+    "title_fr": "Multi-LIS non supporté",
+    "title_en": "Multi-LIS not supported",
+    "description_fr": "Informe qu'une configuration multi-LIS partageant le même SpecimenID a été détectée.",
+    "description_en": "Reports a multi-LIS configuration sharing the same SpecimenID.",
+    "file": "checks/multi_lis_not_supported.html"
+  },
+  {
+    "id": "CHK-WAR-002",
+    "script": "N/A",
+    "level": "WARNING",
+    "title_fr": "Doublons workflow/executedrequest",
+    "title_en": "Duplicate entries in workflow/executedrequest",
+    "description_fr": "Signale des doublons pouvant provoquer l'exception TooManyResultsException.",
+    "description_en": "Highlights duplicates that can trigger a TooManyResultsException.",
+    "file": "checks/duplicate_entries_workflow.html"
+  },
+  {
+    "id": "CHK-WAR-003",
+    "script": "N/A",
+    "level": "WARNING",
+    "title_fr": "Aucun Common Platform installé",
+    "title_en": "No CP installed",
+    "description_fr": "Vérifie qu'aucune Common Platform n'est installée.",
+    "description_en": "Verifies that no Common Platform is installed.",
+    "file": "checks/no_common_platform_installed.html"
+  },
+  {
+    "id": "CHK-WAR-004",
+    "script": "N/A",
+    "level": "WARNING",
+    "title_fr": "Succès ETL dernier mois",
+    "title_en": "ETL success last month",
+    "description_fr": "Informe si le processus ETL a réussi au cours du mois précédent.",
+    "description_en": "Reports whether the ETL process succeeded within the last month.",
+    "file": "checks/etl_success_last_month.html"
+  },
+  {
+    "id": "CHK-INF-001",
+    "script": "N/A",
     "level": "INFORMATION",
-    "title_fr": "Vérification des données des checks",
-    "title_en": "Check data verification",
-    "description_fr": "Synthèse des contrôles fournis classés par criticité.",
-    "description_en": "Summary of the provided checks grouped by criticality.",
-    "file": "checks/checks_data_verification.html"
+    "title_fr": "Mémoire physique recommandée",
+    "title_en": "Physical memory",
+    "description_fr": "Informe sur la présence des 24 Go de mémoire recommandés.",
+    "description_en": "Indicates whether the recommended 24 GB of memory is installed.",
+    "file": "checks/physical_memory_recommended.html"
+  },
+  {
+    "id": "CHK-INF-002",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "IPv6 désactivé",
+    "title_en": "IPv6 disabled",
+    "description_fr": "Informe sur la désactivation d'IPv6 au niveau système ou carte réseau.",
+    "description_en": "Reports whether IPv6 is disabled at system or adapter level.",
+    "file": "checks/ipv6_disabled.html"
+  },
+  {
+    "id": "CHK-INF-003",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Antivirus absent",
+    "title_en": "No antivirus installed",
+    "description_fr": "Informe sur l'absence d'antivirus installé sur la plateforme.",
+    "description_en": "Indicates that no antivirus solution is installed on the platform.",
+    "file": "checks/no_antivirus_installed_info.html"
+  },
+  {
+    "id": "CHK-INF-004",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Exigences certificats",
+    "title_en": "Certificate requirements",
+    "description_fr": "Vérifie la conformité des noms alternatifs de certificat avec la Common Platform.",
+    "description_en": "Checks that certificate alternative names comply with Common Platform requirements.",
+    "file": "checks/certificate_requirements.html"
+  },
+  {
+    "id": "CHK-INF-005",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "DNS Virtuo et Vitek2",
+    "title_en": "DNS names for Virtuo and Vitek2",
+    "description_fr": "Vérifie la correspondance entre les endpoints BCI Connect et les noms DNS configurés.",
+    "description_en": "Checks that BCI Connect endpoints match the configured DNS names.",
+    "file": "checks/dns_names_virtuo_vitek2.html"
+  },
+  {
+    "id": "CHK-INF-006",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Plateforme supportée",
+    "title_en": "Supported platform",
+    "description_fr": "Informe si la plateforme identifiée fait partie des plateformes supportées.",
+    "description_en": "Indicates whether the detected platform is supported.",
+    "file": "checks/supported_platform.html"
+  },
+  {
+    "id": "CHK-INF-007",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Mappings non conformes",
+    "title_en": "Non-compliant mappings",
+    "description_fr": "Informe que certains mappings non conformes ont été exclus lors de l'import.",
+    "description_en": "Indicates that non-compliant mappings were discarded during import.",
+    "file": "checks/non_compliant_mappings.html"
+  },
+  {
+    "id": "CHK-INF-008",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Conflits patients non résolus",
+    "title_en": "Patient conflicts not resolved",
+    "description_fr": "Informe de la présence de conflits patients dupliqués qui ne sont pas encore résolus.",
+    "description_en": "Reports duplicate patient conflicts that remain unresolved.",
+    "file": "checks/patient_conflicts_not_resolved.html"
+  },
+  {
+    "id": "CHK-INF-009",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Version .NET",
+    "title_en": ".Net version",
+    "description_fr": "Informe sur la disponibilité de .NET 4.8 ou supérieur.",
+    "description_en": "Indicates whether .NET version 4.8 or later is available.",
+    "file": "checks/dotnet_version.html"
+  },
+  {
+    "id": "CHK-INF-010",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Initialisation DWH",
+    "title_en": "DWH initialization",
+    "description_fr": "Informe sur l'état d'initialisation de l'entrepôt de données.",
+    "description_en": "Reports the initialization status of the data warehouse.",
+    "file": "checks/dwh_initialization.html"
+  },
+  {
+    "id": "CHK-INF-011",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Notifications pare-feu",
+    "title_en": "Firewall notifications",
+    "description_fr": "Informe si les notifications du pare-feu sont autorisées.",
+    "description_en": "Indicates whether firewall notifications are allowed.",
+    "file": "checks/firewall_notifications.html"
+  },
+  {
+    "id": "CHK-INF-012",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Dernière sauvegarde système",
+    "title_en": "Last FSB",
+    "description_fr": "Informe sur la disponibilité d'une sauvegarde complète de moins d'un jour dans F:/RSBR_V1_backups.",
+    "description_en": "Indicates whether a full system backup less than a day old exists in F:/RSBR_V1_backups.",
+    "file": "checks/last_fsb.html"
+  },
+  {
+    "id": "CHK-INF-013",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Initialisation BI",
+    "title_en": "BI initialization",
+    "description_fr": "Informe sur l'état d'initialisation de la BI MAESTRIA.",
+    "description_en": "Indicates the initialization status of MAESTRIA BI.",
+    "file": "checks/bi_initialization.html"
+  },
+  {
+    "id": "CHK-INF-014",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Dernier pilote Vitek MS",
+    "title_en": "Latest Vitek MS driver installed",
+    "description_fr": "Informe de la présence du pilote MYLA@VitekMS 2.0.1.1 sur les serveurs VITEK MS.",
+    "description_en": "Indicates whether the MYLA@VitekMS 2.0.1.1 driver is installed on VITEK MS servers.",
+    "file": "checks/latest_vitek_ms_driver.html"
+  },
+  {
+    "id": "CHK-INF-015",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Pas de doublons BacT actifs",
+    "title_en": "No BacT duplicates",
+    "description_fr": "Informe sur l'absence de doublons d'instruments BC actifs dans la topologie.",
+    "description_en": "Indicates that no active BC instrument names are duplicated in topology.",
+    "file": "checks/no_bact_duplicates_info.html"
+  },
+  {
+    "id": "CHK-INF-016",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Aucun LIS data management",
+    "title_en": "No data management LIS",
+    "description_fr": "Informe s'il existe un LIS défini comme Data Management dans MYLA.",
+    "description_en": "Indicates whether any LIS is defined as Data Management in MYLA.",
+    "file": "checks/no_data_management_lis.html"
+  },
+  {
+    "id": "CHK-INF-017",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Isolats liés aux flacons",
+    "title_en": "Isolates linked to bottles",
+    "description_fr": "Informe sur l'existence de liens isolats/flacons restant à résoudre.",
+    "description_en": "Reports any pending isolate-to-bottle links that need resolution.",
+    "file": "checks/isolates_linked_to_bottles.html"
+  },
+  {
+    "id": "CHK-INF-018",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Conflits patients non re-résolus",
+    "title_en": "Patient conflicts not re-solved",
+    "description_fr": "Informe des conflits patients requalifiés qui pourraient réapparaître après migration.",
+    "description_en": "Highlights requalified patient conflicts that may reappear after migration.",
+    "file": "checks/patient_conflicts_not_resolved_again.html"
+  },
+  {
+    "id": "CHK-INF-019",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Pas de doublons de catégories de prélèvements",
+    "title_en": "No duplicate specimen categories",
+    "description_fr": "Informe sur l'unicité des codes de catégories de prélèvements utilisateur.",
+    "description_en": "Indicates whether user specimen category codes remain unique.",
+    "file": "checks/no_duplicate_specimen_categories.html"
+  },
+  {
+    "id": "CHK-INF-020",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Licence Windows",
+    "title_en": "Windows license",
+    "description_fr": "Informe sur l'état d'activation de la licence Windows.",
+    "description_en": "Indicates the activation state of the Windows license.",
+    "file": "checks/windows_license.html"
+  },
+  {
+    "id": "CHK-INF-021",
+    "script": "N/A",
+    "level": "INFORMATION",
+    "title_fr": "Mises à jour Windows",
+    "title_en": "Windows updates",
+    "description_fr": "Informe sur la date de la dernière mise à jour Windows (moins de 60 jours).",
+    "description_en": "Indicates whether the last Windows update is less than 60 days old.",
+    "file": "checks/windows_updates.html"
   }
 ]
