@@ -688,5 +688,15 @@
     "description_fr": "Contrôle que le système d'exploitation Windows fait partie des versions supportées.",
     "description_en": "Checks that the Windows operating system is within the supported versions.",
     "file": null
+  },
+  {
+    "id": "CHK070",
+    "script": "data_verification_overview",
+    "level": "INFORMATION",
+    "title_fr": "Vérification des données des checks",
+    "title_en": "Check data verification",
+    "description_fr": "Synthèse des contrôles fournis classés par criticité.",
+    "description_en": "Summary of the provided checks grouped by criticality.",
+    "file": "checks/checks_data_verification.html"
   }
 ]
