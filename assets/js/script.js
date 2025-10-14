@@ -16,32 +16,21 @@ const LEVEL_LABELS = {
   INFORMATION: { fr: 'INFO', en: 'INFORMATION' }
 };
 
-const SIDEBAR_GROUPS = [
-  { key: 'all', label: { fr: 'Tous', en: 'All' } },
-  { key: 'fatal_error', label: { fr: 'Fatal', en: 'Fatal' } },
-  { key: 'error', label: { fr: 'Erreur', en: 'Error' } },
-  { key: 'warning', label: { fr: 'Avertissement', en: 'Warning' } },
-  { key: 'information', label: { fr: 'Info', en: 'Info' } }
-];
+const LEVEL_ORDER = {
+  FATAL_ERROR: 0,
+  ERROR: 1,
+  WARNING: 2,
+  INFORMATION: 3,
+  INFO: 3
+};
 
-function getLevelGroup(level) {
-  switch (level) {
-    case 'FATAL':
-    case 'FATAL_ERROR':
-      return 'fatal_error';
-    case 'ERROR':
-      return 'error';
-    case 'WARNING':
-      return 'warning';
-    case 'INFO':
-    case 'INFORMATION':
-      return 'information';
-    default:
-      return (level || '').toLowerCase();
-  }
-}
+const LANGUAGE_STORAGE_KEY = 'precheck-doc-language';
+const VIEW_STORAGE_KEY = 'precheck-doc-view-mode';
+const DEFAULT_VIEW_MODE = 'grid-comfort';
+const SUPPORTED_VIEW_MODES = new Set(['grid-dense', 'grid-comfort', 'list']);
 
-const STORAGE_KEY = 'precheck-doc-language';
+const DOM_PARSER = new DOMParser();
+const LANGUAGE_LISTENERS = new Set();
 
 const normalize = (value) =>
   (value || '')
@@ -52,7 +41,7 @@ const normalize = (value) =>
 
 function getPreferredLanguage() {
   try {
-    const stored = window.localStorage ? localStorage.getItem(STORAGE_KEY) : null;
+    const stored = window.localStorage ? localStorage.getItem(LANGUAGE_STORAGE_KEY) : null;
     if (stored === 'en' || stored === 'fr') {
       return stored;
     }
@@ -65,7 +54,7 @@ function getPreferredLanguage() {
 function setPreferredLanguage(lang) {
   try {
     if (window.localStorage) {
-      localStorage.setItem(STORAGE_KEY, lang);
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     }
   } catch (error) {
     console.warn('Unable to persist language preference', error);
@@ -74,8 +63,9 @@ function setPreferredLanguage(lang) {
 
 function applyLanguage(lang) {
   document.documentElement.setAttribute('lang', lang);
-  const targets = document.querySelectorAll('[data-fr][data-en]');
-  targets.forEach((element) => {
+
+  const textTargets = document.querySelectorAll('[data-fr][data-en]');
+  textTargets.forEach((element) => {
     const text = element.getAttribute(`data-${lang}`);
     if (text === null) {
       return;
@@ -87,14 +77,718 @@ function applyLanguage(lang) {
     }
   });
 
+  const titleTargets = document.querySelectorAll('[data-fr-title][data-en-title]');
+  titleTargets.forEach((element) => {
+    const label = element.getAttribute(lang === 'fr' ? 'data-fr-title' : 'data-en-title');
+    if (label) {
+      element.setAttribute('title', label);
+      element.setAttribute('aria-label', label);
+    }
+  });
+
   document.querySelectorAll('.language-toggle').forEach((button) => {
     button.classList.toggle('active', button.dataset.lang === lang);
   });
 }
 
+function notifyLanguageChange(lang) {
+  LANGUAGE_LISTENERS.forEach((listener) => {
+    try {
+      listener(lang);
+    } catch (error) {
+      console.warn('Language listener error', error);
+    }
+  });
+}
+
+function onLanguageChange(listener) {
+  if (typeof listener === 'function') {
+    LANGUAGE_LISTENERS.add(listener);
+  }
+}
+
 function switchLanguage(lang) {
   applyLanguage(lang);
   setPreferredLanguage(lang);
+  notifyLanguageChange(lang);
+}
+
+function getStoredViewMode() {
+  try {
+    const stored = window.localStorage ? localStorage.getItem(VIEW_STORAGE_KEY) : null;
+    if (stored && SUPPORTED_VIEW_MODES.has(stored)) {
+      return stored;
+    }
+  } catch (error) {
+    console.warn('Unable to read stored view mode', error);
+  }
+  return DEFAULT_VIEW_MODE;
+}
+
+function setStoredViewMode(view) {
+  try {
+    if (window.localStorage && SUPPORTED_VIEW_MODES.has(view)) {
+      localStorage.setItem(VIEW_STORAGE_KEY, view);
+    }
+  } catch (error) {
+    console.warn('Unable to persist view mode', error);
+  }
+}
+
+function normalizeLevel(level) {
+  const value = (level || '').toString().trim().toUpperCase().replace(/\s+/g, '_');
+  if (value === 'FATAL') {
+    return 'FATAL_ERROR';
+  }
+  if (value === 'INFO') {
+    return 'INFORMATION';
+  }
+  if (LEVEL_STYLES[value]) {
+    return value;
+  }
+  return 'INFORMATION';
+}
+
+function extractLocalizedText(element, fallback = '') {
+  if (!element) {
+    return { fr: fallback, en: fallback };
+  }
+  const dataset = element.dataset || {};
+  const pick = (keys, defaultValue) => {
+    for (const key of keys) {
+      const value = dataset[key];
+      if (value) {
+        return value.trim();
+      }
+    }
+    return defaultValue;
+  };
+  const baseText = element.textContent ? element.textContent.trim() : fallback;
+  const frValue = pick(['fr', 'frFr'], baseText);
+  const enValue = pick(['en', 'enUs', 'enUk', 'enGb'], baseText);
+  return { fr: frValue, en: enValue };
+}
+
+function extractIdentifierFromDocument(doc) {
+  const rows = Array.from(doc.querySelectorAll('.info-table tr'));
+  for (const row of rows) {
+    const header = row.querySelector('th');
+    const headerTexts = [
+      header ? header.textContent || '' : '',
+      header?.dataset?.fr || '',
+      header?.dataset?.en || ''
+    ]
+      .map((value) => value.toLowerCase())
+      .join(' ');
+    if (headerTexts.includes('identifiant') || headerTexts.includes('identifier') || headerTexts.includes('check id')) {
+      const cell = row.querySelector('td');
+      if (cell) {
+        return cell.textContent.trim();
+      }
+    }
+  }
+  return '';
+}
+
+function parseCheckDocument(filename, html) {
+  const doc = DOM_PARSER.parseFromString(html, 'text/html');
+
+  const title = extractLocalizedText(doc.querySelector('.page-title'));
+  const descriptionElement = doc.querySelector('.content-section p');
+  const description = extractLocalizedText(descriptionElement);
+
+  const remediationSection = doc.querySelectorAll('.content-section p')[1];
+  const remediation = remediationSection
+    ? extractLocalizedText(remediationSection)
+    : { ...description };
+
+  const levelElement = doc.querySelector('.level-pill');
+  let level = 'INFORMATION';
+  if (levelElement) {
+    const classLevel = Array.from(levelElement.classList).find((className) => className.startsWith('level-') && className !== 'level-pill');
+    if (classLevel) {
+      level = classLevel.replace('level-', '');
+    } else {
+      level = levelElement.textContent || level;
+    }
+  }
+  level = normalizeLevel(level);
+
+  const identifier = extractIdentifierFromDocument(doc);
+
+  return {
+    file: filename,
+    title,
+    description,
+    remediation,
+    identifier,
+    level,
+    normalized: {
+      fr: normalize([title.fr, description.fr, remediation.fr, identifier].join(' ')),
+      en: normalize([title.en, description.en, remediation.en, identifier].join(' '))
+    }
+  };
+}
+
+async function discoverCheckFiles() {
+  try {
+    const response = await fetch('checks/');
+    if (!response.ok) {
+      throw new Error(`Unable to list checks directory: ${response.status}`);
+    }
+    const directoryHtml = await response.text();
+    const doc = DOM_PARSER.parseFromString(directoryHtml, 'text/html');
+    const anchors = Array.from(doc.querySelectorAll('a[href]'));
+    const hrefs = anchors.map((anchor) => anchor.getAttribute('href') || '');
+    let files = hrefs
+      .filter((href) => href && href.toLowerCase().endsWith('.html'))
+      .map((href) => href.split('/').filter(Boolean).pop())
+      .filter(Boolean);
+
+    if (!files.length) {
+      const matches = Array.from(directoryHtml.matchAll(/href\s*=\s*"([^"]+\.html)"/gi));
+      files = matches.map((match) => match[1].split('/').filter(Boolean).pop()).filter(Boolean);
+    }
+
+    const unique = Array.from(new Set(files));
+    return unique;
+  } catch (error) {
+    console.error('Failed to discover check files', error);
+    throw error;
+  }
+}
+
+async function loadCheckData(files) {
+  const checks = [];
+  for (const file of files) {
+    try {
+      const response = await fetch(`checks/${file}`);
+      if (!response.ok) {
+        console.warn(`Skipping ${file}: HTTP ${response.status}`);
+        continue;
+      }
+      const html = await response.text();
+      const parsed = parseCheckDocument(file, html);
+      checks.push(parsed);
+    } catch (error) {
+      console.warn(`Unable to parse ${file}`, error);
+    }
+  }
+  return checks;
+}
+
+function formatStatusMessage(state, lang) {
+  if (state.type === 'error') {
+    return lang === 'fr'
+      ? "Impossible de charger les contrôles."
+      : 'Unable to load the checks.';
+  }
+  if (state.type === 'loading') {
+    return lang === 'fr'
+      ? 'Chargement des contrôles...'
+      : 'Loading checks...';
+  }
+  const count = state.count || 0;
+  const total = state.total || 0;
+  if (total === 0) {
+    return lang === 'fr' ? 'Aucun contrôle disponible.' : 'No check available.';
+  }
+  const countLabelFr = count > 1 ? 'contrôles affichés' : 'contrôle affiché';
+  const countLabelEn = count === 1 ? 'check displayed' : 'checks displayed';
+  return lang === 'fr'
+    ? `${count} ${countLabelFr} sur ${total}.`
+    : `${count} ${countLabelEn} out of ${total}.`;
+}
+
+function applyFilters(checks, term, criticality, lang) {
+  const normalizedTerm = normalize(term);
+  return checks.filter((check) => {
+    const matchesLevel = criticality === 'all' || check.level === criticality;
+    if (!matchesLevel) {
+      return false;
+    }
+    if (!normalizedTerm) {
+      return true;
+    }
+    const haystack = check.normalized[lang] || check.normalized.fr;
+    return haystack.includes(normalizedTerm);
+  });
+}
+
+function sortChecks(checks, sortState, lang) {
+  const collator = new Intl.Collator(lang === 'fr' ? 'fr-FR' : 'en-US', {
+    sensitivity: 'base',
+    numeric: true
+  });
+  const direction = sortState.direction === 'desc' ? -1 : 1;
+  return [...checks].sort((a, b) => {
+    const aTitle = a.title[lang] || a.title.fr || a.title.en;
+    const bTitle = b.title[lang] || b.title.fr || b.title.en;
+    switch (sortState.key) {
+      case 'description': {
+        const aDesc = a.description[lang] || a.description.fr || a.description.en;
+        const bDesc = b.description[lang] || b.description.fr || b.description.en;
+        return collator.compare(aDesc, bDesc) * direction;
+      }
+      case 'level': {
+        const levelDiff = (LEVEL_ORDER[a.level] ?? 99) - (LEVEL_ORDER[b.level] ?? 99);
+        if (levelDiff !== 0) {
+          return levelDiff * direction;
+        }
+        return collator.compare(aTitle, bTitle) * direction;
+      }
+      case 'identifier': {
+        return collator.compare(a.identifier || '', b.identifier || '') * direction;
+      }
+      case 'title':
+      default:
+        return collator.compare(aTitle, bTitle) * direction;
+    }
+  });
+}
+
+function buildLevelPill(level, lang) {
+  const span = document.createElement('span');
+  const normalized = normalizeLevel(level);
+  span.className = `level-pill ${LEVEL_STYLES[normalized] || LEVEL_STYLES.INFORMATION}`;
+  const label = LEVEL_LABELS[normalized] ? LEVEL_LABELS[normalized][lang] : normalized;
+  span.textContent = label || normalized;
+  return span;
+}
+
+function renderGrid(viewContainer, checks, viewMode, lang, openModal) {
+  const grid = document.createElement('div');
+  grid.className = `card-grid ${viewMode === 'grid-dense' ? 'card-grid--dense' : 'card-grid--comfortable'}`;
+
+  checks.forEach((check) => {
+    const card = document.createElement('article');
+    card.className = 'check-card';
+    card.tabIndex = 0;
+    card.dataset.level = check.level;
+
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+
+    const front = document.createElement('div');
+    front.className = 'card-front';
+
+    const levelPill = buildLevelPill(check.level, lang);
+    front.appendChild(levelPill);
+
+    if (check.identifier) {
+      const identifier = document.createElement('p');
+      identifier.className = 'identifier';
+      identifier.textContent = check.identifier;
+      front.appendChild(identifier);
+    }
+
+    const title = document.createElement('h3');
+    title.textContent = check.title[lang] || check.title.fr || check.title.en;
+    front.appendChild(title);
+
+    const summary = document.createElement('p');
+    summary.className = 'check-summary';
+    summary.textContent = check.description[lang] || check.description.fr || check.description.en || '';
+    front.appendChild(summary);
+
+    const back = document.createElement('div');
+    back.className = 'card-back';
+
+    const backTitle = document.createElement('p');
+    backTitle.className = 'card-back-title';
+    backTitle.textContent = lang === 'fr' ? 'Résumé' : 'Overview';
+    back.appendChild(backTitle);
+
+    const backDescription = document.createElement('p');
+    backDescription.className = 'card-back-description';
+    backDescription.textContent = check.remediation[lang] || check.description[lang] || check.remediation.fr || check.description.fr;
+    back.appendChild(backDescription);
+
+    const backAction = document.createElement('button');
+    backAction.type = 'button';
+    backAction.className = 'card-back-action';
+    backAction.textContent = lang === 'fr' ? 'Ouvrir le détail' : 'Open details';
+    backAction.addEventListener('click', (event) => {
+      event.stopPropagation();
+      openModal(check);
+    });
+    back.appendChild(backAction);
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    card.appendChild(inner);
+
+    card.addEventListener('click', () => openModal(check));
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openModal(check);
+      }
+    });
+
+    grid.appendChild(card);
+  });
+
+  viewContainer.innerHTML = '';
+  viewContainer.appendChild(grid);
+}
+
+function buildListActions(lang, copyHandler, exportHandler) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'list-actions';
+
+  const copyButton = document.createElement('button');
+  copyButton.type = 'button';
+  copyButton.textContent = lang === 'fr' ? 'Copier le tableau' : 'Copy table';
+  copyButton.addEventListener('click', copyHandler);
+
+  const exportButton = document.createElement('button');
+  exportButton.type = 'button';
+  exportButton.textContent = lang === 'fr' ? 'Exporter en CSV' : 'Export CSV';
+  exportButton.addEventListener('click', exportHandler);
+
+  wrapper.appendChild(copyButton);
+  wrapper.appendChild(exportButton);
+
+  return wrapper;
+}
+
+function renderList(viewContainer, checks, sortState, lang, openModal, updateSort) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'table-wrapper';
+
+  const actions = buildListActions(
+    lang,
+    () => copyChecksToClipboard(checks, lang),
+    () => exportChecksToCsv(checks, lang)
+  );
+  wrapper.appendChild(actions);
+
+  const table = document.createElement('table');
+  table.className = 'data-table';
+
+  const columns = [
+    { key: 'title', label: { fr: 'Nom du check', en: 'Check name' } },
+    { key: 'description', label: { fr: 'Description', en: 'Description' } },
+    { key: 'level', label: { fr: 'Criticité', en: 'Criticality' } },
+    { key: 'identifier', label: { fr: 'Identifiant', en: 'Identifier' } }
+  ];
+
+  const thead = table.createTHead();
+  const headRow = thead.insertRow();
+  columns.forEach((column) => {
+    const th = document.createElement('th');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.sortKey = column.key;
+    button.textContent = column.label[lang];
+    if (sortState.key === column.key) {
+      const indicator = document.createElement('span');
+      indicator.className = 'sort-indicator';
+      indicator.textContent = sortState.direction === 'asc' ? '↑' : '↓';
+      button.appendChild(indicator);
+    }
+    button.addEventListener('click', () => updateSort(column.key));
+    th.appendChild(button);
+    headRow.appendChild(th);
+  });
+
+  const tbody = table.createTBody();
+  checks.forEach((check) => {
+    const row = tbody.insertRow();
+    row.dataset.file = check.file;
+    row.addEventListener('click', () => openModal(check));
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openModal(check);
+      }
+    });
+    row.tabIndex = 0;
+    row.setAttribute('role', 'button');
+
+    const titleCell = row.insertCell();
+    titleCell.textContent = check.title[lang] || check.title.fr || check.title.en;
+
+    const descriptionCell = row.insertCell();
+    descriptionCell.textContent = check.description[lang] || check.description.fr || check.description.en;
+
+    const levelCell = row.insertCell();
+    levelCell.appendChild(buildLevelPill(check.level, lang));
+
+    const identifierCell = row.insertCell();
+    identifierCell.textContent = check.identifier;
+  });
+
+  wrapper.appendChild(table);
+  viewContainer.innerHTML = '';
+  viewContainer.appendChild(wrapper);
+}
+
+function copyChecksToClipboard(checks, lang) {
+  if (!checks.length) {
+    return;
+  }
+  const columns = [
+    lang === 'fr' ? 'Nom du check' : 'Check name',
+    lang === 'fr' ? 'Description' : 'Description',
+    lang === 'fr' ? 'Criticité' : 'Criticality',
+    lang === 'fr' ? 'Identifiant' : 'Identifier'
+  ];
+  const rows = checks.map((check) => [
+    check.title[lang] || check.title.fr || check.title.en,
+    check.description[lang] || check.description.fr || check.description.en,
+    LEVEL_LABELS[check.level] ? LEVEL_LABELS[check.level][lang] : check.level,
+    check.identifier
+  ]);
+  const text = [columns.join('\t'), ...rows.map((row) => row.join('\t'))].join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch((error) => {
+      console.warn('Clipboard copy failed', error);
+      window.alert(lang === 'fr' ? 'Impossible de copier le tableau.' : 'Unable to copy the table.');
+    });
+  } else {
+    window.alert(lang === 'fr' ? 'La copie n\'est pas supportée par ce navigateur.' : 'Copy is not supported by this browser.');
+  }
+}
+
+function exportChecksToCsv(checks, lang) {
+  if (!checks.length) {
+    return;
+  }
+  const headers = [
+    lang === 'fr' ? 'Nom du check' : 'Check name',
+    lang === 'fr' ? 'Description' : 'Description',
+    lang === 'fr' ? 'Criticité' : 'Criticality',
+    lang === 'fr' ? 'Identifiant' : 'Identifier'
+  ];
+  const escapeCsv = (value) => {
+    const stringValue = (value || '').toString();
+    if (/[",\n]/.test(stringValue)) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return stringValue;
+  };
+  const rows = checks.map((check) => [
+    escapeCsv(check.title[lang] || check.title.fr || check.title.en),
+    escapeCsv(check.description[lang] || check.description.fr || check.description.en),
+    escapeCsv(LEVEL_LABELS[check.level] ? LEVEL_LABELS[check.level][lang] : check.level),
+    escapeCsv(check.identifier)
+  ]);
+  const csvContent = [headers.map(escapeCsv).join(','), ...rows.map((row) => row.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `consistency-checks-${lang}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function initHomePage(initialLang) {
+  const searchInput = document.querySelector('[data-search]');
+  const criticalitySelect = document.querySelector('[data-filter-criticality]');
+  const viewButtons = Array.from(document.querySelectorAll('[data-view-mode]'));
+  const viewContainer = document.querySelector('[data-view-container]');
+  const loadingIndicator = document.querySelector('[data-loading-indicator]');
+  const emptyState = document.querySelector('[data-empty-state]');
+  const statusElement = document.querySelector('[data-status-count]');
+  const modal = document.querySelector('[data-check-modal]');
+  const modalTitle = modal ? modal.querySelector('.modal-title') : null;
+  const modalFrame = modal ? modal.querySelector('.modal-frame') : null;
+  const modalClose = modal ? modal.querySelector('[data-modal-close]') : null;
+
+  let checks = [];
+  let searchTerm = '';
+  let selectedCriticality = 'all';
+  let currentView = getStoredViewMode();
+  let currentLanguage = initialLang;
+  let sortState = { key: 'title', direction: 'asc' };
+  let statusState = { type: 'loading', count: 0, total: 0 };
+
+  const updateStatus = () => {
+    if (statusElement) {
+      statusElement.textContent = formatStatusMessage(statusState, currentLanguage);
+    }
+  };
+
+  const setViewButtonsState = () => {
+    viewButtons.forEach((button) => {
+      const isActive = button.dataset.viewMode === currentView;
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      button.classList.toggle('is-active', isActive);
+    });
+  };
+
+  const openModal = (check) => {
+    if (!modal || !modalTitle || !modalFrame) {
+      window.open(`checks/${check.file}`, '_blank');
+      return;
+    }
+    const targetTitle = check.title[currentLanguage] || check.title.fr || check.title.en;
+    modalTitle.textContent = targetTitle;
+    modalFrame.setAttribute('src', `checks/${check.file}`);
+    if (typeof modal.showModal === 'function') {
+      modal.showModal();
+    } else {
+      window.open(`checks/${check.file}`, '_blank');
+    }
+  };
+
+  if (modal && modalClose) {
+    modalClose.addEventListener('click', () => {
+      modal.close();
+    });
+    modal.addEventListener('close', () => {
+      if (modalFrame) {
+        modalFrame.setAttribute('src', 'about:blank');
+      }
+    });
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.close();
+      }
+    });
+  }
+
+  const updateSort = (key) => {
+    if (sortState.key === key) {
+      sortState = { key, direction: sortState.direction === 'asc' ? 'desc' : 'asc' };
+    } else {
+      sortState = { key, direction: 'asc' };
+    }
+    render();
+  };
+
+  const render = () => {
+    if (!viewContainer) {
+      return;
+    }
+    if (statusState.type === 'loading') {
+      if (loadingIndicator) {
+        loadingIndicator.hidden = false;
+      }
+      if (emptyState) {
+        emptyState.hidden = true;
+      }
+      viewContainer.innerHTML = '';
+      return;
+    }
+
+    if (statusState.type === 'error') {
+      if (loadingIndicator) {
+        loadingIndicator.hidden = true;
+      }
+      if (emptyState) {
+        emptyState.hidden = false;
+      }
+      viewContainer.innerHTML = '';
+      updateStatus();
+      return;
+    }
+
+    if (loadingIndicator) {
+      loadingIndicator.hidden = true;
+    }
+
+    const filtered = applyFilters(checks, searchTerm, selectedCriticality, currentLanguage);
+    const sorted = sortChecks(filtered, sortState, currentLanguage);
+    statusState = { type: 'ready', count: sorted.length, total: checks.length };
+    updateStatus();
+
+    if (!sorted.length) {
+      viewContainer.innerHTML = '';
+      if (emptyState) {
+        emptyState.hidden = false;
+      }
+      return;
+    }
+
+    if (emptyState) {
+      emptyState.hidden = true;
+    }
+
+    if (currentView === 'list') {
+      renderList(viewContainer, sorted, sortState, currentLanguage, openModal, updateSort);
+    } else {
+      renderGrid(viewContainer, sorted, currentView, currentLanguage, openModal);
+    }
+  };
+
+  const performSearch = (event) => {
+    searchTerm = event.target.value || '';
+    render();
+  };
+
+  const changeCriticality = (event) => {
+    selectedCriticality = event.target.value || 'all';
+    render();
+  };
+
+  const changeView = (event) => {
+    const mode = event.currentTarget.dataset.viewMode;
+    if (!mode || mode === currentView) {
+      return;
+    }
+    currentView = mode;
+    setStoredViewMode(currentView);
+    setViewButtonsState();
+    render();
+  };
+
+  onLanguageChange((lang) => {
+    currentLanguage = lang;
+    updateStatus();
+    render();
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', performSearch);
+  }
+
+  if (criticalitySelect) {
+    criticalitySelect.addEventListener('change', changeCriticality);
+  }
+
+  viewButtons.forEach((button) => {
+    button.addEventListener('click', changeView);
+  });
+
+  setViewButtonsState();
+  statusState = { type: 'loading', count: 0, total: 0 };
+  updateStatus();
+  if (loadingIndicator) {
+    loadingIndicator.hidden = false;
+  }
+  if (emptyState) {
+    emptyState.hidden = true;
+  }
+
+  discoverCheckFiles()
+    .then((files) => loadCheckData(files))
+    .then((loadedChecks) => {
+      checks = sortChecks(loadedChecks, { key: 'title', direction: 'asc' }, currentLanguage);
+      statusState = { type: 'ready', count: checks.length, total: checks.length };
+      render();
+    })
+    .catch(() => {
+      statusState = { type: 'error', count: 0, total: 0 };
+      updateStatus();
+      if (loadingIndicator) {
+        loadingIndicator.hidden = true;
+      }
+      if (emptyState) {
+        emptyState.hidden = false;
+        const message = emptyState.querySelector('[data-fr][data-en]');
+        if (message) {
+          message.setAttribute('data-fr', 'Aucun contrôle n\'a pu être chargé.');
+          message.setAttribute('data-en', 'No check could be loaded.');
+          message.textContent = message.getAttribute(`data-${currentLanguage}`) || '';
+        }
+      }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -102,478 +796,16 @@ document.addEventListener('DOMContentLoaded', () => {
   applyLanguage(initialLang);
 
   document.querySelectorAll('.language-toggle').forEach((button) => {
-    button.addEventListener('click', () => switchLanguage(button.dataset.lang));
+    button.addEventListener('click', () => {
+      const lang = button.dataset.lang;
+      if (lang === 'en' || lang === 'fr') {
+        switchLanguage(lang);
+      }
+    });
   });
 
-  const manifestContainer = document.querySelector('[data-manifest-container]');
-  if (!manifestContainer) {
-    return;
-  }
-
   const pageType = document.body ? document.body.getAttribute('data-page') : null;
-  const searchInput = document.querySelector('[data-search]');
-  const filterButtons = Array.from(document.querySelectorAll('[data-filter-level]'));
-  let sidebarButtons = [];
-  let activeSidebarLevel = 'all';
-  let filterChecksRef = null;
-  let sidebarState = null;
-
-  function collapseSidebarPanels() {
-    if (!sidebarState) {
-      return;
-    }
-    sidebarState.groups.forEach(({ toggle, panel }) => {
-      toggle.classList.remove('is-active');
-      if (panel) {
-        panel.hidden = true;
-        toggle.setAttribute('aria-expanded', 'false');
-      } else {
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
-
-  function applySidebarState() {
-    if (!sidebarState) {
-      return;
-    }
-
-    collapseSidebarPanels();
-    const current = sidebarState.groups.get(activeSidebarLevel);
-
-    if (current) {
-      current.toggle.classList.add('is-active');
-      if (current.panel) {
-        current.panel.hidden = false;
-        current.toggle.setAttribute('aria-expanded', 'true');
-      }
-      return;
-    }
-
-    const fallback = sidebarState.groups.get('all');
-    if (fallback) {
-      fallback.toggle.classList.add('is-active');
-    }
-    activeSidebarLevel = 'all';
-  }
-
-  function handleSidebarToggle(levelKey) {
-    if (activeSidebarLevel === levelKey) {
-      activeSidebarLevel = 'all';
-    } else {
-      activeSidebarLevel = levelKey;
-    }
-    applySidebarState();
-
-    if (typeof filterChecksRef === 'function') {
-      filterChecksRef();
-    }
-  }
-
-  function createSidebar() {
-    const sidebar = document.createElement('nav');
-    sidebar.id = 'sidebar';
-    sidebar.setAttribute('aria-label', 'Navigation par criticité');
-
-    const title = document.createElement('h2');
-    title.className = 'sidebar-title';
-    title.setAttribute('data-fr', 'Criticité');
-    title.setAttribute('data-en', 'Criticality');
-    title.textContent = 'Criticité';
-    sidebar.appendChild(title);
-
-    const list = document.createElement('ul');
-    list.className = 'sidebar-groups';
-    sidebar.appendChild(list);
-
-    const groups = new Map();
-
-    SIDEBAR_GROUPS.forEach((group) => {
-      const listItem = document.createElement('li');
-      listItem.className = 'sidebar-group';
-
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'sidebar-toggle';
-      toggle.dataset.level = group.key;
-      toggle.dataset.hasPanel = group.key !== 'all' ? 'true' : 'false';
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.innerHTML = `<span data-fr="${group.label.fr}" data-en="${group.label.en}">${group.label.fr}</span>`;
-      listItem.appendChild(toggle);
-
-      let panel = null;
-      let linksList = null;
-      if (group.key !== 'all') {
-        panel = document.createElement('div');
-        panel.className = 'sidebar-panel';
-        panel.hidden = true;
-
-        linksList = document.createElement('ul');
-        linksList.className = 'sidebar-links';
-        panel.appendChild(linksList);
-        listItem.appendChild(panel);
-      }
-
-      list.appendChild(listItem);
-      groups.set(group.key, { toggle, panel, linksList, definition: group });
-    });
-
-    document.body.appendChild(sidebar);
-    sidebarButtons = Array.from(sidebar.querySelectorAll('.sidebar-toggle'));
-    sidebarState = { sidebar, groups };
-
-    sidebarButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const levelKey = button.dataset.level || 'all';
-        handleSidebarToggle(levelKey);
-      });
-    });
-
-    applySidebarState();
-    applyLanguage(getPreferredLanguage());
-  }
-
   if (pageType === 'index') {
-    createSidebar();
+    initHomePage(initialLang);
   }
-
-  function updateSidebar(checks) {
-    if (!sidebarState) {
-      return;
-    }
-
-    sidebarState.groups.forEach(({ linksList }, key) => {
-      if (!linksList) {
-        return;
-      }
-
-      linksList.innerHTML = '';
-      const matches = checks
-        .filter((check) => getLevelGroup(check.level) === key)
-        .slice()
-        .sort((a, b) => a.title_fr.localeCompare(b.title_fr));
-
-      if (!matches.length) {
-        const emptyItem = document.createElement('li');
-        const emptyText = document.createElement('span');
-        emptyText.className = 'sidebar-empty';
-        emptyText.setAttribute('data-fr', 'Aucun contrôle disponible');
-        emptyText.setAttribute('data-en', 'No checks available');
-        emptyText.textContent = 'Aucun contrôle disponible';
-        emptyItem.appendChild(emptyText);
-        linksList.appendChild(emptyItem);
-        return;
-      }
-
-      matches.forEach((check) => {
-        const listItem = document.createElement('li');
-        const link = document.createElement('a');
-        link.className = 'sidebar-link';
-        link.setAttribute('data-fr', check.title_fr);
-        link.setAttribute('data-en', check.title_en);
-        link.textContent = check.title_fr;
-
-        if (check.file) {
-          link.href = check.file;
-        } else {
-          link.href = '#';
-          link.classList.add('is-disabled');
-          link.setAttribute('aria-disabled', 'true');
-          link.addEventListener('click', (event) => event.preventDefault());
-        }
-
-        listItem.appendChild(link);
-        linksList.appendChild(listItem);
-      });
-    });
-
-    applySidebarState();
-    applyLanguage(getPreferredLanguage());
-  }
-
-  function setupCardInteractions(card) {
-    const mediaQuery = typeof window.matchMedia === 'function' ? window.matchMedia('(hover: none)') : null;
-
-    card.addEventListener('click', (event) => {
-      if (mediaQuery && !mediaQuery.matches) {
-        return;
-      }
-      if (!mediaQuery) {
-        return;
-      }
-      if (event.target.closest('.btn')) {
-        return;
-      }
-      card.classList.toggle('is-flipped');
-    });
-  }
-
-  function renderChecks(checks) {
-    manifestContainer.innerHTML = '';
-
-    const fragment = document.createDocumentFragment();
-    const entries = [];
-
-    checks.forEach((check) => {
-      const card = document.createElement('article');
-      card.className = 'check-card';
-      const levelGroup = getLevelGroup(check.level);
-      card.dataset.level = levelGroup;
-
-      const cardInner = document.createElement('div');
-      cardInner.className = 'card-inner';
-      card.appendChild(cardInner);
-
-      const front = document.createElement('div');
-      front.className = 'card-front';
-      cardInner.appendChild(front);
-
-      const levelPill = document.createElement('span');
-      const levelStyle = LEVEL_STYLES[check.level] || '';
-      levelPill.className = `level-pill ${levelStyle}`;
-      const levelLabel = LEVEL_LABELS[check.level] || {
-        fr: check.level || '',
-        en: check.level || ''
-      };
-      levelPill.setAttribute('data-fr', levelLabel.fr);
-      levelPill.setAttribute('data-en', levelLabel.en);
-      levelPill.textContent = levelLabel.fr;
-      front.appendChild(levelPill);
-
-      const title = document.createElement('h3');
-      title.setAttribute('data-fr', check.title_fr);
-      title.setAttribute('data-en', check.title_en);
-      front.appendChild(title);
-
-      const scriptInfo = document.createElement('p');
-      scriptInfo.setAttribute('data-fr', `Script : ${check.script}`);
-      scriptInfo.setAttribute('data-en', `Script: ${check.script}`);
-      front.appendChild(scriptInfo);
-
-      if (check.description_fr || check.description_en) {
-        const description = document.createElement('p');
-        description.className = 'card-description';
-        description.setAttribute('data-fr', check.description_fr || '');
-        description.setAttribute('data-en', check.description_en || check.description_fr || '');
-        front.appendChild(description);
-      }
-
-      const back = document.createElement('div');
-      back.className = 'card-back';
-      cardInner.appendChild(back);
-
-      const summary = document.createElement('p');
-      summary.setAttribute('data-fr', check.description_fr || '');
-      summary.setAttribute('data-en', check.description_en || check.description_fr || '');
-      back.appendChild(summary);
-
-      const button = document.createElement('a');
-      button.className = 'btn';
-      if (check.file) {
-        button.href = check.file;
-      } else {
-        button.href = '#';
-        button.setAttribute('aria-disabled', 'true');
-        button.classList.add('is-disabled');
-      }
-      button.setAttribute('data-fr', 'Consulter la documentation');
-      button.setAttribute('data-en', 'View documentation');
-      back.appendChild(button);
-
-      fragment.appendChild(card);
-      setupCardInteractions(card);
-
-      const searchableParts = [
-        check.title_fr,
-        check.title_en,
-        check.script,
-        check.id,
-        check.description_fr,
-        check.description_en
-      ]
-        .filter(Boolean)
-        .join(' ');
-      const normalizedText = normalize(searchableParts);
-      const normalizedWords = normalizedText
-        .replace(/[^a-z0-9\s]/g, ' ')
-        .split(/\s+/)
-        .filter(Boolean);
-
-      entries.push({
-        element: card,
-        level: check.level,
-        levelGroup,
-        normalizedText,
-        normalizedWords
-      });
-    });
-
-    manifestContainer.appendChild(fragment);
-    applyLanguage(getPreferredLanguage());
-
-    return entries;
-  }
-
-  function handleFiltering(checks) {
-    const sorted = checks.slice().sort((a, b) => a.title_fr.localeCompare(b.title_fr));
-    const entries = renderChecks(sorted);
-    updateSidebar(sorted);
-
-    const emptyMessage = document.createElement('p');
-    emptyMessage.className = 'empty-state';
-    emptyMessage.setAttribute('data-fr', 'Aucun résultat ne correspond à votre recherche.');
-    emptyMessage.setAttribute('data-en', 'No results match your search.');
-    emptyMessage.style.display = 'none';
-    manifestContainer.parentNode.insertBefore(emptyMessage, manifestContainer.nextSibling);
-    applyLanguage(getPreferredLanguage());
-
-    function setCardVisibility(element, shouldShow) {
-      const EXIT_CLASS = 'is-hiding';
-      const ENTER_CLASS = 'is-entering';
-      const EXIT_ANIMATION = 'cardExit';
-      const ENTER_ANIMATION = 'cardEnter';
-
-      const detachHandler = (key) => {
-        const handler = element[key];
-        if (typeof handler === 'function') {
-          element.removeEventListener('animationend', handler);
-          delete element[key];
-        }
-      };
-
-      if (shouldShow) {
-        if (!element.hasAttribute('hidden') && !element.classList.contains(EXIT_CLASS)) {
-          return;
-        }
-
-        detachHandler('__cardExitHandler');
-
-        element.classList.remove(EXIT_CLASS);
-        element.removeAttribute('hidden');
-
-        // Force reflow before playing the enter animation
-        void element.offsetWidth; // eslint-disable-line no-unused-expressions
-
-        element.classList.add(ENTER_CLASS);
-
-        const handleEnter = (event) => {
-          if (event.target !== element || event.animationName !== ENTER_ANIMATION) {
-            return;
-          }
-          element.classList.remove(ENTER_CLASS);
-          detachHandler('__cardEnterHandler');
-        };
-
-        element.__cardEnterHandler = handleEnter;
-        element.addEventListener('animationend', handleEnter);
-        return;
-      }
-
-      if (element.hasAttribute('hidden') || element.classList.contains(EXIT_CLASS)) {
-        return;
-      }
-
-      detachHandler('__cardEnterHandler');
-      element.classList.add(EXIT_CLASS);
-
-      const handleExit = (event) => {
-        if (event.target !== element || event.animationName !== EXIT_ANIMATION) {
-          return;
-        }
-        detachHandler('__cardExitHandler');
-        element.classList.remove(EXIT_CLASS);
-        element.setAttribute('hidden', '');
-      };
-
-      element.__cardExitHandler = handleExit;
-      element.addEventListener('animationend', handleExit);
-    }
-
-    function filterChecks() {
-      const rawQuery = searchInput ? searchInput.value : '';
-      const normalizedQuery = normalize(rawQuery.trim());
-      const fuzzyPrefix = normalizedQuery.slice(0, 3);
-      const activeLevels = filterButtons
-        .filter((button) => button.classList.contains('active'))
-        .map((button) => button.dataset.filterLevel);
-
-      let visibleCount = 0;
-
-      entries.forEach(({ element, level, levelGroup, normalizedText, normalizedWords }) => {
-        const matchesLevel = !activeLevels.length || activeLevels.includes(level);
-        const matchesSidebar =
-          activeSidebarLevel === 'all' || (levelGroup && levelGroup === activeSidebarLevel);
-
-        let matchesQuery = !normalizedQuery;
-        if (!matchesQuery) {
-          const hasExact = normalizedText.includes(normalizedQuery);
-          const hasPrefix =
-            fuzzyPrefix.length >= 3 &&
-            normalizedWords.some((word) => word.startsWith(fuzzyPrefix));
-          matchesQuery = hasExact || hasPrefix;
-        }
-
-        const shouldShow = matchesQuery && matchesLevel && matchesSidebar;
-        setCardVisibility(element, shouldShow);
-        if (shouldShow) {
-          visibleCount += 1;
-        }
-      });
-
-      emptyMessage.style.display = visibleCount ? 'none' : 'block';
-    }
-
-    filterChecks();
-    filterChecksRef = filterChecks;
-
-    if (searchInput) {
-      searchInput.addEventListener('input', filterChecks);
-    }
-
-    filterButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        button.classList.toggle('active');
-        filterChecks();
-      });
-    });
-
-    applySidebarState();
-  }
-
-  function loadManifest() {
-    function onData(data) {
-      handleFiltering(Array.isArray(data) ? data : []);
-    }
-
-    fetch('manifest.json')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(onData)
-      .catch(() => {
-        const request = new XMLHttpRequest();
-        request.overrideMimeType('application/json');
-        request.open('GET', 'manifest.json', true);
-        request.onreadystatechange = function () {
-          if (request.readyState === 4) {
-            if (request.status === 200 || request.status === 0) {
-              onData(JSON.parse(request.responseText));
-            } else {
-              manifestContainer.innerHTML = '';
-              const error = document.createElement('p');
-              error.setAttribute('data-fr', 'Impossible de charger la liste des contrôles.');
-              error.setAttribute('data-en', 'Unable to load the list of checks.');
-              manifestContainer.appendChild(error);
-              applyLanguage(getPreferredLanguage());
-            }
-          }
-        };
-        request.send(null);
-      });
-  }
-
-  loadManifest();
 });
