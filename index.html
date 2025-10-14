@@ -16,13 +16,27 @@
           <span class="brand-title">Centre MAESTRIA</span>
           <span class="brand-subtitle">Consistency Checker</span>
         </a>
+        <button
+          class="language-switch"
+          type="button"
+          role="switch"
+          data-language-toggle
+          data-aria-label-to-en="Passer l'interface en anglais"
+          data-aria-label-to-fr="Switch interface to French"
+          aria-checked="false"
+          data-active-lang="fr"
+          aria-label="Passer l'interface en anglais"
+          title="Passer l'interface en anglais"
+        >
+          <span class="language-switch-track">
+            <span class="language-switch-option language-switch-option--fr">FR</span>
+            <span class="language-switch-option language-switch-option--en">EN</span>
+            <span class="language-switch-thumb" aria-hidden="true"></span>
+          </span>
+        </button>
       </div>
     </header>
     <main id="main-content">
-      <div class="language-switcher">
-        <button class="language-toggle active" data-lang="fr" data-fr="FR" data-en="FR">FR</button>
-        <button class="language-toggle" data-lang="en" data-fr="EN" data-en="EN">EN</button>
-      </div>
       <section class="hero-banner">
         <div class="hero-content">
           <p
@@ -53,12 +67,6 @@
           data-fr="Rechercher un check..."
           data-en="Search a check..."
         />
-        <div class="filter-group">
-          <button class="filter-button" data-filter-level="FATAL_ERROR" data-fr="FATAL" data-en="FATAL"></button>
-          <button class="filter-button" data-filter-level="ERROR" data-fr="ERREUR" data-en="ERROR"></button>
-          <button class="filter-button" data-filter-level="WARNING" data-fr="AVERTISSEMENT" data-en="WARNING"></button>
-          <button class="filter-button" data-filter-level="INFORMATION" data-fr="INFO" data-en="INFO"></button>
-        </div>
         <div class="display-mode-controls">
           <span class="display-mode-label" data-fr="Affichage" data-en="Display">Affichage</span>
           <div class="display-mode-toggle" role="group" aria-label="Mode d'affichage">

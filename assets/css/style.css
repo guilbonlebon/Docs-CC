@@ -142,31 +142,77 @@ main {
   min-height: calc(100vh - var(--header-height));
 }
 
-.language-switcher {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.language-toggle {
-  border: 2px solid var(--color-blue-primary);
-  background: #FFFFFF;
-  color: var(--color-blue-primary);
-  font-weight: bold;
-  font-size: 1rem;
-  padding: 0.5rem 1.2rem;
-  border-radius: 999px;
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  padding: 0;
+  margin-left: auto;
+  font: inherit;
+  color: inherit;
 }
 
-.language-toggle:hover {
-  transform: translateY(-2px);
+.language-switch:focus-visible {
+  outline: 3px solid var(--color-yellow);
+  outline-offset: 4px;
 }
 
-.language-toggle.active {
-  background: var(--color-blue-primary);
-  color: #FFFFFF;
+.language-switch-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  min-width: 112px;
+  min-height: 44px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.language-switch-option {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.25s ease;
+}
+
+.language-switch-thumb {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc(50% - 6px);
+  border-radius: 999px;
+  background: #FFFFFF;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease;
+}
+
+.language-switch[data-active-lang="fr"] .language-switch-option--fr,
+.language-switch[data-active-lang="en"] .language-switch-option--en {
+  color: var(--color-blue-primary);
+}
+
+.language-switch[data-active-lang="en"] .language-switch-thumb {
+  transform: translateX(100%);
+}
+
+@media (max-width: 600px) {
+  .language-switch-track {
+    min-width: 96px;
+    min-height: 40px;
+  }
 }
 
 .hero-banner {
@@ -267,12 +313,6 @@ main {
   flex: 1 1 240px;
 }
 
-.filter-group {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
 .display-mode-controls {
   display: flex;
   align-items: center;
@@ -339,26 +379,6 @@ main {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.filter-button {
-  border: 2px solid transparent;
-  background: #FFFFFF;
-  color: var(--color-blue-primary);
-  font-weight: bold;
-  padding: 0.5rem 0.9rem;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.filter-button:hover {
-  transform: translateY(-2px);
-}
-
-.filter-button.active {
-  border-color: var(--color-green-primary);
-  box-shadow: 0 0 0 3px rgba(60, 152, 69, 0.2);
 }
 
 #sidebar {
