@@ -115,6 +115,24 @@ main {
   color: var(--color-blue-primary);
 }
 
+#search {
+  width: 40%;
+  min-width: 320px;
+  display: block;
+  margin: 20px auto;
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 2px solid #00427F;
+  border-radius: 8px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#search:focus {
+  outline: none;
+  border-color: #3C9845;
+  box-shadow: 0 0 6px #3C9845;
+}
+
 .search-input {
   padding: 0.75rem 1rem;
   border: 2px solid var(--color-blue-primary);
@@ -168,7 +186,7 @@ main {
   cursor: pointer;
   perspective: 1000px;
   border-radius: var(--card-radius);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease, opacity 0.3s ease;
 }
 
 .check-card:hover {
@@ -191,6 +209,15 @@ main {
 
 .check-card.is-flipped .card-inner {
   transform: rotateY(180deg);
+}
+
+.card.hidden,
+.check-card.hidden {
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
 }
 
 .card-front,

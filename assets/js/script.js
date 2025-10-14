@@ -7,6 +7,13 @@ const LEVEL_STYLES = {
 
 const STORAGE_KEY = 'precheck-doc-language';
 
+const normalize = (value) =>
+  (value || '')
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
 function getPreferredLanguage() {
   try {
     const stored = window.localStorage ? localStorage.getItem(STORAGE_KEY) : null;
@@ -90,14 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderChecks(checks) {
     manifestContainer.innerHTML = '';
 
-    if (!checks.length) {
-      const empty = document.createElement('p');
-      empty.setAttribute('data-fr', 'Aucun résultat ne correspond à votre recherche.');
-      empty.setAttribute('data-en', 'No results match your search.');
-      manifestContainer.appendChild(empty);
-      applyLanguage(getPreferredLanguage());
-      return;
-    }
+    const fragment = document.createDocumentFragment();
+    const entries = [];
 
     checks.forEach((check) => {
       const card = document.createElement('article');
@@ -148,36 +149,77 @@ document.addEventListener('DOMContentLoaded', () => {
       button.setAttribute('data-en', 'View documentation');
       back.appendChild(button);
 
-      manifestContainer.appendChild(card);
+      fragment.appendChild(card);
       setupCardInteractions(card);
+
+      const searchableParts = [check.title_fr, check.title_en, check.script, check.id]
+        .filter(Boolean)
+        .join(' ');
+      const normalizedText = normalize(searchableParts);
+      const normalizedWords = normalizedText
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean);
+
+      entries.push({
+        element: card,
+        level: check.level,
+        normalizedText,
+        normalizedWords
+      });
     });
 
+    manifestContainer.appendChild(fragment);
     applyLanguage(getPreferredLanguage());
+
+    return entries;
   }
 
   function handleFiltering(checks) {
     const sorted = checks.slice().sort((a, b) => a.title_fr.localeCompare(b.title_fr));
-    renderChecks(sorted);
+    const entries = renderChecks(sorted);
+
+    const emptyMessage = document.createElement('p');
+    emptyMessage.className = 'empty-state';
+    emptyMessage.setAttribute('data-fr', 'Aucun résultat ne correspond à votre recherche.');
+    emptyMessage.setAttribute('data-en', 'No results match your search.');
+    emptyMessage.style.display = 'none';
+    manifestContainer.parentNode.insertBefore(emptyMessage, manifestContainer.nextSibling);
+    applyLanguage(getPreferredLanguage());
 
     function filterChecks() {
-      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const rawQuery = searchInput ? searchInput.value : '';
+      const normalizedQuery = normalize(rawQuery.trim());
+      const fuzzyPrefix = normalizedQuery.slice(0, 3);
       const activeLevels = filterButtons
         .filter((button) => button.classList.contains('active'))
         .map((button) => button.dataset.filterLevel);
 
-      const filtered = sorted.filter((check) => {
-        const matchesQuery =
-          !query ||
-          check.title_fr.toLowerCase().includes(query) ||
-          check.title_en.toLowerCase().includes(query) ||
-          check.script.toLowerCase().includes(query);
+      let visibleCount = 0;
 
-        const matchesLevel = !activeLevels.length || activeLevels.includes(check.level);
-        return matchesQuery && matchesLevel;
+      entries.forEach(({ element, level, normalizedText, normalizedWords }) => {
+        const matchesLevel = !activeLevels.length || activeLevels.includes(level);
+
+        let matchesQuery = !normalizedQuery;
+        if (!matchesQuery) {
+          const hasExact = normalizedText.includes(normalizedQuery);
+          const hasPrefix =
+            fuzzyPrefix.length >= 3 &&
+            normalizedWords.some((word) => word.startsWith(fuzzyPrefix));
+          matchesQuery = hasExact || hasPrefix;
+        }
+
+        const shouldShow = matchesQuery && matchesLevel;
+        element.classList.toggle('hidden', !shouldShow);
+        if (shouldShow) {
+          visibleCount += 1;
+        }
       });
 
-      renderChecks(filtered);
+      emptyMessage.style.display = visibleCount ? 'none' : 'block';
     }
+
+    filterChecks();
 
     if (searchInput) {
       searchInput.addEventListener('input', filterChecks);
