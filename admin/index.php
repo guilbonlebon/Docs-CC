@@ -46,6 +46,16 @@ function normalizeNewlines(string $content): string
     return $content;
 }
 
+function toSearchableString(string $value): string
+{
+    $value = trim($value);
+    if (function_exists('mb_strtolower')) {
+        return mb_strtolower($value, 'UTF-8');
+    }
+
+    return strtolower($value);
+}
+
 function createDomDocument(string $htmlContent): ?DOMDocument
 {
     $document = new DOMDocument();
@@ -547,8 +557,30 @@ function h(?string $value): string
       <div class="layout">
         <section class="card card-table">
           <div class="card-header">
-            <h2>Checks disponibles</h2>
-            <p class="status"><?= $totalChecks ?> check<?= $checksPlural ?> détecté<?= $checksPlural ?> dans le dossier.</p>
+            <div class="card-title">
+              <h2>Checks disponibles</h2>
+              <p
+                class="status"
+                data-check-count
+                data-total="<?= $totalChecks ?>"
+                data-singular="check détecté dans le dossier."
+                data-plural="checks détectés dans le dossier."
+                data-display-singular="%COUNT% check affiché sur %TOTAL%."
+                data-display-plural="%COUNT% checks affichés sur %TOTAL%."
+                data-empty="Aucun check ne correspond à votre recherche."
+              >
+                <?= $totalChecks ?> check<?= $checksPlural ?> détecté<?= $checksPlural ?> dans le dossier.
+              </p>
+            </div>
+            <?php if ($checks): ?>
+              <label class="table-search" for="checks-search">
+                <span class="sr-only">Rechercher un check</span>
+                <input id="checks-search" type="search" placeholder="Rechercher par titre, script ou fichier" autocomplete="off" />
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 0 0 1.57-4.23A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"></path>
+                </svg>
+              </label>
+            <?php endif; ?>
           </div>
           <div class="table-wrapper">
             <table>
@@ -569,9 +601,24 @@ function h(?string $value): string
                     <?php
                       $isSelected = $selectedFile !== '' && $selectedFile === $item['file'];
                       $entry = $item['manifest'] ?? null;
+                      $filterParts = [
+                        toSearchableString((string) ($entry['title_fr'] ?? '')),
+                        toSearchableString((string) ($entry['title_en'] ?? '')),
+                        toSearchableString((string) ($entry['script'] ?? '')),
+                        toSearchableString($item['file']),
+                      ];
+                      $filterLabel = trim(implode(' ', array_filter($filterParts, static fn (string $part): bool => $part !== '')));
                     ?>
-                    <tr<?= $isSelected ? ' class="selected"' : '' ?>>
-                      <td><?= h($entry['title_fr'] ?? '—') ?></td>
+                    <tr
+                      <?= $isSelected ? ' class="selected"' : '' ?>
+                      data-check-row
+                      data-filter="<?= h($filterLabel) ?>"
+                      tabindex="0"
+                    >
+                      <td>
+                        <span class="row-title"><?= h($entry['title_fr'] ?? '—') ?></span>
+                        <span class="row-subtitle" title="<?= h($item['file']) ?>"><?= h($item['file']) ?></span>
+                      </td>
                       <td>
                         <?= h($entry['script'] ?? '—') ?>
                         <?php if (!$item['exists']): ?>
@@ -579,11 +626,19 @@ function h(?string $value): string
                         <?php endif; ?>
                       </td>
                       <td>
-                        <a class="ghost-btn" href="?file=<?= urlencode($item['file']) ?>">Modifier</a>
+                        <a class="ghost-btn edit-btn" data-edit-link href="?file=<?= urlencode($item['file']) ?>">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20">
+                            <path d="M13.586 3.172a2 2 0 0 1 2.828 2.828l-8.49 8.49-3.42.57.57-3.42 8.512-8.468zm-2.121-.707L3.293 10.637a1 1 0 0 0-.263.5l-.98 5.883a1 1 0 0 0 1.147 1.147l5.883-.98a1 1 0 0 0 .5-.263l8.172-8.172a4 4 0 0 0-5.657-5.657z"></path>
+                          </svg>
+                          <span>Modifier</span>
+                        </a>
                       </td>
                     </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>
+                <tr class="empty" data-empty-result style="display: none;">
+                  <td colspan="3">Aucun check ne correspond à votre recherche.</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -671,5 +726,94 @@ function h(?string $value): string
         </section>
       </div>
     </main>
+
+    <script>
+      (function () {
+        const searchInput = document.getElementById('checks-search');
+        if (!searchInput) {
+          return;
+        }
+
+        const rows = Array.prototype.slice.call(document.querySelectorAll('tr[data-check-row]'));
+        const emptyRow = document.querySelector('[data-empty-result]');
+        const status = document.querySelector('[data-check-count]');
+        const total = status ? Number(status.getAttribute('data-total')) || rows.length : rows.length;
+        const singular = status ? status.getAttribute('data-singular') || '' : '';
+        const plural = status ? status.getAttribute('data-plural') || '' : '';
+        const displaySingular = status ? status.getAttribute('data-display-singular') || '' : '';
+        const displayPlural = status ? status.getAttribute('data-display-plural') || '' : '';
+        const emptyMessage = status ? status.getAttribute('data-empty') || '' : '';
+
+        function updateStatus(visibleCount) {
+          if (!status) {
+            return;
+          }
+
+          if (visibleCount === 0) {
+            status.textContent = emptyMessage || 'Aucun check ne correspond à votre recherche.';
+            return;
+          }
+
+          if (visibleCount === total) {
+            const suffix = visibleCount === 1 ? singular : plural;
+            status.textContent = visibleCount + ' ' + (suffix || (visibleCount === 1 ? 'check détecté dans le dossier.' : 'checks détectés dans le dossier.'));
+            return;
+          }
+
+          const template = visibleCount === 1 ? displaySingular : displayPlural;
+          if (template) {
+            status.textContent = template.replace('%COUNT%', String(visibleCount)).replace('%TOTAL%', String(total));
+          } else {
+            status.textContent = visibleCount + ' check' + (visibleCount === 1 ? '' : 's') + ' affiché' + (visibleCount === 1 ? '' : 's') + ' sur ' + total + '.';
+          }
+        }
+
+        function updateFilter() {
+          const query = searchInput.value.trim().toLowerCase();
+          let visibleCount = 0;
+
+          rows.forEach(function (row) {
+            const haystack = row.getAttribute('data-filter') || '';
+            const matches = query === '' || haystack.indexOf(query) !== -1;
+            row.style.display = matches ? '' : 'none';
+            if (matches) {
+              visibleCount += 1;
+            }
+          });
+
+          if (emptyRow) {
+            emptyRow.style.display = visibleCount === 0 ? '' : 'none';
+          }
+
+          updateStatus(visibleCount);
+        }
+
+        searchInput.addEventListener('input', updateFilter);
+        updateFilter();
+
+        rows.forEach(function (row) {
+          row.addEventListener('click', function (event) {
+            var target = event.target;
+            if (target && target.closest && target.closest('a')) {
+              return;
+            }
+            const link = row.querySelector('[data-edit-link]');
+            if (link && link.href) {
+              window.location.href = link.href;
+            }
+          });
+
+          row.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              const link = row.querySelector('[data-edit-link]');
+              if (link && link.href) {
+                event.preventDefault();
+                window.location.href = link.href;
+              }
+            }
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
