@@ -193,6 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add(normalizedMode);
     }
 
+    if (normalizedMode === 'grid-list') {
+      const flippedCards = document.querySelectorAll('.check-card.is-flipped');
+      flippedCards.forEach((card) => {
+        card.classList.remove('is-flipped');
+        card.setAttribute('aria-pressed', 'false');
+      });
+    }
+
     displayModeButtons.forEach((button) => {
       const isActive = button.dataset.mode === normalizedMode;
       button.classList.toggle('active', isActive);
@@ -391,19 +399,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setupCardInteractions(card) {
-    const mediaQuery = typeof window.matchMedia === 'function' ? window.matchMedia('(hover: none)') : null;
+    const updatePressedState = () => {
+      card.setAttribute('aria-pressed', card.classList.contains('is-flipped') ? 'true' : 'false');
+    };
+
+    const shouldToggle = (event) => {
+      if (event.target.closest('.btn')) {
+        return false;
+      }
+      const mode = document.body ? document.body.getAttribute('data-display-mode') : null;
+      return mode !== 'grid-list';
+    };
 
     card.addEventListener('click', (event) => {
-      if (mediaQuery && !mediaQuery.matches) {
-        return;
-      }
-      if (!mediaQuery) {
-        return;
-      }
-      if (event.target.closest('.btn')) {
+      if (!shouldToggle(event)) {
         return;
       }
       card.classList.toggle('is-flipped');
+      updatePressedState();
+    });
+
+    card.addEventListener('keydown', (event) => {
+      if (!shouldToggle(event)) {
+        return;
+      }
+      if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+        event.preventDefault();
+        card.classList.toggle('is-flipped');
+        updatePressedState();
+      }
     });
   }
 
@@ -416,6 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
     checks.forEach((check) => {
       const card = document.createElement('article');
       card.className = 'check-card';
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-pressed', 'false');
       const levelGroup = getLevelGroup(check.level);
       card.dataset.level = levelGroup;
 
