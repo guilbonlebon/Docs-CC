@@ -129,7 +129,12 @@ function applyLanguage(lang) {
   document.documentElement.setAttribute('lang', lang);
   const targets = document.querySelectorAll('[data-fr][data-en]');
   targets.forEach((element) => {
+    const html = element.getAttribute(`data-${lang}-html`);
     const text = element.getAttribute(`data-${lang}`);
+    if (html !== null) {
+      element.innerHTML = html;
+      return;
+    }
     if (text === null) {
       return;
     }

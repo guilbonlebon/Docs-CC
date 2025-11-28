@@ -46,6 +46,13 @@ function normalizeNewlines(string $content): string
     return $content;
 }
 
+function stripText(?string $content): string
+{
+    $content = (string) $content;
+    $content = trim(strip_tags($content));
+    return preg_replace('/\s+/', ' ', $content) ?? '';
+}
+
 function toSearchableString(string $value): string
 {
     $value = trim($value);
@@ -82,6 +89,100 @@ function getFirstNode(DOMXPath $xpath, string $query, ?DOMNode $context = null):
 
     $item = $nodeList->item(0);
     return $item instanceof DOMElement ? $item : null;
+}
+
+function replaceTagName(DOMElement $element, string $tagName): DOMElement
+{
+    if (strcasecmp($element->tagName, $tagName) === 0) {
+        return $element;
+    }
+
+    $document = $element->ownerDocument;
+    if (!$document instanceof DOMDocument) {
+        return $element;
+    }
+
+    $replacement = $document->createElement($tagName);
+    foreach ($element->attributes ?? [] as $attribute) {
+        $replacement->setAttribute($attribute->name, $attribute->value);
+    }
+
+    while ($element->firstChild) {
+        $replacement->appendChild($element->firstChild);
+    }
+
+    $parent = $element->parentNode;
+    if ($parent) {
+        $parent->replaceChild($replacement, $element);
+    }
+
+    return $replacement;
+}
+
+function setElementInnerHtml(DOMElement $element, string $html): void
+{
+    $document = $element->ownerDocument;
+    if (!$document instanceof DOMDocument) {
+        return;
+    }
+
+    while ($element->firstChild) {
+        $element->removeChild($element->firstChild);
+    }
+
+    libxml_use_internal_errors(true);
+    $wrapper = new DOMDocument();
+    $wrapper->loadHTML('<div>' . $html . '</div>', LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+    libxml_clear_errors();
+
+    $body = $wrapper->getElementsByTagName('body')->item(0);
+    $container = $body ? $body->firstChild : null;
+    if (!$container instanceof DOMNode) {
+        return;
+    }
+
+    foreach (iterator_to_array($container->childNodes) as $child) {
+        $imported = $document->importNode($child, true);
+        $element->appendChild($imported);
+    }
+}
+
+function ensureRichContentContainer(DOMXPath $xpath, string $query): ?DOMElement
+{
+    $element = getFirstNode($xpath, $query);
+    if (!$element instanceof DOMElement) {
+        return null;
+    }
+
+    return replaceTagName($element, 'div');
+}
+
+function setLocalizedRichContent(DOMElement $element, string $fr, string $en): void
+{
+    $fr = trim($fr);
+    $en = trim($en);
+
+    $fallbackHtml = $fr !== '' ? $fr : $en;
+
+    if ($fr !== '') {
+        $element->setAttribute('data-fr-html', $fr);
+        $element->setAttribute('data-fr', stripText($fr));
+    } elseif ($fallbackHtml !== '') {
+        $element->setAttribute('data-fr-html', $fallbackHtml);
+        $element->setAttribute('data-fr', stripText($fallbackHtml));
+    }
+    if ($en !== '') {
+        $element->setAttribute('data-en-html', $en);
+        $element->setAttribute('data-en', stripText($en));
+    } elseif ($fallbackHtml !== '') {
+        $element->setAttribute('data-en-html', $fallbackHtml);
+        $element->setAttribute('data-en', stripText($fallbackHtml));
+    }
+
+    $htmlToApply = $fallbackHtml;
+    if ($htmlToApply !== '') {
+        setElementInnerHtml($element, $htmlToApply);
+    }
 }
 
 function updateCheckHtml(string $htmlContent, array $data): string
@@ -137,45 +238,33 @@ function updateCheckHtml(string $htmlContent, array $data): string
     $explanationFr = trim((string) ($data['explanation_fr'] ?? ''));
     $explanationEn = trim((string) ($data['explanation_en'] ?? ''));
     if ($explanationFr !== '' || $explanationEn !== '') {
-        $paragraph = getFirstNode(
+        $paragraph = ensureRichContentContainer(
             $xpath,
             "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
-            . "[h2[contains(@data-fr, 'Explications') or contains(@data-en, 'Overview')]]"
-            . "//p[@data-fr or @data-en]"
+                . "[h2[contains(@data-fr, 'Explications') or contains(@data-en, 'Overview')]]"
+                . "//*[(@data-fr or @data-en) and not(self::h2)]"
         );
         if ($paragraph) {
-            if ($explanationFr !== '') {
-                $paragraph->setAttribute('data-fr', $explanationFr);
-                $paragraph->textContent = $explanationFr;
-            }
-            if ($explanationEn !== '') {
-                $paragraph->setAttribute('data-en', $explanationEn);
-            }
+            setLocalizedRichContent($paragraph, $explanationFr, $explanationEn);
         }
     }
 
     $metaDescription = getFirstNode($xpath, "//meta[@name='description']");
     if ($metaDescription) {
-        $metaDescription->setAttribute('content', $explanationFr !== '' ? $explanationFr : $explanationEn);
+        $metaDescription->setAttribute('content', stripText($explanationFr !== '' ? $explanationFr : $explanationEn));
     }
 
     $resolutionFr = trim((string) ($data['resolution_fr'] ?? ''));
     $resolutionEn = trim((string) ($data['resolution_en'] ?? ''));
     if ($resolutionFr !== '' || $resolutionEn !== '') {
-        $resolutionParagraph = getFirstNode(
+        $resolutionParagraph = ensureRichContentContainer(
             $xpath,
             "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
-            . "[h2[contains(@data-fr, 'Résolution') or contains(@data-en, 'Remediation')]]"
-            . "//p[@data-fr or @data-en]"
+                . "[h2[contains(@data-fr, 'Résolution') or contains(@data-en, 'Remediation')]]"
+                . "//*[(@data-fr or @data-en) and not(self::h2)]"
         );
         if ($resolutionParagraph) {
-            if ($resolutionFr !== '') {
-                $resolutionParagraph->setAttribute('data-fr', $resolutionFr);
-                $resolutionParagraph->textContent = $resolutionFr;
-            }
-            if ($resolutionEn !== '') {
-                $resolutionParagraph->setAttribute('data-en', $resolutionEn);
-            }
+            setLocalizedRichContent($resolutionParagraph, $resolutionFr, $resolutionEn);
         }
     }
 
@@ -194,19 +283,25 @@ function extractExplanationTexts(string $htmlContent): array
         $xpath,
         "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
         . "[h2[contains(@data-fr, 'Explications') or contains(@data-en, 'Overview')]]"
-        . "//p[@data-fr or @data-en]"
+        . "//*[@data-fr or @data-en][not(self::h2)]"
     );
 
     if (!$paragraph) {
         return ['fr' => '', 'en' => ''];
     }
 
-    $fr = trim((string) $paragraph->getAttribute('data-fr'));
+    $fr = trim((string) $paragraph->getAttribute('data-fr-html'));
+    if ($fr === '') {
+        $fr = trim((string) $paragraph->getAttribute('data-fr'));
+    }
     if ($fr === '') {
         $fr = trim($paragraph->textContent);
     }
 
-    $en = trim((string) $paragraph->getAttribute('data-en'));
+    $en = trim((string) $paragraph->getAttribute('data-en-html'));
+    if ($en === '') {
+        $en = trim((string) $paragraph->getAttribute('data-en'));
+    }
     if ($en === '') {
         $en = $fr;
     }
@@ -226,19 +321,25 @@ function extractResolutionTexts(string $htmlContent): array
         $xpath,
         "//section[contains(concat(' ', normalize-space(@class), ' '), ' content-section ')]"
         . "[h2[contains(@data-fr, 'Résolution') or contains(@data-en, 'Remediation')]]"
-        . "//p[@data-fr or @data-en]"
+        . "//*[@data-fr or @data-en][not(self::h2)]"
     );
 
     if (!$paragraph) {
         return ['fr' => '', 'en' => ''];
     }
 
-    $fr = trim((string) $paragraph->getAttribute('data-fr'));
+    $fr = trim((string) $paragraph->getAttribute('data-fr-html'));
+    if ($fr === '') {
+        $fr = trim((string) $paragraph->getAttribute('data-fr'));
+    }
     if ($fr === '') {
         $fr = trim($paragraph->textContent);
     }
 
-    $en = trim((string) $paragraph->getAttribute('data-en'));
+    $en = trim((string) $paragraph->getAttribute('data-en-html'));
+    if ($en === '') {
+        $en = trim((string) $paragraph->getAttribute('data-en'));
+    }
     if ($en === '') {
         $en = $fr;
     }
@@ -688,24 +789,64 @@ function h(?string $value): string
               </div>
 
               <div class="grid">
-                <div class="field">
-                  <label for="field-explanation-fr">Explications (FR)</label>
-                  <textarea id="field-explanation-fr" name="explanation_fr" rows="4"><?= h($formData['explanation_fr']) ?></textarea>
+                <div class="field rich-field">
+                  <div class="field-heading">
+                    <label for="field-explanation-fr">Explications (FR)</label>
+                    <div class="rich-toolbar" data-toolbar-for="field-explanation-fr">
+                      <button type="button" data-format="h1">H1</button>
+                      <button type="button" data-format="h2">H2</button>
+                      <button type="button" data-format="h3">H3</button>
+                      <button type="button" data-format="spacing">Espacement</button>
+                      <button type="button" data-format="image">Image</button>
+                    </div>
+                  </div>
+                  <textarea id="field-explanation-fr" name="explanation_fr" rows="6" data-rich-editor><?= h($formData['explanation_fr']) ?></textarea>
+                  <p class="field-hint">Vous pouvez utiliser du HTML pour structurer le texte (titres, images, paragraphes).</p>
                 </div>
-                <div class="field">
-                  <label for="field-explanation-en">Explications (EN)</label>
-                  <textarea id="field-explanation-en" name="explanation_en" rows="4"><?= h($formData['explanation_en']) ?></textarea>
+                <div class="field rich-field">
+                  <div class="field-heading">
+                    <label for="field-explanation-en">Explications (EN)</label>
+                    <div class="rich-toolbar" data-toolbar-for="field-explanation-en">
+                      <button type="button" data-format="h1">H1</button>
+                      <button type="button" data-format="h2">H2</button>
+                      <button type="button" data-format="h3">H3</button>
+                      <button type="button" data-format="spacing">Espacement</button>
+                      <button type="button" data-format="image">Image</button>
+                    </div>
+                  </div>
+                  <textarea id="field-explanation-en" name="explanation_en" rows="6" data-rich-editor><?= h($formData['explanation_en']) ?></textarea>
+                  <p class="field-hint">Utilisez les boutons pour insérer des titres H1-H3, des espacements ou des images.</p>
                 </div>
               </div>
 
               <div class="grid">
-                <div class="field">
-                  <label for="field-resolution-fr">Résolution (FR)</label>
-                  <textarea id="field-resolution-fr" name="resolution_fr" rows="4"><?= h($formData['resolution_fr']) ?></textarea>
+                <div class="field rich-field">
+                  <div class="field-heading">
+                    <label for="field-resolution-fr">Résolution (FR)</label>
+                    <div class="rich-toolbar" data-toolbar-for="field-resolution-fr">
+                      <button type="button" data-format="h1">H1</button>
+                      <button type="button" data-format="h2">H2</button>
+                      <button type="button" data-format="h3">H3</button>
+                      <button type="button" data-format="spacing">Espacement</button>
+                      <button type="button" data-format="image">Image</button>
+                    </div>
+                  </div>
+                  <textarea id="field-resolution-fr" name="resolution_fr" rows="6" data-rich-editor><?= h($formData['resolution_fr']) ?></textarea>
+                  <p class="field-hint">Le contenu pourra inclure des paragraphes, des titres et des visuels.</p>
                 </div>
-                <div class="field">
-                  <label for="field-resolution-en">Resolution (EN)</label>
-                  <textarea id="field-resolution-en" name="resolution_en" rows="4"><?= h($formData['resolution_en']) ?></textarea>
+                <div class="field rich-field">
+                  <div class="field-heading">
+                    <label for="field-resolution-en">Resolution (EN)</label>
+                    <div class="rich-toolbar" data-toolbar-for="field-resolution-en">
+                      <button type="button" data-format="h1">H1</button>
+                      <button type="button" data-format="h2">H2</button>
+                      <button type="button" data-format="h3">H3</button>
+                      <button type="button" data-format="spacing">Spacing</button>
+                      <button type="button" data-format="image">Image</button>
+                    </div>
+                  </div>
+                  <textarea id="field-resolution-en" name="resolution_en" rows="6" data-rich-editor><?= h($formData['resolution_en']) ?></textarea>
+                  <p class="field-hint">Rich HTML is supported for headings, spacing and images.</p>
                 </div>
               </div>
 
@@ -717,6 +858,7 @@ function h(?string $value): string
 
               <div class="form-actions">
                 <a class="ghost-btn" href="index.php">Annuler</a>
+                <button class="secondary-btn" type="button" data-preview-button>Prévisualiser</button>
                 <button class="primary-btn" type="submit">Sauvegarder</button>
               </div>
             </form>
@@ -726,6 +868,36 @@ function h(?string $value): string
         </section>
       </div>
     </main>
+
+    <div class="preview-overlay" data-preview-overlay hidden>
+      <div class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title">
+        <div class="preview-header">
+          <div>
+            <p class="status">Prévisualisez les sections bilingues avant de sauvegarder.</p>
+            <h2 id="preview-title">Prévisualisation du contenu</h2>
+          </div>
+          <button type="button" class="ghost-btn" data-close-preview>Fermer</button>
+        </div>
+        <div class="preview-grid">
+          <div class="preview-card">
+            <h3>Explications (FR)</h3>
+            <div class="preview-content" data-preview-target="explanation_fr"></div>
+          </div>
+          <div class="preview-card">
+            <h3>Explications (EN)</h3>
+            <div class="preview-content" data-preview-target="explanation_en"></div>
+          </div>
+          <div class="preview-card">
+            <h3>Résolution (FR)</h3>
+            <div class="preview-content" data-preview-target="resolution_fr"></div>
+          </div>
+          <div class="preview-card">
+            <h3>Resolution (EN)</h3>
+            <div class="preview-content" data-preview-target="resolution_en"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script>
       (function () {
@@ -813,6 +985,118 @@ function h(?string $value): string
             }
           });
         });
+
+        const toolbars = document.querySelectorAll('[data-toolbar-for]');
+        toolbars.forEach(function (toolbar) {
+          const targetId = toolbar.getAttribute('data-toolbar-for');
+          const textarea = targetId ? document.getElementById(targetId) : null;
+          if (!textarea) {
+            return;
+          }
+
+          function wrapSelection(prefix, suffix) {
+            const start = textarea.selectionStart || 0;
+            const end = textarea.selectionEnd || 0;
+            const value = textarea.value;
+            const selected = value.substring(start, end) || 'Votre texte ici';
+            const newValue = value.slice(0, start) + prefix + selected + suffix + value.slice(end);
+            textarea.value = newValue;
+            textarea.focus();
+            textarea.selectionStart = start + prefix.length;
+            textarea.selectionEnd = start + prefix.length + selected.length;
+          }
+
+          toolbar.addEventListener('click', function (event) {
+            const button = event.target.closest('button[data-format]');
+            if (!button) {
+              return;
+            }
+            event.preventDefault();
+            const format = button.getAttribute('data-format');
+            switch (format) {
+              case 'h1':
+              case 'h2':
+              case 'h3':
+                wrapSelection('<' + format + '>', '</' + format + '>');
+                break;
+              case 'spacing':
+                wrapSelection('<p><br /></p>', '');
+                break;
+              case 'image': {
+                var url = window.prompt('URL de l\'image à insérer :');
+                if (!url) {
+                  return;
+                }
+                var alt = window.prompt('Texte alternatif (optionnel) :') || '';
+                const tag = '<img src="' + url + '" alt="' + alt.replace(/"/g, '') + '" />';
+                wrapSelection(tag, '');
+                break;
+              }
+              default:
+                break;
+            }
+          });
+        });
+
+        const previewButton = document.querySelector('[data-preview-button]');
+        const previewOverlay = document.querySelector('[data-preview-overlay]');
+        const previewClose = document.querySelector('[data-close-preview]');
+        const previewTargets = previewOverlay
+          ? Array.prototype.slice.call(previewOverlay.querySelectorAll('[data-preview-target]'))
+          : [];
+
+        function fillPreview() {
+          const mapping = {
+            explanation_fr: document.getElementById('field-explanation-fr'),
+            explanation_en: document.getElementById('field-explanation-en'),
+            resolution_fr: document.getElementById('field-resolution-fr'),
+            resolution_en: document.getElementById('field-resolution-en')
+          };
+
+          previewTargets.forEach(function (target) {
+            const key = target.getAttribute('data-preview-target');
+            const textarea = mapping[key];
+            if (!textarea) {
+              target.innerHTML = '';
+              return;
+            }
+            target.innerHTML = textarea.value || '<em>Aucun contenu saisi pour l\'instant.</em>';
+          });
+        }
+
+        function togglePreview(show) {
+          if (!previewOverlay) {
+            return;
+          }
+          if (show) {
+            fillPreview();
+            previewOverlay.classList.add('is-visible');
+            previewOverlay.removeAttribute('hidden');
+          } else {
+            previewOverlay.classList.remove('is-visible');
+            previewOverlay.setAttribute('hidden', 'hidden');
+          }
+        }
+
+        if (previewButton) {
+          previewButton.addEventListener('click', function () {
+            togglePreview(true);
+          });
+        }
+
+        if (previewClose) {
+          previewClose.addEventListener('click', function () {
+            togglePreview(false);
+          });
+        }
+
+        if (previewOverlay) {
+          previewOverlay.addEventListener('click', function (event) {
+            if (event.target === previewOverlay) {
+              togglePreview(false);
+            }
+          });
+        }
       })();
     </script>
   </body>
